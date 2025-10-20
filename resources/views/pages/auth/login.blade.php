@@ -28,17 +28,19 @@
                           <h3>Account Login</h3>
                         </div>
                       </div>
-                      <form>
+                      <form method="POST" action="{{ url('login') }}">
+                        @csrf
                         <div class="mb-3">
-                          <label class="form-label" for="card-email">Email address</label>
-                          <input class="form-control" id="card-email" type="email" />
-                        </div>
-                        <div class="mb-3">
-                          <div class="d-flex justify-content-between">
-                            <label class="form-label" for="card-password">Password</label>
-                          </div>
-                          <input class="form-control" id="card-password" type="password" />
-                        </div>
+            <label class="form-label">CNIC or Email</label>
+            <input type="text" name="login" value="{{ old('login') }}" class="form-control @error('login') is-invalid @enderror" required autofocus>
+            @error('login') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+            @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
                         <div class="row flex-between-center">
                           <div class="col-auto">
                             <div class="form-check mb-0">
@@ -46,7 +48,7 @@
                               <label class="form-check-label mb-0" for="card-checkbox">Remember me</label>
                             </div>
                           </div>
-                          <div class="col-auto"><a class="fs-10" href="{{ route('forgot-password') }}">Forgot Password?</a></div>
+                          <div class="col-auto"><a class="fs-10" href="{{ route('password.request') }}">Forgot Password?</a></div>
                         </div>
                         <div class="mb-3">
                           <button class="btn btn-primary d-block w-100 mt-3" type="submit" name="submit">Log in</button>

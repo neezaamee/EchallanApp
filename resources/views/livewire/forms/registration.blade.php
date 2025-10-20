@@ -1,38 +1,34 @@
-<form wire:submit="save">
-                        <div class="mb-3">
-                          <label class="form-label" for="card-name">Name</label>
-                          <input class="form-control" type="text" id="card-name" wire:model="name" />
-                              <div>
-        @error('name') <span class="error">{{ $message }}</span> @enderror
-    </div>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label" for="card-cnic">CNIC</label>
-                          <input class="form-control" type="number" id="card-cnic" wire:model="cnic" />
-                              <div>
-        @error('cnic') <span class="error">{{ $message }}</span> @enderror
-    </div>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label" for="card-email">Email address</label>
-                          <input class="form-control" type="email" id="card-email" />
+<form method="POST" action="{{ route('register') }}">
+          @csrf
 
-                        </div>
-                        <div class="row gx-2">
-                          <div class="mb-3 col-sm-6">
-                            <label class="form-label" for="card-password">Password</label>
-                            <input class="form-control" type="password" autocomplete="on" id="card-password" />
-                          </div>
-                          <div class="mb-3 col-sm-6">
-                            <label class="form-label" for="card-confirm-password">Confirm Password</label>
-                            <input class="form-control" type="password" autocomplete="on" id="card-confirm-password" />
-                          </div>
-                        </div>
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" id="card-register-checkbox" />
-                          <label class="form-label" for="card-register-checkbox">I accept the <a href="#!">terms </a>and <a class="white-space-nowrap" href="#!">privacy policy</a></label>
-                        </div>
-                        <div class="mb-3">
-                          <button class="btn btn-primary d-block w-100 mt-3" type="submit" name="submit">Register</button>
-                        </div>
-                      </form>
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" required>
+            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">CNIC</label>
+            <input type="text" name="cnic" value="{{ old('cnic') }}" class="form-control @error('cnic') is-invalid @enderror" required>
+            @error('cnic') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" required>
+            @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+            @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" name="password_confirmation" class="form-control" required>
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">Register</button>
+        </form>

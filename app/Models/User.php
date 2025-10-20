@@ -7,11 +7,35 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+    public function roles()
+{
+    return $this->belongsToMany(Role::class);
+}
+
+// check one or many roles
+public function hasRole($roles)
+{
+    if (is_array($roles)) {
+        return $this->roles()->whereIn('name', $roles)->exists();
+    }
+    return $this->roles()->where('name', $roles)->exists();
+}
+
+// convenient checks
+public function isSuperAdmin()
+{
+    return $this->hasRole('super_admin');
+}
+
+
+
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +44,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'cnic',
+        'username',
         'email',
         'password',
     ];
