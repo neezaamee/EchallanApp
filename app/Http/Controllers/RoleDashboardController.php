@@ -6,7 +6,7 @@ class RoleDashboardController extends Controller
 {
     public function superAdmin()
     {
-        return view('dashboards.super-admin');
+        return view('pages.dashboards.super-admin');
     }
 
     public function admin()

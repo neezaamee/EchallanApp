@@ -48,7 +48,7 @@
                               <label class="form-check-label mb-0" for="card-checkbox">Remember me</label>
                             </div>
                           </div>
-                          <div class="col-auto"><a class="fs-10" href="{{ route('password.request') }}">Forgot Password?</a></div>
+                          <div class="col-auto"><a class="fs-10" href="{{ url('/') }}">Forgot Password?</a></div>
                         </div>
                         <div class="mb-3">
                           <button class="btn btn-primary d-block w-100 mt-3" type="submit" name="submit">Log in</button>
