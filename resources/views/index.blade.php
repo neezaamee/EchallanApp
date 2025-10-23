@@ -744,7 +744,7 @@
                           <td class="align-middle white-space-nowrap"><a class="text-800" href="../pages/user/profile.html">
                               <div class="d-flex align-items-center">
                                 <div class="avatar avatar-xl">
-                                  <img class="rounded-circle" src="../assets/img/team/3-thumb.png" alt="" />
+                                  <img class="rounded-circle" src="{{ asset('assets/img/team/3.thumb.png') }}" alt="" />
 
                                 </div>
                                 <h6 class="mb-0 ps-2 name">Jenny Horas</h6>

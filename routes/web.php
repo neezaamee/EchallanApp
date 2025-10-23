@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 // public home
 Route::get('/', function () {
-    return view('landing'); // replace with your landing page
+    return view('index'); // replace with your landing page
 })->name('home');
 
 // Authentication (override Breeze defaults if present)
