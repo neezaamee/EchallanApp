@@ -25,7 +25,7 @@ Route::post('register', [CustomRegisteredUserController::class, 'store']);
 // Password reset routes are provided by Breeze/Fortify; keep them if you installed Breeze.
 // Email verification routes (use Laravel defaults)
 Route::get('/email/verify', function () {
-    return view('auth.verify-email');
+    return view('pages.auth.confirm-mail');
 })->middleware('auth')->name('verification.notice');
 
 // Email verification handler
