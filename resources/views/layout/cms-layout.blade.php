@@ -72,7 +72,7 @@
   @endsection
 
 @section('after-main-content')
-    @include('partials.components.setting-panel')
+    @include('partials.setting-panel')
 @endsection
 
 

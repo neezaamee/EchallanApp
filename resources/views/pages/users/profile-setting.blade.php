@@ -28,7 +28,32 @@
                     </div>
                 </div>
             </div>
+            <div class="card mb-3">
+            <div class="card-header">
+              <div class="row">
+                <div class="col">
+                  <h5 class="mb-2">Tony Robbins (<a href="mailto:tony@gmail.com">tony@gmail.com</a>)</h5><a class="btn btn-falcon-default btn-sm" href="#!"><svg class="svg-inline--fa fa-plus fa-w-14 fs-11 me-1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path></svg><!-- <span class="fas fa-plus fs-11 me-1"></span> Font Awesome fontawesome.com -->Add note</a>
+                  <button class="btn btn-falcon-default btn-sm dropdown-toggle ms-2 dropdown-caret-none" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><svg class="svg-inline--fa fa-ellipsis-h fa-w-16" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg><!-- <span class="fas fa-ellipsis-h"></span> Font Awesome fontawesome.com --></button>
+                  <div class="dropdown-menu" style=""><a class="dropdown-item" href="#">Edit</a><a class="dropdown-item" href="#">Report</a><a class="dropdown-item" href="#">Archive</a>
+                    <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#">Delete user</a>
+                  </div>
+                </div>
+                <div class="col-auto d-none d-sm-block">
+                  <h6 class="text-uppercase text-600">Customer<svg class="svg-inline--fa fa-user fa-w-14 ms-2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"></path></svg><!-- <span class="fas fa-user ms-2"></span> Font Awesome fontawesome.com --></h6>
+                </div>
+              </div>
+            </div>
+            <div class="card-body border-top">
+              <div class="d-flex"><svg class="svg-inline--fa fa-user fa-w-14 text-success me-2" data-fa-transform="down-5" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="" style="transform-origin: 0.4375em 0.8125em;"><g transform="translate(224 256)"><g transform="translate(0, 160)  scale(1, 1)  rotate(0 0 0)"><path fill="currentColor" d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z" transform="translate(-224 -256)"></path></g></g></svg><!-- <span class="fas fa-user text-success me-2" data-fa-transform="down-5"></span> Font Awesome fontawesome.com -->
+                <div class="flex-1">
+                  <p class="mb-0">Customer was created</p>
+                  <p class="fs-10 mb-0 text-600">Jan 12, 11:13 PM</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
     </div>
     <div class="row g-0">
         <div class="col-lg-8 pe-lg-2">
@@ -40,27 +65,35 @@
                     <form class="row g-3">
                         <div class="col-lg-6">
                             <label class="form-label" for="first-name">First Name</label>
-                            <input class="form-control" id="first-name" type="text" value="Anthony" />
+                            <input class="form-control" id="first-name" type="text" value="Ali" />
                         </div>
                         <div class="col-lg-6">
                             <label class="form-label" for="last-name">Last Name</label>
-                            <input class="form-control" id="last-name" type="text" value="Hopkins" />
+                            <input class="form-control" id="last-name" type="text" value="Nizami" />
                         </div>
                         <div class="col-lg-6">
-                            <label class="form-label" for="email1">Email</label>
-                            <input class="form-control" id="email1" type="text" value="anthony@gmail.com" />
+                            <label class="form-label" for="cnic">CNIC</label>
+                            <input class="form-control" id="cnic" type="text" value="3310221557297" />
                         </div>
                         <div class="col-lg-6">
-                            <label class="form-label" for="email2">Phone</label>
-                            <input class="form-control" id="email2" type="text" value="+44098098304" />
+                            <label class="form-label" for="email">Email</label>
+                            <input class="form-control" id="email" type="text" value="neezaamee@gmail.com" />
                         </div>
-                        <div class="col-lg-12">
-                            <label class="form-label" for="email3">Heading</label>
-                            <input class="form-control" id="email3" type="text" value="Software Engineer" />
+                        <div class="col-lg-6">
+                            <label class="form-label" for="last-name">Phone</label>
+                            <input class="form-control" id="last-name" type="text" value="+923022211000" />
                         </div>
-                        <div class="col-lg-12">
-                            <label class="form-label" for="intro">Intro</label>
-                            <textarea class="form-control" id="intro" name="intro" cols="30" rows="13">Dedicated, passionate, and accomplished Full Stack Developer with 9+ years of progressive experience working as an Independent Contractor for Google and developing and growing my educational social network that helps others learn programming, web design, game development, networking. I’ve acquired a wide depth of knowledge and expertise in using my technical skills in programming, computer science, software development, and mobile app development to developing solutions to help organizations increase productivity, and accelerate business performance. It’s great that we live in an age where we can share so much with technology but I’m but I’m ready for the next phase of my career, with a healthy balance between the virtual world and a workplace where I help others face-to-face. There’s always something new to learn, especially in IT-related fields. People like working with me because I can explain technology to everyone, from staff to executives who need me to tie together the details and the big picture. I can also implement the technologies that successful projects need.</textarea>
+                        <div class="col-lg-6">
+                            <label class="form-label" for="email1">Rank</label>
+                            <input class="form-control" id="email1" type="text" value="DEO" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label" for="email2">Designation</label>
+                            <input class="form-control" id="email2" type="text" value="Admin" />
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label" for="email2">Posting</label>
+                            <input class="form-control" id="email2" type="text" value="CTO Office" />
                         </div>
                         <div class="col-12 d-flex justify-content-end">
                             <button class="btn btn-primary" type="submit">Update </button>

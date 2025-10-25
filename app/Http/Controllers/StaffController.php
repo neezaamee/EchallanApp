@@ -2,54 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreStaffRequest;
+use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Staff;
+use App\Models\Designation;
+use App\Models\Rank;
+use App\Models\City;
+use App\Models\Province;
+use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
     public function __construct()
     {
-        // only allow authenticated users with role admin or super_admin
-        //$this->middleware(['auth','role:admin|super_admin']);
+        $this->middleware(['auth','role:admin|super_admin']);
     }
 
-    /**
-     * Display a paginated listing of staff.
-     */
     public function index(Request $request)
     {
-        $staff = Staff::with('creator')->orderByDesc('created_at')->paginate(15);
+        $query = Staff::with(['designation','rank','city','province','creator']);
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function($wr) use ($q) {
+                $wr->where('first_name','like',"%{$q}%")
+                   ->orWhere('last_name','like',"%{$q}%")
+                   ->orWhere('cnic','like',"%{$q}%")
+                   ->orWhere('email','like',"%{$q}%");
+            });
+        }
+
+        $staff = $query->orderByDesc('id')->paginate(15);
         return view('staff.index', compact('staff'));
     }
 
-    /**
-     * Show the form for creating a new staff.
-     */
     public function create()
     {
-        return view('staff.create');
+        $designations = Designation::orderBy('name')->get();
+        $ranks = Rank::orderBy('name')->get();
+        $provinces = Province::orderBy('name')->get();
+        $cities = City::orderBy('name')->get();
+
+        return view('staff.create', compact('designations','ranks','provinces','cities'));
     }
 
-    /**
-     * Store a newly created staff in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreStaffRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'cnic' => 'required|string|unique:staff,cnic',
-            'email' => 'required|email|unique:staff,email|unique:users,email',
-            'department' => 'nullable|string|max:100',
-            'designation' => 'nullable|string|max:100',
-            'current_posting' => 'nullable|string|max:255',
-        ]);
-
+        $data = $request->validated();
         $data['created_by'] = auth()->id();
+        $staff = Staff::create($data);
 
-        Staff::create($data);
-
-        return redirect()->route('staff.index')->with('success', 'Staff created.');
+        return redirect()->route('staff.index')->with('success','Staff created.');
     }
 
-    // (Optional) Add edit/update/destroy later as needed.
+    public function edit(Staff $staff)
+    {
+        $this->authorize('update', $staff); // optional policy
+
+        $designations = Designation::orderBy('name')->get();
+        $ranks = Rank::orderBy('name')->get();
+        $provinces = Province::orderBy('name')->get();
+        $cities = City::orderBy('name')->get();
+
+        return view('staff.edit', compact('staff','designations','ranks','provinces','cities'));
+    }
+
+    public function update(UpdateStaffRequest $request, Staff $staff)
+    {
+        $data = $request->validated();
+        $staff->update($data);
+        return redirect()->route('staff.index')->with('success','Staff updated.');
+    }
+
+    public function destroy(Staff $staff)
+    {
+        $this->authorize('delete', $staff); // optional
+        $staff->delete();
+        return redirect()->route('staff.index')->with('success','Staff deleted.');
+    }
 }

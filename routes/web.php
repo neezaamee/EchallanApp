@@ -11,8 +11,14 @@ use Illuminate\Http\Request;
 
 // public home
 Route::get('/', function () {
-    return view('index'); // replace with your landing page
+    return view('landing'); // replace with your landing page
 })->name('home');
+
+//User
+Route::get('/user', function () {
+    return view('pages.users.profile-setting'); // replace with your landing page
+})->name('home');
+
 
 // Authentication (override Breeze defaults if present)
 Route::get('login', [CustomAuthenticatedSessionController::class, 'create'])->name('login');
@@ -46,8 +52,10 @@ Route::middleware(['auth','role:admin|super_admin'])->group(function () {
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
     Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
     Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::get('/staff/{staff}/edit', [StaffController::class, 'edit'])->name('staff.edit');
+    Route::put('/staff/{staff}', [StaffController::class, 'update'])->name('staff.update');
+    Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
 });
-
 
 // Central dashboard entry (redirect to role-specific dashboards)
 Route::middleware(['auth'])->group(function () {

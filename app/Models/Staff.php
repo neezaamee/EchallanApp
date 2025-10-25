@@ -7,24 +7,43 @@ use Illuminate\Database\Eloquent\Model;
 class Staff extends Model
 {
     protected $fillable = [
-        'name','cnic','email','department','designation','current_posting','created_by','can_create_officer'
+        'user_id',
+        'first_name','last_name','belt_no','phone','email','cnic',
+        'designation_id','rank_id','city_id','province_id','created_by'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function designation()
+    {
+        return $this->belongsTo(Designation::class);
+    }
+
+    public function rank()
+    {
+        return $this->belongsTo(Rank::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class);
+    }
 
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function user()
+    public function fullName()
     {
-        return $this->hasOne(User::class, 'cnic', 'cnic');
-    }
-
-    public function roleName()
-    {
-        $user = $this->user()->with('roles')->first();
-        if (! $user) return null;
-        $role = $user->roles()->first();
-        return $role ? $role->name : null;
+        return trim($this->first_name.' '.$this->last_name);
     }
 }

@@ -33,7 +33,10 @@ public function isSuperAdmin()
 {
     return $this->hasRole('super_admin');
 }
-
+public function staff()
+{
+    return $this->hasOne(Staff::class); // if one-to-one
+}
 
 
 

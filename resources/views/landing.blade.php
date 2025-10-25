@@ -90,7 +90,7 @@
                         <li class="nav-item"><a class="nav-link" href="#services">E-Services</a></li>
                         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                     </ul>
-                    <a href="#" class="btn btn-warning btn-sm fw-bold ms-lg-3 d-none d-lg-inline-block">Staff Login</a>
+                    <a href="{{ route('login') }}" class="btn btn-warning btn-sm fw-bold ms-lg-3 d-none d-lg-inline-block">Login</a>
                 </div>
             </div>
         </nav>
