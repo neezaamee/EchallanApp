@@ -9,7 +9,21 @@ class ProvincesSeeder extends Seeder
 {
     public function run()
     {
-        Province::firstOrCreate(['name' => 'Punjab'], ['code' => 'PB']);
-        // Add other provinces later if needed
+        $provinces = [
+            ['name' => 'Punjab', 'code' => 'PB'],
+            ['name' => 'Sindh', 'code' => 'SD'],
+            ['name' => 'Khyber Pakhtunkhwa', 'code' => 'KP'],
+            ['name' => 'Balochistan', 'code' => 'BL'],
+            ['name' => 'Islamabad Capital Territory', 'code' => 'ICT'],
+            ['name' => 'Gilgit-Baltistan', 'code' => 'GB'],
+            ['name' => 'Azad Jammu and Kashmir', 'code' => 'AJK'],
+        ];
+
+        foreach ($provinces as $province) {
+            Province::firstOrCreate(
+                ['name' => $province['name']],
+                ['code' => $province['code']]
+            );
+        }
     }
 }

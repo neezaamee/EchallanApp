@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layout.main')
 @section('main-content')
         <script>
           var isFluid = JSON.parse(localStorage.getItem('isFluid'));
