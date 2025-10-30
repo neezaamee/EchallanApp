@@ -12,6 +12,7 @@ use App\Http\Controllers\CircleController;
 use App\Http\Controllers\DumpingPointController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use App\Livewire\EditProvince;
 
 // Public home
 Route::get('/', function () {
