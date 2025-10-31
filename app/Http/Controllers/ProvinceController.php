@@ -11,6 +11,10 @@ class ProvinceController extends Controller
         //$provinces = Province::all();
         return view('pages.infrastructure.provinces.index');
     }
+    public function create()
+    {
+        return view('pages.infrastructure.provinces.create');
+    }
     public function edit($id){
         return view('pages.infrastructure.provinces.edit', compact('id'));
     }

@@ -13,9 +13,12 @@ class ProvincesTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
+
     public $confirmingProvinceDeletion = null;
+    public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
+    protected $queryString = ['search'];
 
     public function updatingSearch()
     {
@@ -35,34 +38,30 @@ class ProvincesTable extends Component
     public function confirmDelete($id)
     {
         $this->confirmingProvinceDeletion = $id;
+        $this->deleteId = $id;
     }
+
     public function deleteProvince()
     {
-        $province = Province::find($this->confirmingProvinceDeletion);
-        if ($province) {
-            $province->delete();
-        }
+        if (!$this->deleteId) return;
+
+        Province::findOrFail($this->deleteId)->delete();
 
         $this->confirmingProvinceDeletion = null;
+        $this->deleteId = null;
+
         session()->flash('message', 'Province deleted successfully!');
+        $this->resetPage();
     }
+
     public function render()
     {
-        $query = Province::query();
-
-        if (trim($this->search) !== '') {
-            $query->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('code', 'like', '%' . $this->search . '%');
-            });
-        }
-
-        $provinces = $query
+        $provinces = Province::query()
+            ->where('name', 'like', '%' . $this->search . '%')
+            ->orWhere('code', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
-        return view('livewire.provinces-table', [
-            'provinces' => $provinces,
-        ]);
+        return view('livewire.provinces-table', compact('provinces'));
     }
 }

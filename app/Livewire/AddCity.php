@@ -7,24 +7,15 @@ use App\Models\City;
 use App\Models\Province;
 use Illuminate\Support\Str;
 
-class EditCity extends Component
+class AddCity extends Component
 {
-    public $cityId;
     public $name;
     public $slug;
     public $province_id;
-
     public $provinces = [];
 
-    public function mount($id)
+    public function mount()
     {
-        $city = City::findOrFail($id);
-
-        $this->cityId = $city->id;
-        $this->name = $city->name;
-        $this->slug = $city->slug;
-        $this->province_id = $city->province_id;
-
         $this->provinces = Province::orderBy('name')->get();
     }
 
@@ -36,29 +27,27 @@ class EditCity extends Component
 
     public function updatedName($value)
     {
-        // auto-generate slug if empty
         if (empty($this->slug)) {
             $this->slug = Str::slug($value);
         }
     }
 
-    public function updateCity()
+    public function save()
     {
         $this->validate();
 
-        $city = City::findOrFail($this->cityId);
-        $city->update([
+        City::create([
             'name' => $this->name,
-            'slug' => $this->slug,
+            'slug' => $this->slug ?: Str::slug($this->name),
             'province_id' => $this->province_id,
         ]);
 
-        session()->flash('message', 'City updated successfully!');
-        return redirect()->route('cities.index');
+        session()->flash('message', 'City added successfully!');
+        $this->reset(['name', 'slug', 'province_id']);
     }
 
     public function render()
     {
-        return view('livewire.edit-city');
+        return view('livewire.add-city');
     }
 }

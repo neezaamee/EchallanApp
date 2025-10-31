@@ -59,8 +59,8 @@
                                 <!-- more inner pages-->
                             </li>
                             <li class="nav-item"><a class="nav-link" href="pages/user/settings.html">
-                                    <div class="d-flex align-items-center"><span
-                                            class="nav-link-text ps-1">View Users</span>
+                                    <div class="d-flex align-items-center"><span class="nav-link-text ps-1">View
+                                            Users</span>
                                     </div>
                                 </a>
                                 <!-- more inner pages-->
@@ -97,36 +97,36 @@
                         </div>
                     </a>
                     <ul class="nav collapse" id="email">
-                        <li class="nav-item"><a class="nav-link" href="app/email/inbox.html">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dumping-points.*') ? 'active' : '' }}"
+                                href="{{ route('dumping-points.index') }}">
                                 <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Dumping
-                                        Points</span>
+                                        Points</span></div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('circles.*') ? 'active' : '' }}"
+                                href="{{ route('circles.index') }}">
+                                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Circles</span>
                                 </div>
                             </a>
-                            <!-- more inner pages-->
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="app/email/email-detail.html">
-                                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">
-                                        Circles</span>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('cities.*') ? 'active' : '' }}"
+                                href="{{ route('cities.index') }}">
+                                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Cities</span>
                                 </div>
                             </a>
-                            <!-- more inner pages-->
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="app/email/email-detail.html">
-                                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">
-                                        Cities</span>
-                                </div>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('provinces.*') ? 'active' : '' }}"
+                                href="{{ route('provinces.index') }}">
+                                <div class="d-flex align-items-center"><span
+                                        class="nav-link-text ps-1">Provinces</span></div>
                             </a>
-                            <!-- more inner pages-->
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('provinces.index') }}">
-                                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">
-                                        Provinces</span>
-                                </div>
-                            </a>
-                            <!-- more inner pages-->
-                        </li>
-
                     </ul>
+
                 </li>
                 <li class="nav-item">
                     <!-- label-->
