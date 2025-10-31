@@ -118,7 +118,7 @@
                             </a>
                             <!-- more inner pages-->
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="app/email/email-detail.html">
+                        <li class="nav-item"><a class="nav-link" href="{{ route('provinces.index') }}">
                                 <div class="d-flex align-items-center"><span class="nav-link-text ps-1">
                                         Provinces</span>
                                 </div>

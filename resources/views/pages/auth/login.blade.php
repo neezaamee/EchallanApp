@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layout.main')
 @section('page-title', 'Login - ')
 @section('main-content')
 <div class="row min-vh-100 flex-center g-0">
