@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('provinces', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('code')->nullable(); // e.g. PB for Punjab
+            $table->string('slug')->nullable(); // e.g. PB for Punjab
             $table->timestamps();
         });
     }
