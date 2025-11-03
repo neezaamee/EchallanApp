@@ -13,7 +13,7 @@
                       <!--/.bg-holder-->
 
                       {{-- heading and sub heading --}}
-                      @include('partials.auth-card-heading-sub-heading')
+                      @include('pages.auth.components.auth-card-heading-sub-heading')
 
                     </div>
                     <div class="mt-3 mb-4 mt-md-4 mb-md-5" data-bs-theme="light">

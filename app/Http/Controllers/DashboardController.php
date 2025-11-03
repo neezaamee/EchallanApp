@@ -10,6 +10,13 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        // Force email verification for violators
+        if ($user->hasRole('violator') && !$user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice')
+                ->with('registered_email', $user->email)
+                ->with('status', 'Please verify your email before accessing your dashboard.');
+        }
+
         if ($user->isSuperAdmin()) {
             return redirect()->route('dashboard.super-admin');
         }

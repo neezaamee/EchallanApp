@@ -28,7 +28,7 @@
                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                         @endif
                     </th>
-                    <th wire:click="sortBy('code')" style="cursor: pointer;">
+                    <th wire:click="sortBy('slug')" style="cursor: pointer;">
                         Slug
                         @if ($sortField === 'slug')
                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>

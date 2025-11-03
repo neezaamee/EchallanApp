@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             ProvincesSeeder::class,
             CitiesPunjabSeeder::class,
             CirclesFaisalabadSeeder::class,
+            DumpingPointSeeder::class,
             DesignationsSeeder::class,
             RanksSeeder::class,
             RoleSeeder::class,

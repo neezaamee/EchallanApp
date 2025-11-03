@@ -9,7 +9,7 @@ class EditProvince extends Component
 {
     public $provinceId;
     public $name;
-    public $slug;
+    public $code;
 
     protected $rules = [
         'name' => 'required|string|max:255|unique:provinces,name,{{provinceId}}',
@@ -22,20 +22,20 @@ class EditProvince extends Component
 
         $this->provinceId = $province->id;
         $this->name = $province->name;
-        $this->slug = $province->slug;
+        $this->code = $province->code;
     }
 
     public function update()
     {
         $this->validate([
             'name' => 'required|string|max:255|unique:provinces,name,' . $this->provinceId,
-            'slug' => 'required|string|max:10|unique:provinces,slug,' . $this->provinceId,
+            'code' => 'required|string|max:10|unique:provinces,code,' . $this->provinceId,
         ]);
 
         $province = Province::find($this->provinceId);
         $province->update([
             'name' => $this->name,
-            'slug' => $this->slug,
+            'code' => $this->code,
         ]);
 
         session()->flash('message', 'Province updated successfully!');

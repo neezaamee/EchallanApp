@@ -20,9 +20,9 @@
 
                 <div class="mb-3">
                     <label class="form-label">Province Code</label>
-                    <input type="text" class="form-control @error('slug') is-invalid @enderror"
-                           wire:model="slug" placeholder="Enter province code (e.g., PB)">
-                    @error('slug') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    <input type="text" class="form-control @error('code') is-invalid @enderror"
+                           wire:model="code" placeholder="Enter province code (e.g., PB)">
+                    @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <button type="submit" class="btn btn-success">

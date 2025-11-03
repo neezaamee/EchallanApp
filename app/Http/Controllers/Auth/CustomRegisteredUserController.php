@@ -45,7 +45,8 @@ class CustomRegisteredUserController extends Controller
 
         event(new Registered($user));
 
+
         // redirect to the verification notice page
-        return redirect()->route('verification.notice');
+        return redirect()->route('verification.notice')->with('registered_email', $user->email);
     }
 }
