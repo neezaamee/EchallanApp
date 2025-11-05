@@ -1,80 +1,126 @@
 <?php
 
+
 namespace App\Livewire\DumpingPoints;
 
+
 use Livewire\Component;
-use App\Models\DumpingPoint;
+
+use App\Models\Province;
+
+use App\Models\City;
+
 use App\Models\Circle;
-use Illuminate\Validation\Rule;
+
+use App\Models\DumpingPoint;
+
 
 class AddDumpingPoint extends Component
+
 {
-    // Public properties (form fields)
-    public $name;
-    public $location;
-    public $circle_id;
+
+    public $provinces = [];
+
+    public $cities = [];
+
     public $circles = [];
 
-    public $successMessage;
 
-    /**
-     * Mount the component.
-     * Load all circles for the dropdown (used when adding dumping points).
-     */
+    public $province_id;
+
+    public $city_id;
+
+    public $circle_id;
+
+    public $name;
+
+    public $location;
+
+
     public function mount()
+
     {
-        // Get all circles (could filter later if needed)
-        $this->circles = Circle::orderBy('name')->get();
+
+        $this->provinces = Province::orderBy('name')->get(); // Keep collection
+
     }
 
-    /**
-     * Define validation rules.
-     */
-    protected function rules()
+
+    public function updatedProvinceId($value)
+
     {
-        return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                // Prevent duplicate dumping points within the same circle
-                Rule::unique('dumping_points')->where(function ($query) {
-                    return $query->where('circle_id', $this->circle_id);
-                }),
-            ],
-            'location' => 'nullable|string|max:500',
-            'circle_id' => 'required|exists:circles,id',
-        ];
+
+        $this->cities = City::where('province_id', $value)
+
+            ->orderBy('name')
+
+            ->get();
+
+
+        $this->city_id = null;
+
+        $this->circles = [];
+
     }
 
-    /**
-     * Save dumping point to database.
-     */
+
+    public function updatedCityId($value)
+
+    {
+
+        $this->circles = Circle::where('city_id', $value)
+
+            ->orderBy('name')
+
+            ->get();
+
+
+        $this->circle_id = null;
+
+    }
+
+
     public function save()
-    {
-        $this->validate();
 
-        DumpingPoint::create([
-            'name' => $this->name,
-            'location' => $this->location,
-            'circle_id' => $this->circle_id,
+    {
+
+        $this->validate([
+
+            'name' => 'required|string|max:255',
+
+            'location' => 'nullable|string|max:255',
+
+            'circle_id' => 'required|exists:circles,id',
+
         ]);
 
-        // Reset the form after saving
-        $this->reset(['name', 'location', 'circle_id']);
 
-        // Show success message
-        $this->successMessage = 'Dumping Point added successfully!';
+        DumpingPoint::create([
 
-        // Optionally, emit event to refresh table component
-        $this->dispatch('dumpingPointAdded');
+            'name' => $this->name,
+
+            'location' => $this->location,
+
+            'circle_id' => $this->circle_id,
+
+        ]);
+
+
+        session()->flash('message', 'Dumping Point added successfully!');
+
+        $this->reset(['name', 'location', 'province_id', 'city_id', 'circle_id', 'cities', 'circles']);
+
+        $this->dispatch('dumping-point-added');
+
     }
 
-    /**
-     * Render the view.
-     */
+
     public function render()
+
     {
+
         return view('livewire.dumping-points.add-dumping-point');
+
     }
+
 }

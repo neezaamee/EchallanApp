@@ -2,70 +2,96 @@
 
 namespace App\Livewire\DumpingPoints;
 
+use App\Livewire\DumpingPoints;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\DumpingPoint;
 use App\Models\Circle;
+use App\Models\City;
 
 class DumpingPointsTable extends Component
 {
     use WithPagination;
 
-    // --- Public properties for search, filters, etc. ---
-    public $search = '';              // search by dumping point name
-    public $circleFilter = '';        // filter by circle
-    public $perPage = 10;             // how many per page
+    public $search = '';
+    public $sortField = 'id';
+    public $sortDirection = 'asc';
 
-    protected $paginationTheme = 'bootstrap'; // for bootstrap styling
+    public $confirmingDumpingPointDeletion = null;
+    public $deleteId = null;
 
-    // --- Reset page when filters change ---
-    protected $updatesQueryString = ['search', 'circleFilter'];
+    protected $paginationTheme = 'bootstrap';
+    protected $queryString = ['search'];
+    protected $listeners = ['dumping-point-added' => 'render'];
 
-    // Reset pagination when search or filters update
+    /**
+     * Reset pagination when search input changes
+     */
     public function updatingSearch()
     {
         $this->resetPage();
     }
 
-    public function updatingCircleFilter()
+    /**
+     * Handle sorting logic
+     */
+    public function sortBy($field)
     {
-        $this->resetPage();
-    }
-
-    // --- Delete dumping point ---
-    public function delete($id)
-    {
-        $point = DumpingPoint::find($id);
-
-        if ($point) {
-            $point->delete();
-            session()->flash('message', 'Dumping point deleted successfully.');
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
         }
     }
 
-    // --- Main render method ---
+    /**
+     * Open delete confirmation modal
+     */
+    public function confirmDelete($id)
+    {
+        $this->confirmingDumpingPointDeletion = true;
+        $this->deleteId = $id;
+    }
+
+    /**
+     * Perform deletion
+     */
+    public function deleteDumpingPoint()
+    {
+        if (!$this->deleteId) return;
+
+        $dumpingPoint = DumpingPoint::find($this->deleteId);
+        if ($dumpingPoint) $dumpingPoint->delete();
+
+        $this->reset(['confirmingDumpingPointDeletion', 'deleteId']);
+        session()->flash('message', 'Dumping Point deleted successfully!');
+        $this->resetPage();
+    }
+
+    /**
+     * Render component with filtered, sorted, and paginated data
+     */
     public function render()
     {
-        // Query with relationships for filtering
-        $query = DumpingPoint::with('circle.city.province')
-            ->when($this->search, function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('location', 'like', '%' . $this->search . '%');
-            })
-            ->when($this->circleFilter, function ($q) {
-                $q->where('circle_id', $this->circleFilter);
-            })
-            ->orderBy('name', 'asc');
+        $query = DumpingPoint::with(['circle.city'])
+            ->when(trim($this->search) !== '', function ($q) {
+                $s = '%' . $this->search . '%';
+                $q->where('name', 'like', $s)
+                  ->orWhereHas('circle', function ($q2) use ($s) {
+                      $q2->where('name', 'like', $s)
+                         ->orWhereHas('city', function ($q3) use ($s) {
+                             $q3->where('name', 'like', $s);
+                         });
+                  });
+            });
 
-        // Paginate results
-        $dumpingPoints = $query->paginate($this->perPage);
+        $dumpingPoints = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
 
-        // Load circles for filter dropdown
+        // Useful lists for filters or dropdowns if needed
         $circles = Circle::orderBy('name')->get();
+        $cities = City::orderBy('name')->get();
 
-        return view('livewire.dumping-points.dumping-points-table', [
-            'dumpingPoints' => $dumpingPoints,
-            'circles' => $circles,
-        ]);
+        return view('livewire.dumping-points.dumping-points-table', compact('dumpingPoints', 'circles', 'cities'));
     }
 }

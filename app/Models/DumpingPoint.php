@@ -23,4 +23,5 @@ class DumpingPoint extends Model
     {
         return $this->belongsTo(Circle::class);
     }
+
 }

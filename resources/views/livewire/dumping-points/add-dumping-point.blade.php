@@ -1,39 +1,146 @@
-<div class="card shadow-sm border-0">
-    <div class="card-body">
-        <h5 class="card-title mb-3">Add Dumping Point</h5>
+ <div class="card shadow-sm mb-4">
 
-        @if ($successMessage)
-            <div class="alert alert-success">{{ $successMessage }}</div>
+    <div class="card-header bg-primary text-white">
+
+        <h5 class="mb-0">Add New Dumping Point</h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        @if (session()->has('message'))
+
+            <div class="alert alert-success">{{ session('message') }}</div>
+
         @endif
 
-        <div class="mb-3">
-            <label for="circle_id" class="form-label fw-bold">Circle</label>
-            <select wire:model="circle_id" id="circle_id" class="form-select">
-                <option value="">Select Circle</option>
-                @foreach ($circles as $circle)
-                    <option value="{{ $circle->id }}">{{ $circle->name }}</option>
-                @endforeach
-            </select>
-            @error('circle_id') <span class="text-danger small">{{ $message }}</span> @enderror
-        </div>
 
-        <div class="mb-3">
-            <label for="name" class="form-label fw-bold">Dumping Point Name</label>
-            <input wire:model="name" type="text" id="name" class="form-control" placeholder="Enter dumping point name">
-            @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
-        </div>
+        <form wire:submit.prevent="save">
 
-        <div class="mb-3">
-            <label for="location" class="form-label fw-bold">Location</label>
-            <textarea wire:model="location" id="location" class="form-control" rows="3" placeholder="Optional: Enter location details"></textarea>
-            @error('location') <span class="text-danger small">{{ $message }}</span> @enderror
-        </div>
+            {{-- Province Dropdown --}}
 
-        <button wire:click="save" wire:loading.attr="disabled" class="btn btn-primary w-100">
-            <span wire:loading.remove>Save Dumping Point</span>
-            <span wire:loading>
-                <i class="spinner-border spinner-border-sm"></i> Saving...
-            </span>
-        </button>
+            <div class="mb-3">
+
+                <label class="form-label">Province</label>
+
+                <select class="form-select" wire:model="province_id">
+
+                    <option value="">-- Select Province --</option>
+
+                    @foreach($provinces as $p)
+
+                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+
+                    @endforeach
+
+                </select>
+
+                @error('province_id') <span class="text-danger small">{{ $message }}</span> @enderror
+
+            </div>
+
+
+            {{-- City Dropdown --}}
+
+            @if(!empty($cities))
+
+            <div class="mb-3">
+
+                <label class="form-label">City</label>
+
+                <select class="form-select" wire:model="city_id">
+
+                    <option value="">-- Select City --</option>
+
+                    @foreach($cities as $c)
+
+                        <option value="{{ $c->id }}">{{ $c->name }}</option>
+
+                    @endforeach
+
+                </select>
+
+                @error('city_id') <span class="text-danger small">{{ $message }}</span> @enderror
+
+            </div>
+
+            @endif
+
+
+            {{-- Circle Dropdown --}}
+
+            @if(!empty($circles))
+
+            <div class="mb-3">
+
+                <label class="form-label">Circle</label>
+
+                <select class="form-select" wire:model="circle_id">
+
+                    <option value="">-- Select Circle --</option>
+
+                    @foreach($circles as $circle)
+
+                        <option value="{{ $circle->id }}">{{ $circle->name }}</option>
+
+                    @endforeach
+
+                </select>
+
+                @error('circle_id') <span class="text-danger small">{{ $message }}</span> @enderror
+
+            </div>
+
+            @endif
+
+
+            {{-- Dumping Point Name --}}
+
+            <div class="mb-3">
+
+                <label class="form-label">Dumping Point Name</label>
+
+                <input type="text" wire:model.defer="name" class="form-control" placeholder="Enter dumping point name">
+
+                @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
+
+            </div>
+
+
+            {{-- Location (optional) --}}
+
+            <div class="mb-3">
+
+                <label class="form-label">Location (optional)</label>
+
+                <input type="text" wire:model.defer="location" class="form-control" placeholder="Enter location">
+
+                @error('location') <span class="text-danger small">{{ $message }}</span> @enderror
+
+            </div>
+
+
+            {{-- Buttons --}}
+
+            <div class="d-flex justify-content-between mt-4">
+
+                <a href="{{ route('dumping-points.index') }}" class="btn btn-secondary">
+
+                    <i class="fas fa-arrow-left me-1"></i> Back
+
+                </a>
+
+                <button type="submit" class="btn btn-success">
+
+                    <i class="fas fa-save me-1"></i> Add Dumping Point
+
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
+
 </div>
