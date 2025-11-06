@@ -10,24 +10,35 @@ return new class extends Migration {
         Schema::create('staff', function (Blueprint $table) {
             $table->id();
 
-            // optional link to users table (if you later create portal accounts for staff)
+            // optional link to user account (if staff have portal access)
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
 
-            // personal profile
+            // personal info
             $table->string('first_name');
             $table->string('last_name')->nullable();
             $table->string('belt_no')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('cnic')->unique();
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->date('date_of_birth')->nullable();
 
-            // relations
+            // job info
             $table->foreignId('designation_id')->nullable()->constrained('designations')->nullOnDelete();
             $table->foreignId('rank_id')->nullable()->constrained('ranks')->nullOnDelete();
-            $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
-            $table->foreignId('province_id')->nullable()->constrained('provinces')->nullOnDelete();
 
-            // audit
+            // geographic / posting info
+            $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
+            $table->foreignId('circle_id')->nullable()->constrained('circles')->nullOnDelete();
+            // province_id removed (can be derived via city)
+            $table->string('posting_location')->nullable();
+            $table->string('photo')->nullable(); // store path of profile image
+
+            // status and soft delete support
+            $table->enum('status', ['active', 'inactive', 'retired', 'transferred'])->default('active');
+            $table->softDeletes();
+
+            // audit trail
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();
