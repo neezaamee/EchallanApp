@@ -24,8 +24,8 @@ class RoleDashboardController extends Controller
         return view('pages.dashboards.accountant');
     }
 
-    public function violator()
+    public function citizen()
     {
-        return view('pages.dashboards.violator');
+        return view('pages.dashboards.citizen');
     }
 }

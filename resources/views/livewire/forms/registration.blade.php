@@ -8,15 +8,15 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">CNIC</label>
-            <input type="text" name="cnic" value="{{ old('cnic') }}" class="form-control @error('cnic') is-invalid @enderror" required>
-            @error('cnic') <div class="invalid-feedback">{{ $message }}</div> @enderror
-          </div>
-
-          <div class="mb-3">
             <label class="form-label">Email</label>
             <input type="email" name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" required>
             @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">CNIC</label>
+            <input type="text" name="cnic" value="{{ old('cnic') }}" class="form-control @error('cnic') is-invalid @enderror" required>
+            @error('cnic') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
           <div class="mb-3">
