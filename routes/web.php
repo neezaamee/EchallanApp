@@ -14,7 +14,10 @@ use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CircleController;
 use App\Http\Controllers\DumpingPointController;
-use App\Livewire\Profile\EditProfile;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\MedicalCenterController;
+use App\Http\Controllers\LocationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -58,8 +61,10 @@ Route::post('logout', [CustomAuthenticatedSessionController::class, 'destroy'])
 // ==========================
 // Profile (Authenticated Users Only)
 // ==========================
-Route::middleware(['auth'])->group(function () {
-    Route::get('/profile/edit', EditProfile::class)->name('profile.edit');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    //Route::get('/profile/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    //Route::post('/profile/update', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
 
@@ -75,7 +80,7 @@ Route::get('/email/verify', function () {
 // Handle actual verification link (signed)
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect()->route('/dashboard')->with('verified', true);
+    return redirect()->route('dashboard')->with('verified', true);
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 // Resend verification email
@@ -104,7 +109,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if ($user->hasRole('admin')) return redirect()->route('dashboard.admin');
         if ($user->hasRole('challan_officer')) return redirect()->route('dashboard.officer');
         if ($user->hasRole('accountant')) return redirect()->route('dashboard.accountant');
-        if ($user->hasRole('violator')) return redirect()->route('dashboard.violator');
+        if ($user->hasRole('citizen')) return redirect()->route('dashboard.citizen');
 
         return abort(403, 'Unauthorized access.');
     })->name('dashboard');
@@ -124,6 +129,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard/citizen', [RoleDashboardController::class, 'citizen'])
         ->name('dashboard.citizen')->middleware(['role:citizen', 'verified']);
+
+    // User profile page
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 
@@ -153,6 +162,20 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
     // Dumping Points Management
     Route::resource('dumping-points', DumpingPointController::class)->except(['show']);
+
+    // Medical Centers
+    Route::resource('medical-centers', MedicalCenterController::class)->except(['show']);
+});
+
+Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->group(function () {
+    // Dashboard overview
+    Route::get('/locations', [LocationController::class, 'index'])->name('admin.locations');
+
+    // Provinces, Cities, Circles, and Medical Centers management pages
+    Route::get('/locations/provinces', [LocationController::class, 'provinces'])->name('admin.provinces');
+    Route::get('/locations/cities', [LocationController::class, 'cities'])->name('admin.cities');
+    Route::get('/locations/circles', [LocationController::class, 'circles'])->name('admin.circles');
+    Route::get('/locations/medical-centers', [LocationController::class, 'medicalCenters'])->name('admin.medical-centers');
 });
 
 Route::get('/force-verify', function () {
@@ -160,3 +183,4 @@ Route::get('/force-verify', function () {
     $user->markEmailAsVerified();
     return redirect('/dashboard')->with('status', 'Email verified!');
 })->middleware('auth');
+

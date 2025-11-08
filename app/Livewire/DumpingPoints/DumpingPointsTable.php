@@ -2,7 +2,6 @@
 
 namespace App\Livewire\DumpingPoints;
 
-use App\Livewire\DumpingPoints;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\DumpingPoint;

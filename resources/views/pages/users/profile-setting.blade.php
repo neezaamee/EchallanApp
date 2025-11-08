@@ -1,7 +1,8 @@
 @extends('layout.cms-layout')
 @section('page-title', 'Profile - ')
 @section('cms-main-content')
-    <div class="row">
+<livewire:circles.edit-circle :id="$id" />
+    {{-- <div class="row">
         <div class="col-12">
             <div class="card mb-3 btn-reveal-trigger">
                 <div class="card-header position-relative min-vh-25 mb-8">
@@ -432,5 +433,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection

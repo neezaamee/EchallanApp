@@ -1,41 +1,35 @@
-<div class="container py-4">
-    <h4 class="mb-3 fw-bold">Edit Profile</h4>
+<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-xl font-bold mb-4">Update Profile</h2>
 
-    @if (session()->has('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+    @if (session('message'))
+        <div class="alert alert-success mb-3">
+            {{ session('message') }}
         </div>
     @endif
 
-    <form wire:submit.prevent="updateProfile" class="card shadow-sm p-4">
+    <form wire:submit.prevent="updateProfile">
         <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" class="form-control" wire:model.defer="name">
+            <label class="form-label">Name</label>
+            <input type="text" wire:model="name" class="form-control">
             @error('name') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
-            <label class="form-label">CNIC</label>
-            <input type="text" class="form-control" wire:model.defer="cnic">
-            @error('cnic') <small class="text-danger">{{ $message }}</small> @enderror
+            <label class="form-label">Email (readonly)</label>
+            <input type="email" wire:model="email" class="form-control" readonly>
         </div>
 
-        <hr>
-
         <div class="mb-3">
-            <label class="form-label">New Password (optional)</label>
-            <input type="password" class="form-control" wire:model.defer="password">
+            <label class="form-label">New Password</label>
+            <input type="password" wire:model="password" class="form-control">
             @error('password') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Confirm New Password</label>
-            <input type="password" class="form-control" wire:model.defer="password_confirmation">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" wire:model="password_confirmation" class="form-control">
         </div>
 
-        <button class="btn btn-primary w-100" type="submit" wire:loading.attr="disabled">
-            <span wire:loading.remove>Update Profile</span>
-            <span wire:loading>Updating...</span>
-        </button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
 </div>

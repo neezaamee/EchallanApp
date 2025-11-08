@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class EditProfile extends Component
 {
     public $name;
-    public $cnic;
+    public $email;
     public $password;
     public $password_confirmation;
 
@@ -17,20 +17,18 @@ class EditProfile extends Component
     {
         $user = Auth::user();
         $this->name = $user->name;
-        $this->cnic = $user->cnic;
+        $this->email = $user->email;
     }
 
     public function updateProfile()
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'cnic' => 'required|string|max:20|unique:users,cnic,' . Auth::id(),
-            'password' => 'nullable|confirmed|min:8',
+            'password' => 'nullable|min:6|confirmed',
         ]);
 
         $user = Auth::user();
         $user->name = $this->name;
-        $user->cnic = $this->cnic;
 
         if ($this->password) {
             $user->password = Hash::make($this->password);
@@ -38,7 +36,7 @@ class EditProfile extends Component
 
         $user->save();
 
-        session()->flash('success', 'Profile updated successfully!');
+        session()->flash('message', 'Profile updated successfully.');
     }
 
     public function render()
