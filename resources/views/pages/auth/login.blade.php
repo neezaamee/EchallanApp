@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layout.main')
 @section('page-title', 'Login - ')
 @section('main-content')
 <div class="row min-vh-100 flex-center g-0">
@@ -13,7 +13,7 @@
                       <!--/.bg-holder-->
 
                       {{-- heading and sub heading --}}
-                      @include('partials.components.auth-card-heading-sub-heading')
+                      @include('pages.auth.components.auth-card-heading-sub-heading')
 
                     </div>
                     <div class="mt-3 mb-4 mt-md-4 mb-md-5" data-bs-theme="light">
@@ -48,7 +48,7 @@
                               <label class="form-check-label mb-0" for="card-checkbox">Remember me</label>
                             </div>
                           </div>
-                          <div class="col-auto"><a class="fs-10" href="{{ route('password.request') }}">Forgot Password?</a></div>
+                          <div class="col-auto"><a class="fs-10" href="{{ url('/') }}">Forgot Password?</a></div>
                         </div>
                         <div class="mb-3">
                           <button class="btn btn-primary d-block w-100 mt-3" type="submit" name="submit">Log in</button>

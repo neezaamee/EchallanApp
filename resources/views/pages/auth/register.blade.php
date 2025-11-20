@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layout.main')
 @section('page-title', 'Register - ')
 @section('main-content')
 <div class="row min-vh-100 flex-center g-0">
@@ -12,10 +12,10 @@
                       </div>
                       <!--/.bg-holder-->
 
-                      @include('partials.components.auth-card-heading-sub-heading')
+                      @include('pages.auth.components.auth-card-heading-sub-heading')
                     </div>
                     <div class="mt-3 mb-4 mt-md-4 mb-md-5" data-bs-theme="light">
-                      <p class="pt-3 text-white">Have an account?<br><a class="btn btn-outline-light mt-2 px-4" href="../../../pages/authentication/card/login.html">Log In</a></p>
+                      <p class="pt-3 text-white">Have an account?<br><a class="btn btn-outline-light mt-2 px-4" href="{{ route('login') }}">Log In</a></p>
                     </div>
                   </div>
                   <div class="col-md-7 d-flex flex-center">

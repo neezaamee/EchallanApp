@@ -1966,10 +1966,10 @@
                               <div class="avatar avatar-2xl"> <img class="rounded-circle" src="assets/img/team/3.jpg" alt="" /></div>
                               <p class="mb-0 fw-medium text-800 text-truncate fs-11">Account</p>
                             </a></div>
-                          <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="https://themewagon.com/" target="_blank"><img class="rounded" src="assets/img/nav-icons/themewagon.png" alt="" width="40" height="40" />
+                          <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="{{ url('#!') }}" target="_blank"><img class="rounded" src="assets/img/nav-icons/themewagon.png" alt="" width="40" height="40" />
                               <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Themewagon</p>
                             </a></div>
-                          <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="https://mailbluster.com/" target="_blank"><img class="rounded" src="assets/img/nav-icons/mailbluster.png" alt="" width="40" height="40" />
+                          <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="{{ url('https://mailbluster.com/') }}" target="_blank"><img class="rounded" src="assets/img/nav-icons/mailbluster.png" alt="" width="40" height="40" />
                               <p class="mb-0 fw-medium text-800 text-truncate fs-11 pt-1">Mailbluster</p>
                             </a></div>
                           <div class="col-4"><a class="d-block hover-bg-200 px-2 py-3 rounded-3 text-center text-decoration-none" href="#!" target="_blank"><img class="rounded" src="assets/img/nav-icons/google.png" alt="" width="40" height="40" />
@@ -2036,7 +2036,7 @@
               </li>
               <li class="nav-item dropdown"><a class="nav-link pe-0 ps-2" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <div class="avatar avatar-xl">
-                    <img class="rounded-circle" src="assets/img/team/3-thumb.png" alt="" />
+                    <img class="rounded-circle" src="{{ asset('assets/img/team/3-thumb.png') }}" alt="" />
 
                   </div>
                 </a>
@@ -2789,15 +2789,15 @@
           <div class="row gx-2">
             <div class="col-4">
               <input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light" data-theme-control="theme" />
-              <label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherLight"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="assets/img/generic/falcon-mode-default.jpg" alt=""/></span><span class="label-text">Light</span></label>
+              <label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherLight"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="{{ asset('assets/img/generic/falcon-mode-default.jpg') }}" alt=""/></span><span class="label-text">Light</span></label>
             </div>
             <div class="col-4">
               <input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark" data-theme-control="theme" />
-              <label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherDark"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="assets/img/generic/falcon-mode-dark.jpg" alt=""/></span><span class="label-text"> Dark</span></label>
+              <label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherDark"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="{{ asset('assets/img/generic/falcon-mode-dark.jpg') }}" alt=""/></span><span class="label-text"> Dark</span></label>
             </div>
             <div class="col-4">
               <input class="btn-check" id="themeSwitcherAuto" name="theme-color" type="radio" value="auto" data-theme-control="theme" />
-              <label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherAuto"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="assets/img/generic/falcon-mode-auto.jpg" alt=""/></span><span class="label-text"> Auto</span></label>
+              <label class="btn d-inline-block btn-navbar-style fs-10" for="themeSwitcherAuto"> <span class="hover-overlay mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="{{ asset('assets/img/generic/falcon-mode-auto.jpg') }}" alt=""/></span><span class="label-text"> Auto</span></label>
             </div>
           </div>
         </div>
@@ -2815,7 +2815,7 @@
         </div>
         <hr />
         <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-start"><img class="me-2" src="assets/img/icons/arrows-h.svg" width="20" alt="" />
+          <div class="d-flex align-items-start"><img class="me-2" src="{{ asset('assets/img/icons/arrows-h.svg') }}" width="20" alt="" />
             <div class="flex-1">
               <h5 class="fs-9">Fluid Layout</h5>
               <p class="fs-10 mb-0">Toggle container layout system </p><a class="fs-10" href="documentation/customization/configuration.html">Fluid Documentation</a>
@@ -2826,7 +2826,7 @@
           </div>
         </div>
         <hr />
-        <div class="d-flex align-items-start"><img class="me-2" src="assets/img/icons/paragraph.svg" width="20" alt="" />
+        <div class="d-flex align-items-start"><img class="me-2" src="{{ asset('assets/img/icons/paragraph.svg') }}" width="20" alt="" />
           <div class="flex-1">
             <h5 class="fs-9 d-flex align-items-center">Navigation Position</h5>
             <p class="fs-10 mb-2">Select a suitable navigation system for your web application </p>
@@ -2864,7 +2864,7 @@
             </div>
           </div>
         </div>
-        <div class="text-center mt-5"><img class="mb-4" src="assets/img/icons/spot-illustrations/47.png" alt="" width="120" />
+        <div class="text-center mt-5"><img class="mb-4" src="{{ asset('assets/img/icons/spot-illustrations/47.png') }}" alt="" width="120" />
           <h5>Like What You See?</h5>
           <p class="fs-10">Get Falcon now and create beautiful dashboards with hundreds of widgets.</p><a class="mb-3 btn btn-primary" href="https://themes.getbootstrap.com/product/falcon-admin-dashboard-webapp-template/" target="_blank">Purchase</a>
         </div>
@@ -2884,15 +2884,15 @@
     <!-- ===============================================-->
     <!--    JavaScripts-->
     <!-- ===============================================-->
-    <script src="vendors/popper/popper.min.js"></script>
-    <script src="vendors/bootstrap/bootstrap.min.js"></script>
-    <script src="vendors/anchorjs/anchor.min.js"></script>
-    <script src="vendors/is/is.min.js"></script>
-    <script src="vendors/echarts/echarts.min.js"></script>
-    <script src="vendors/fontawesome/all.min.js"></script>
-    <script src="vendors/lodash/lodash.min.js"></script>
-    <script src="vendors/list.js/list.min.js"></script>
-    <script src="assets/js/theme.js"></script>
+    <script src="{{asset('vendors/popper/popper.min.js')}}"></script>
+    <script src="{{asset('vendors/bootstrap/bootstrap.min.js')}}"></script>
+    <script src="{{asset('vendors/anchorjs/anchor.min.js')}}"></script>
+    <script src="{{asset('vendors/is/is.min.js')}}"></script>
+    <script src="{{asset('vendors/echarts/echarts.min.js')}}"></script>
+    <script src="{{asset('vendors/fontawesome/all.min.js')}}"></script>
+    <script src="{{asset('vendors/lodash/lodash.min.js')}}"></script>
+    <script src="{{asset('vendors/list.js/list.min.js')}}"></script>
+    <script src="{{asset('assets/js/theme.js')}}"></script>
 
   </body>
 
