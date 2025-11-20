@@ -26,16 +26,10 @@ return new class extends Migration {
             // job info
             $table->foreignId('designation_id')->nullable()->constrained('designations')->nullOnDelete();
             $table->foreignId('rank_id')->nullable()->constrained('ranks')->nullOnDelete();
-
-            // geographic / posting info
-            $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
-            $table->foreignId('circle_id')->nullable()->constrained('circles')->nullOnDelete();
-            // province_id removed (can be derived via city)
-            $table->string('posting_location')->nullable();
             $table->string('photo')->nullable(); // store path of profile image
 
             // status and soft delete support
-            $table->enum('status', ['active', 'inactive', 'retired', 'transferred'])->default('active');
+            $table->enum('status', ['active', 'inactive','suspended', 'retired', 'transferred_out'])->default('active');
             $table->softDeletes();
 
             // audit trail

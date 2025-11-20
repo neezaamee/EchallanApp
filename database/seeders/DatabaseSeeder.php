@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             CirclesFaisalabadSeeder::class,
             DumpingPointSeeder::class,
             DesignationsSeeder::class,
+            StaffSeeder::class,
         ]);
 
         /* User::factory()->create([

@@ -89,8 +89,37 @@
                         <li class="nav-item"><a class="nav-link" href="#hero">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="#services">E-Services</a></li>
                         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+
+                        @auth
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                    <a class="btn btn-warning btn-sm fw-bold ms-lg-3 d-lg-inline-block" href="{{ route('logout') }}"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        Logout
+                    </a>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                        {# This @csrf Blade directive (if you're using Laravel/Blade,
+       or use the raw Twig equivalent if you're only using Twig)
+       adds the required CSRF token input field. #}
+                    </form>
+                        </li>
+                    @endauth
+                    @guest
+                    <li class="nav-item">
+                    <a href="{{ route('login') }}" class="btn btn-warning btn-sm fw-bold ms-lg-3 d-lg-inline-block">Login</a>
+                    </li>
+                    @endguest
+
+
                     </ul>
-                    <a href="{{ route('login') }}" class="btn btn-warning btn-sm fw-bold ms-lg-3 d-none d-lg-inline-block">Login</a>
+
+
+
+
                 </div>
             </div>
         </nav>
