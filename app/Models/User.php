@@ -10,6 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use App\Models\Role;
+use Illuminate\Support\Arr;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -19,10 +20,13 @@ class User extends Authenticatable implements MustVerifyEmail
 // check one or many roles
 public function hasRole($roles)
 {
-    if (is_array($roles)) {
-        return $this->roles()->whereIn('name', $roles)->exists();
-    }
-    return $this->roles()->where('name', $roles)->exists();
+    // Convert to array if it's a single value
+    $roles = (array) $roles;
+
+    // Flatten in case it's nested
+    $roles = Arr::flatten($roles);
+
+    return $this->roles()->whereIn('name', $roles)->exists();
 }
 
 

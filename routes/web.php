@@ -146,7 +146,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | They can manage system entities like staff, provinces, cities, circles, and dumping points.
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:super_admin'])->group(function () {
+Route::middleware(['auth', 'role:super_admin|admin'])->group(function () {
 
     // Staff Management
     Route::resource('staff', StaffController::class)->except(['show']);
@@ -167,7 +167,7 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::resource('medical-centers', MedicalCenterController::class)->except(['show']);
 });
 
-Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->group(function () {
+/* Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->group(function () {
     // Dashboard overview
     Route::get('/locations', [LocationController::class, 'index'])->name('admin.locations');
 
@@ -176,7 +176,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->group(function
     Route::get('/locations/cities', [LocationController::class, 'cities'])->name('admin.cities');
     Route::get('/locations/circles', [LocationController::class, 'circles'])->name('admin.circles');
     Route::get('/locations/medical-centers', [LocationController::class, 'medicalCenters'])->name('admin.medical-centers');
-});
+}); */
 
 Route::get('/force-verify', function () {
     $user = Auth::user();
@@ -184,3 +184,13 @@ Route::get('/force-verify', function () {
     return redirect('/dashboard')->with('status', 'Email verified!');
 })->middleware('auth');
 
+// Test route to check current user's roles and permissions
+Route::middleware(['auth'])->get('/test-permissions', function () {
+    $user = Auth::user();
+
+    return response()->json([
+        'user' => $user->name,
+        'roles' => $user->getRoleNames(),
+        'permissions' => $user->getAllPermissions()->pluck('name')
+    ]);
+})->name('test.permissions');

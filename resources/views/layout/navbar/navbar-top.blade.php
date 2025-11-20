@@ -4,9 +4,10 @@
         data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false"
         aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
     <a class="navbar-brand me-1 me-sm-3" href="{{ url('/dashboard') }}">
-        <div class="d-flex align-items-center"><img class="me-2"
+        <div class="d-flex align-items-center">
+            <img class="me-2"
                 src="{{ asset('assets/img/icons/spot-illustrations/falcon.png') }}" alt=""
-                width="40" /><span class="font-sans-serif text-primary">falcon</span>
+                width="40" /><span class="font-sans-serif text-primary">Welfare - CTPF</span>
         </div>
     </a>
     {{-- <ul class="navbar-nav align-items-center d-none d-lg-block">
@@ -151,7 +152,7 @@
                     <a class="dropdown-item" href="#!">Feedback</a>
 
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{ url('pages/user/settings.html') }}">Settings</a>
+                    <a class="dropdown-item" href="{{ url('#') }}">Settings</a>
                     <a class="dropdown-item" href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         Logout

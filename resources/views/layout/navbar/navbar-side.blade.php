@@ -44,14 +44,14 @@
                             </div>
                         </a>
                         <ul class="nav collapse" id="user">
-                            <li class="nav-item"><a class="nav-link" href="pages/user/profile.html">
+                            <li class="nav-item"><a class="nav-link" href="{{ route('profile.edit') }}">
                                     <div class="d-flex align-items-center"><span
                                             class="nav-link-text ps-1">Profile</span>
                                     </div>
                                 </a>
                                 <!-- more inner pages-->
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="pages/user/settings.html">
+                            <li class="nav-item"><a class="nav-link" href="{{ url('#') }}">
                                     <div class="d-flex align-items-center"><span
                                             class="nav-link-text ps-1">Settings</span>
                                     </div>

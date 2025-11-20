@@ -26,14 +26,14 @@ class City extends Model
      * The attributes that should be cast.
      * Adjust casts based on your field types
      */
-    /* protected $casts = [
-        'province_id' => 'integer',
+    protected $casts = [
+        /* 'province_id' => 'integer',
         'population' => 'integer',
-        'area' => 'decimal:2',
+        'area' => 'decimal:2', */
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-    ]; */
+    ];
 
     /**
      * The attributes that should be hidden for arrays.

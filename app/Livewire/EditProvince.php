@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Auth;
+
 use Livewire\Component;
 use App\Models\Province;
 
@@ -18,6 +20,9 @@ class EditProvince extends Component
 
     public function mount($id)
     {
+        if (!Auth::user()->can('update provinces') && !Auth::user()->can('delete provinces')) {
+        abort(403, 'Not allowed.');
+    }
         $province = Province::findOrFail($id);
 
         $this->provinceId = $province->id;
