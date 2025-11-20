@@ -16,12 +16,15 @@ class DesignationsSeeder extends Seeder
             ['name' => 'Incharge', 'code' => 'incharge'],
             ['name' => 'Duty Officer', 'code' => 'duty_officer'],
             ['name' => 'Data Entry Operator', 'code' => 'deo'],
+            ['name' => 'Challan Officer', 'code' => 'challan_officer'],
             ['name' => 'Circle Officer', 'code' => 'circle_officer'],
-            ['name' => 'Chief Traffic Officer', 'code' => 'cto'],
             ['name' => 'Reader', 'code' => 'reader'],
             ['name' => 'Accountant', 'code' => 'accountant'],
             ['name' => 'Doctor', 'code' => 'doctor'],
-            ['name' => 'Challan Officer', 'code' => 'challan_officer'],
+            ['name' => 'Chief Traffic Officer', 'code' => 'cto'],
+            ['name' => 'Deputy Inspector General', 'code' => 'dig'],
+            ['name' => 'Inspector General', 'code' => 'ig'],
+            ['name' => 'Addl Inspector General', 'code' => 'addlig'],
             ['name' => 'Citizen', 'code' => 'citizen'],
         ];
 
