@@ -10,7 +10,7 @@
                         <div>
                             <h6 class="text-primary fs-10 mb-0">Welcome to </h6>
                             <h4 class="text-primary fw-bold mb-0">
-                                {{ ucfirst(auth()->user()->getRoleNames()->first()) }} Dashboard
+                                {{ ucwords(str_replace('_', ' ', auth()->user()->getRoleNames()->first())) }} Dashboard
                                 <span class="text-danger fw-medium"> - </span><span class="text-info fw-medium">Welfare CMS</span></h4>
                         </div><img class="ms-n4 d-md-none d-lg-block" src="{{ asset('assets/img/illustrations/crm-line-chart.png') }}"
                             alt="" width="150" />
@@ -37,9 +37,10 @@
 
     <p>Welcome, {{ auth()->user()->name }}</p>
     <p>Your CNIC: {{ auth()->user()->cnic }}</p>
-    <p>Your Gender: {{ auth()->user()->citizen->gender }}</p>
+    <p>Your Email: {{ auth()->user()->email }}</p>
+    {{-- <p>Your Gender: {{ auth()->user()->citizen->gender }}</p>
     <p>Your Email: {{ auth()->user()->citizen->email }}</p>
-    <p>Your Phone: {{ auth()->user()->citizen->phone }}</p>
+    <p>Your Phone: {{ auth()->user()->citizen->phone }}</p> --}}
 
     @endauth
 

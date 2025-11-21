@@ -115,7 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Role-specific dashboards
-    Route::get('/dashboard/super-admin', [RoleDashboardController::class, 'superAdmin'])
+    Route::get('/dashboard/super-admin', [RoleDashboardController::class, 'index'])
         ->name('dashboard.super-admin')->middleware('role:super_admin');
 
     Route::get('/dashboard/admin', [RoleDashboardController::class, 'admin'])
@@ -146,7 +146,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | They can manage system entities like staff, provinces, cities, circles, and dumping points.
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:super_admin|admin'])->group(function () {
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
     // Staff Management
     Route::resource('staff', StaffController::class)->except(['show']);

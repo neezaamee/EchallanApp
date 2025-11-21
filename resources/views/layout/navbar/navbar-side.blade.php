@@ -15,7 +15,7 @@
         </div><a class="navbar-brand" href="index.html">
             <div class="d-flex align-items-center py-3"><img class="me-2"
                     src="{{ asset('assets/img/icons/spot-illustrations/falcon.png') }}" alt=""
-                    width="40" /><span class="font-sans-serif text-primary">CTPF</span>
+                    width="40" /><span class="font-sans-serif text-primary">WCMS</span>
             </div>
         </a>
     </div>
@@ -58,6 +58,7 @@
                                 </a>
                                 <!-- more inner pages-->
                             </li>
+                            @can('crud users')
                             <li class="nav-item"><a class="nav-link" href="pages/user/settings.html">
                                     <div class="d-flex align-items-center"><span class="nav-link-text ps-1">View
                                             Users</span>
@@ -65,9 +66,11 @@
                                 </a>
                                 <!-- more inner pages-->
                             </li>
+                            @endcan
                         </ul>
                     </ul>
                 </li>
+                @role('super_admin')
                 <li class="nav-item">
                     <!-- label-->
                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
@@ -128,6 +131,7 @@
                     </ul>
 
                 </li>
+                @endrole
                 <li class="nav-item">
                     <!-- label-->
                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">

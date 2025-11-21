@@ -7,7 +7,7 @@
         <div class="d-flex align-items-center">
             <img class="me-2"
                 src="{{ asset('assets/img/icons/spot-illustrations/falcon.png') }}" alt=""
-                width="40" /><span class="font-sans-serif text-primary">Welfare - CTPF</span>
+                width="40" /><span class="font-sans-serif text-primary">Welfare - CMS</span>
         </div>
     </a>
     {{-- <ul class="navbar-nav align-items-center d-none d-lg-block">

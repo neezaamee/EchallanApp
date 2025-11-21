@@ -21,12 +21,12 @@ return new class extends Migration {
             $table->string('email')->nullable();
             $table->string('cnic')->unique();
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
-            $table->date('date_of_birth')->nullable();
+            $table->string('photo')->nullable(); // store path of profile image
 
             // job info
-            $table->foreignId('designation_id')->nullable()->constrained('designations')->nullOnDelete();
             $table->foreignId('rank_id')->nullable()->constrained('ranks')->nullOnDelete();
-            $table->string('photo')->nullable(); // store path of profile image
+            $table->foreignId('role_id')->nullable()->constrained('roles')->nullOnDelete();
+
 
             // status and soft delete support
             $table->enum('status', ['active', 'inactive','suspended', 'retired', 'transferred_out'])->default('active');

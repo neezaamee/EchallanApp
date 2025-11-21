@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             DumpingPointSeeder::class,
             DesignationsSeeder::class,
             StaffSeeder::class,
+            CitizensSeeder::class,
         ]);
 
         /* User::factory()->create([

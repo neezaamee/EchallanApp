@@ -23,8 +23,8 @@ class DesignationsSeeder extends Seeder
             ['name' => 'Doctor', 'code' => 'doctor'],
             ['name' => 'Chief Traffic Officer', 'code' => 'cto'],
             ['name' => 'Deputy Inspector General', 'code' => 'dig'],
+            ['name' => 'Addl Inspector General', 'code' => 'addl_ig'],
             ['name' => 'Inspector General', 'code' => 'ig'],
-            ['name' => 'Addl Inspector General', 'code' => 'addlig'],
             ['name' => 'Citizen', 'code' => 'citizen'],
         ];
 

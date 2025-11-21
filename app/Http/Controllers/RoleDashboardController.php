@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 class RoleDashboardController extends Controller
 {
+    public function index(){
+        return view('pages.dashboards.index');
+    }
     public function superAdmin()
     {
-        return view('pages.dashboards.super-admin');
+        return view('pages.dashboards.index');
     }
 
     public function admin()
@@ -26,6 +29,6 @@ class RoleDashboardController extends Controller
 
     public function citizen()
     {
-        return view('pages.dashboards.citizen');
+        return view('pages.dashboards.index');
     }
 }
