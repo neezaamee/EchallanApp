@@ -21,6 +21,7 @@ return new class extends Migration
     $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
     $table->foreignId('circle_id')->nullable()->constrained('circles')->nullOnDelete();
     $table->foreignId('dumping_point_id')->nullable()->constrained('dumping_points')->nullOnDelete();
+    $table->foreignId('medical_center_id')->nullable()->constrained('medical_centers')->nullOnDelete();
 
     $table->date('start_date')->default(now());
     $table->date('end_date')->nullable(); // null means still active

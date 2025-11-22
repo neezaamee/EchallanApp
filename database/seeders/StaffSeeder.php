@@ -10,6 +10,23 @@ use Spatie\Permission\Models\Role;
 
 class StaffSeeder extends Seeder
 {
+    private function resolveRank($role, $rules)
+    {
+        $rule = $rules[$role] ?? ['random'];
+
+        // Fixed rank
+        if (isset($rule['fixed'])) {
+            return $rule['fixed'];
+        }
+
+        // Range rank
+        if (isset($rule['range']) && is_array($rule['range'])) {
+            return rand($rule['range'][0], $rule['range'][1]);
+        }
+
+        // Default random
+        return rand(1, 7);
+    }
     public function run(): void
     {
         // Role => Number of Users Required
@@ -44,6 +61,26 @@ class StaffSeeder extends Seeder
             'ig'               => 14,
         ];
 
+
+        $rankRules = [
+            'doctor'            => ['fixed' => 1],
+            'deo'               => ['fixed' => 2],
+            'circle_officer'    => ['fixed' => 6],
+            'cto'               => ['fixed' => 7],
+            'dig'               => ['fixed' => 8],
+            'addl_ig'           => ['fixed' => 9],
+            'ig'                => ['fixed' => 10],
+            'accountant'        => ['range' => [2, 4]],
+            'reader'            => ['range' => [5, 6]],
+            'challan_officer'   => ['range' => [5, 6]],
+            'incharge'          => ['range' => [5, 6]],
+            //'accountant'     => ['random'],
+
+        ];
+
+
+
+
         foreach ($roles as $role => $count) {
             for ($i = 1; $i <= $count; $i++) {
 
@@ -71,7 +108,8 @@ class StaffSeeder extends Seeder
                     'cnic' => $user->cnic,
                     'gender' => 'male',
                     'role_id' => $roleIds[$role],
-                    'rank_id' => 1,
+                    // 🎉 Role-wise clean rank logic
+                    'rank_id' => $this->resolveRank($role, $rankRules),
                     'status' => 'active',
                     'photo' => null,
                     'created_by' => 1,
