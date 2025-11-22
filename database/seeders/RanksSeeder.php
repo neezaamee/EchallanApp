@@ -10,11 +10,14 @@ class RanksSeeder extends Seeder
     public function run()
     {
         $items = [
+            ['name'=>'Doctor', 'code'=>'dr'],
             ['name'=>'Data Entry Operator','code'=>'deo'],
+            ['name'=>'Junior Clerk','code'=>'jc'],
+            ['name'=>'Senior Clerk','code'=>'sc'],
             ['name'=>'Traffic Warden','code'=>'tw'],
             ['name'=>'Senior Traffic Warden','code'=>'stw'],
-            ['name'=>'Deputy Superintendent','code'=>'ds'],
-            ['name'=>'Superintendent','code'=>'sp'],
+            ['name'=>'Traffic Officer','code'=>'to'],
+            ['name'=>'Superintendent of Police','code'=>'sp'],
             ['name'=>'Deputy Inspector General', 'code'=>'dig'],
             ['name'=>'Additional Inspector General','code'=>'addl_ig'],
             ['name'=>'Inspector General','code'=>'ig'],

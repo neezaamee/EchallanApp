@@ -17,17 +17,17 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-// check one or many roles
-public function hasRole($roles)
-{
-    // Convert to array if it's a single value
-    $roles = (array) $roles;
+    // check one or many roles
+    public function hasRole($roles)
+    {
+        // Convert to array if it's a single value
+        $roles = (array) $roles;
 
-    // Flatten in case it's nested
-    $roles = Arr::flatten($roles);
+        // Flatten in case it's nested
+        $roles = Arr::flatten($roles);
 
-    return $this->roles()->whereIn('name', $roles)->exists();
-}
+        return $this->roles()->whereIn('name', $roles)->exists();
+    }
 
 
 
@@ -70,7 +70,10 @@ public function hasRole($roles)
             'password' => 'hashed',
         ];
     }
-
+    public function citizen()
+    {
+        return $this->hasOne(Citizen::class, 'user_id');
+    }
     /**
      * Get the user's initials
      */
@@ -79,7 +82,7 @@ public function hasRole($roles)
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 }

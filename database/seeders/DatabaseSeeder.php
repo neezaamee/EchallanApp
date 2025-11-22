@@ -21,8 +21,11 @@ class DatabaseSeeder extends Seeder
             CitiesPunjabSeeder::class,
             CirclesFaisalabadSeeder::class,
             DumpingPointSeeder::class,
+            FaisalabadMedicalCentersSeeder::class,
             DesignationsSeeder::class,
             StaffSeeder::class,
+            FaisalabadStaffPostingSeeder::class,
+            CitizensSeeder::class,
         ]);
 
         /* User::factory()->create([

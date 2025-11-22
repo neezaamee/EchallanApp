@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\CustomAuthenticatedSessionController;
 use App\Http\Controllers\Auth\CustomRegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\StaffqController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleDashboardController;
 use App\Http\Controllers\ProvinceController;
@@ -115,7 +116,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Role-specific dashboards
-    Route::get('/dashboard/super-admin', [RoleDashboardController::class, 'superAdmin'])
+    Route::get('/dashboard/super-admin', [RoleDashboardController::class, 'index'])
         ->name('dashboard.super-admin')->middleware('role:super_admin');
 
     Route::get('/dashboard/admin', [RoleDashboardController::class, 'admin'])
@@ -146,7 +147,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | They can manage system entities like staff, provinces, cities, circles, and dumping points.
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:super_admin|admin'])->group(function () {
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
     // Staff Management
     Route::resource('staff', StaffController::class)->except(['show']);
@@ -177,6 +178,14 @@ Route::middleware(['auth', 'role:super_admin|admin'])->group(function () {
     Route::get('/locations/circles', [LocationController::class, 'circles'])->name('admin.circles');
     Route::get('/locations/medical-centers', [LocationController::class, 'medicalCenters'])->name('admin.medical-centers');
 }); */
+Route::prefix('staffq')->middleware('auth')->group(function(){
+    Route::get('/', [StaffqController::class, 'index'])->name('staff.index');
+    Route::get('/create', [StaffqController::class, 'create'])->name('staff.create');
+    Route::post('/store', [StaffqController::class, 'store'])->name('staff.store');
+    Route::get('/{staff}/edit', [StaffqController::class, 'edit'])->name('staff.edit');
+    Route::put('/{staff}', [StaffqController::class, 'update'])->name('staff.update');
+    Route::delete('/{staff}', [StaffqController::class, 'destroy'])->name('staff.destroy');
+});
 
 Route::get('/force-verify', function () {
     $user = Auth::user();
