@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\CustomAuthenticatedSessionController;
 use App\Http\Controllers\Auth\CustomRegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\StaffqController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleDashboardController;
 use App\Http\Controllers\ProvinceController;
@@ -177,6 +178,14 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::get('/locations/circles', [LocationController::class, 'circles'])->name('admin.circles');
     Route::get('/locations/medical-centers', [LocationController::class, 'medicalCenters'])->name('admin.medical-centers');
 }); */
+Route::prefix('staffq')->middleware('auth')->group(function(){
+    Route::get('/', [StaffqController::class, 'index'])->name('staff.index');
+    Route::get('/create', [StaffqController::class, 'create'])->name('staff.create');
+    Route::post('/store', [StaffqController::class, 'store'])->name('staff.store');
+    Route::get('/{staff}/edit', [StaffqController::class, 'edit'])->name('staff.edit');
+    Route::put('/{staff}', [StaffqController::class, 'update'])->name('staff.update');
+    Route::delete('/{staff}', [StaffqController::class, 'destroy'])->name('staff.destroy');
+});
 
 Route::get('/force-verify', function () {
     $user = Auth::user();
