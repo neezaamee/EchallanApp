@@ -32,6 +32,8 @@ use App\Http\Controllers\LocationController;
 // ==========================
 // Public Routes
 // ==========================
+
+
 Route::get('/', fn() => view('landing'))->name('home');
 
 // User profile (public or static page)
@@ -107,6 +109,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = Auth::user();
 
         if ($user->hasRole('super_admin')) return redirect()->route('dashboard.super-admin');
+        if ($user->hasRole('doctor')) return redirect()->route('dashboard.doctor');
         if ($user->hasRole('admin')) return redirect()->route('dashboard.admin');
         if ($user->hasRole('challan_officer')) return redirect()->route('dashboard.officer');
         if ($user->hasRole('accountant')) return redirect()->route('dashboard.accountant');
@@ -121,6 +124,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard/admin', [RoleDashboardController::class, 'admin'])
         ->name('dashboard.admin')->middleware('role:admin');
+    
+    Route::get('/dashboard/doctor', [RoleDashboardController::class, 'doctor'])
+        ->name('dashboard.doctor')->middleware('role:doctor');
 
     Route::get('/dashboard/officer', [RoleDashboardController::class, 'officer'])
         ->name('dashboard.officer')->middleware('role:challan_officer');

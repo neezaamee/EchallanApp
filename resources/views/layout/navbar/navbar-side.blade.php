@@ -44,6 +44,7 @@
                             </div>
                         </a>
                         <ul class="nav collapse" id="user">
+                            @can('read user')
                             <li class="nav-item"><a class="nav-link" href="{{ route('profile.edit') }}">
                                     <div class="d-flex align-items-center"><span
                                             class="nav-link-text ps-1">Profile</span>
@@ -51,6 +52,10 @@
                                 </a>
                                 <!-- more inner pages-->
                             </li>
+                            @else
+                            <p>Have not permission</p>
+                            @endcan
+                            @can('update user')
                             <li class="nav-item"><a class="nav-link" href="{{ url('#') }}">
                                     <div class="d-flex align-items-center"><span
                                             class="nav-link-text ps-1">Settings</span>
@@ -58,6 +63,9 @@
                                 </a>
                                 <!-- more inner pages-->
                             </li>
+                            @else
+                            <p>have not permission</p>
+                            @endcan
                             @can('crud users')
                             <li class="nav-item"><a class="nav-link" href="pages/user/settings.html">
                                     <div class="d-flex align-items-center"><span class="nav-link-text ps-1">View
@@ -70,7 +78,6 @@
                         </ul>
                     </ul>
                 </li>
-                @role('super_admin')
                 <li class="nav-item">
                     <!-- label-->
                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
@@ -80,12 +87,14 @@
                             <hr class="mb-0 navbar-vertical-divider" />
                         </div>
                     </div>
+                    @role('super_admin')
                     <!-- parent pages--><a class="nav-link" href="{{ url('/') }}" role="button">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span
                                     class="fas fa-calendar-alt"></span></span><span class="nav-link-text ps-1">New
                                 Challan</span>
                         </div>
                     </a>
+                    @endrole
                     <!-- parent pages--><a class="nav-link" href="{{ url('/') }}" role="button">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span
                                     class="fas fa-calendar-alt"></span></span><span class="nav-link-text ps-1">View
@@ -131,7 +140,6 @@
                     </ul>
 
                 </li>
-                @endrole
                 <li class="nav-item">
                     <!-- label-->
                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">

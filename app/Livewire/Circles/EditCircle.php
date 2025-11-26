@@ -33,9 +33,10 @@ class EditCircle extends Component
         $this->cities = City::with('province')->get();
     }
 
-    public function setCityFromJs($data)
+    public function setCityFromJs($data = []) // <--- Add default value here
     {
-        $this->city_id = $data['cityId'];
+        // safe access using null coalescing operator
+        $this->city_id = $data['cityId'] ?? $this->city_id;
     }
 
     public function update()
@@ -51,6 +52,7 @@ class EditCircle extends Component
             'name' => $this->name,
             'slug' => $this->slug,
             'city_id' => $this->city_id,
+
         ]);
 
         session()->flash('success', 'Circle updated successfully.');

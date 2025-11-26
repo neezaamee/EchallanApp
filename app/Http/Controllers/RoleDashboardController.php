@@ -17,6 +17,11 @@ class RoleDashboardController extends Controller
         return view('pages.dashboards.admin');
     }
 
+    public function doctor()
+    {
+        return view('pages.dashboards.index');
+    }
+
     public function officer()
     {
         return view('pages.dashboards.officer');

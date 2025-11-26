@@ -9,9 +9,7 @@
                             src="../assets/img/illustrations/crm-bar-chart.png" alt="" width="90" />
                         <div>
                             <h6 class="text-primary fs-10 mb-0">Welcome to </h6>
-                            <h4 class="text-primary fw-bold mb-0">
-                                {{ ucwords(str_replace('_', ' ', auth()->user()->getRoleNames()->first())) }} Dashboard
-                                <span class="text-danger fw-medium"> - </span><span class="text-info fw-medium">Welfare CMS</span></h4>
+                            <h4 class="text-primary fw-bold mb-0">Welfare CMS <span class="text-info fw-medium">CTPF</span></h4>
                         </div><img class="ms-n4 d-md-none d-lg-block" src="{{ asset('assets/img/illustrations/crm-line-chart.png') }}"
                             alt="" width="150" />
                     </div>
@@ -34,42 +32,9 @@
         </div>
     </div>
     @auth
-    
+    <h1>{{ ucfirst(auth()->user()->getRoleNames()->first()) }} Dashboard</h1>
     <p>Welcome, {{ auth()->user()->name }}</p>
-    <p>User Email: {{ auth()->user()->email }}</p>
-    <p>User CNIC: {{ auth()->user()->cnic }}</p>
-    <p>User Password: {{ auth()->user()->password }}</p>
-    @if(auth()->check())
-    @php
-        $user = auth()->user();
-        $allPermissions = $user->getAllPermissions(); // Requires Spatie's laravel-permission
-    @endphp
-
-    @if($allPermissions->isNotEmpty())
-        <h2>Your Permissions:</h2>
-        <ul>
-            @foreach($allPermissions as $permission)
-                <li>{{ $permission->name }}</li>
-            @endforeach
-        </ul>
-    @else
-        <p>You have no permissions assigned.</p>
-    @endif
-@else
-    <p>Please log in to view your permissions.</p>
-@endif
-@can('read user')
-<p>read Permission granted</p>
-@endcan
-@can('update user')
-<p>update Permission granted</p>
-@endcan
-    @role('super_admin')
-    <p>Your Gender: {{ auth()->user()->citizen->gender ?? 'N/A' }}</p>
-    <p>Your Email: {{ auth()->user()->citizen->email ?? 'N/A' }}</p>
-    <p>Your Phone: {{ auth()->user()->citizen->phone ?? 'N/A' }}</p>
-    @endrole
-
     @endauth
 
+    <p>Use this page to manage admins, permissions, and system settings.</p>
 @endsection

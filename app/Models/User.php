@@ -17,17 +17,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-    // check one or many roles
-    public function hasRole($roles)
-    {
-        // Convert to array if it's a single value
-        $roles = (array) $roles;
 
-        // Flatten in case it's nested
-        $roles = Arr::flatten($roles);
-
-        return $this->roles()->whereIn('name', $roles)->exists();
-    }
 
 
 
