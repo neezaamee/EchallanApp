@@ -3,93 +3,75 @@
 namespace App\Livewire\MedicalCenters;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\MedicalCenter;
 use App\Models\Circle;
+use App\Models\City;
 
 class MedicalCentersTable extends Component
 {
-    public $centers;
-    public $circles;
-    public $circle_id, $name, $location;
-    public $center_id;
-    public $isEditMode = false;
+    use WithPagination;
 
-    public function mount()
+    public $search = '';
+    public $sortField = 'id';
+    public $sortDirection = 'asc';
+
+    public $confirmingMedicalCenterDeletion = null;
+    public $deleteId = null;
+
+    protected $paginationTheme = 'bootstrap';
+    protected $queryString = ['search'];
+    protected $listeners = ['medical-center-added' => 'render'];
+
+    public function updatingSearch()
     {
-        $this->circles = Circle::all();
-        $this->loadCenters();
+        $this->resetPage();
     }
 
-    public function loadCenters()
+    public function sortBy($field)
     {
-        $this->centers = MedicalCenter::with('circle')->latest()->get();
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
     }
 
-    public function resetFields()
+    public function confirmDelete($id)
     {
-        $this->circle_id = '';
-        $this->name = '';
-        $this->location = '';
-        $this->center_id = null;
-        $this->isEditMode = false;
+        $this->confirmingMedicalCenterDeletion = true;
+        $this->deleteId = $id;
     }
 
-    public function save()
+    public function deleteMedicalCenter()
     {
-        $this->validate([
-            'circle_id' => 'required|exists:circles,id',
-            'name' => 'required|string|max:255',
-        ]);
+        if (!$this->deleteId) return;
 
-        MedicalCenter::create([
-            'circle_id' => $this->circle_id,
-            'name' => $this->name,
-            'location' => $this->location,
-        ]);
+        $medicalCenter = MedicalCenter::find($this->deleteId);
+        if ($medicalCenter) $medicalCenter->delete();
 
-        session()->flash('message', 'Medical center added successfully.');
-        $this->resetFields();
-        $this->loadCenters();
-    }
-
-    public function edit($id)
-    {
-        $center = MedicalCenter::findOrFail($id);
-        $this->center_id = $center->id;
-        $this->circle_id = $center->circle_id;
-        $this->name = $center->name;
-        $this->location = $center->location;
-        $this->isEditMode = true;
-    }
-
-    public function update()
-    {
-        $this->validate([
-            'circle_id' => 'required|exists:circles,id',
-            'name' => 'required|string|max:255',
-        ]);
-
-        $center = MedicalCenter::findOrFail($this->center_id);
-        $center->update([
-            'circle_id' => $this->circle_id,
-            'name' => $this->name,
-            'location' => $this->location,
-        ]);
-
-        session()->flash('message', 'Medical center updated successfully.');
-        $this->resetFields();
-        $this->loadCenters();
-    }
-
-    public function delete($id)
-    {
-        MedicalCenter::findOrFail($id)->delete();
-        session()->flash('message', 'Medical center deleted.');
-        $this->loadCenters();
+        $this->reset(['confirmingMedicalCenterDeletion', 'deleteId']);
+        session()->flash('message', 'Medical Center deleted successfully!');
+        $this->resetPage();
     }
 
     public function render()
     {
-        return view('livewire.medical-centers.medical-centers-table');
+        $query = MedicalCenter::with(['circle.city'])
+            ->when(trim($this->search) !== '', function ($q) {
+                $s = '%' . $this->search . '%';
+                $q->where('name', 'like', $s)
+                  ->orWhereHas('circle', function ($q2) use ($s) {
+                      $q2->where('name', 'like', $s)
+                         ->orWhereHas('city', function ($q3) use ($s) {
+                             $q3->where('name', 'like', $s);
+                         });
+                  });
+            });
+
+        $medicalCenters = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+
+        return view('livewire.medical-centers.medical-centers-table', compact('medicalCenters'));
     }
 }

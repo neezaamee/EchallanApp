@@ -18,10 +18,9 @@ class Staff extends Model
         'phone',
         'email',
         'cnic',
-        'designation_id',
+        'gender',
+        'status',
         'rank_id',
-        'city_id',
-        'province_id',
         'created_by'
     ];
 

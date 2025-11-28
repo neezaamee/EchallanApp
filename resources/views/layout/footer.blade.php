@@ -4,7 +4,11 @@
                 <p class="mb-0 text-600">Developed by <span class="d-none d-sm-inline-block">| </span><br class="d-sm-none" /> {{ now()->format('Y') }} &copy; <a href="https://elaftech.com">Elaf Tech</a></p>
               </div>
               <div class="col-12 col-sm-auto text-center">
-                <p class="mb-0 text-600">v1.1.1</p>
+                @if (app()->isLocal())                
+                <p class="mb-0 text-600">Your IP Address is: {{ request()->getClientIp() }} | Version {{ env('APP_VERSION') }} | App Name {{ env('APP_NAME') }}</p>
+                @else
+                <p class="mb-0 text-600">Your IP Address is: {{ request()->getClientIp() }} | Version {{ env('APP_VERSION') }} | App Name {{ env('APP_NAME') }}</p>
+                @endif
               </div>
             </div>
           </footer>

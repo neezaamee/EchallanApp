@@ -17,6 +17,7 @@ use App\Http\Controllers\CircleController;
 use App\Http\Controllers\DumpingPointController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MedicalCenterController;
+use App\Http\Controllers\StaffPostingController;
 use App\Http\Controllers\LocationController;
 
 
@@ -171,6 +172,7 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::resource('dumping-points', DumpingPointController::class)->except(['show']);
 
     // Medical Centers
+    Route::resource('staff-postings', StaffPostingController::class);
     Route::resource('medical-centers', MedicalCenterController::class)->except(['show']);
 });
 

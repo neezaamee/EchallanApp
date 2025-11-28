@@ -20,30 +20,12 @@ class StaffController extends Controller
 
     public function index(Request $request)
     {
-        $query = Staff::with(['designation','rank','city','province','creator']);
-
-        if ($request->filled('q')) {
-            $q = $request->q;
-            $query->where(function($wr) use ($q) {
-                $wr->where('first_name','like',"%{$q}%")
-                   ->orWhere('last_name','like',"%{$q}%")
-                   ->orWhere('cnic','like',"%{$q}%")
-                   ->orWhere('email','like',"%{$q}%");
-            });
-        }
-
-        $staff = $query->orderByDesc('id')->paginate(15);
-        return view('staff.index', compact('staff'));
+        return view('pages.staff.index');
     }
 
     public function create()
     {
-        $designations = Designation::orderBy('name')->get();
-        $ranks = Rank::orderBy('name')->get();
-        $provinces = Province::orderBy('name')->get();
-        $cities = City::orderBy('name')->get();
-
-        return view('staff.create', compact('designations','ranks','provinces','cities'));
+        return view('pages.staff.create');
     }
 
     public function store(StoreStaffRequest $request)
@@ -57,14 +39,7 @@ class StaffController extends Controller
 
     public function edit(Staff $staff)
     {
-        $this->authorize('update', $staff); // optional policy
-
-        $designations = Designation::orderBy('name')->get();
-        $ranks = Rank::orderBy('name')->get();
-        $provinces = Province::orderBy('name')->get();
-        $cities = City::orderBy('name')->get();
-
-        return view('staff.edit', compact('staff','designations','ranks','provinces','cities'));
+        return view('pages.staff.edit', compact('staff'));
     }
 
     public function update(UpdateStaffRequest $request, Staff $staff)
