@@ -9,8 +9,7 @@
             <div class="card-body bg-light">
                 <form method="POST" action="{{ route('medical-requests.store') }}">
                     @csrf
-
-                    @role('doctor')
+                    @role(['doctor', 'super_admin'])
                         <div class="alert alert-info">
                             <strong>Note:</strong> You are creating a request on behalf of a citizen. Enter CNIC to
                             search for existing records.
@@ -56,7 +55,6 @@
                             </div>
                         </div>
                     @endrole
-
                     @role('citizen')
                         <!-- Province -->
                         <div class="mb-3">

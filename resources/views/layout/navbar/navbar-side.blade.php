@@ -5,281 +5,310 @@
             document.querySelector('.navbar-vertical').classList.add(`navbar-${navbarStyle}`);
         }
     </script>
+
+    {{-- Brand --}}
     <div class="d-flex align-items-center">
         <div class="toggle-icon-wrapper">
             <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-bs-toggle="tooltip"
-                data-bs-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span
-                        class="toggle-line"></span></span></button>
-
-        </div><a class="navbar-brand" href="index.html">
-            <div class="d-flex align-items-center py-3"><img class="me-2"
-                    src="{{ asset('assets/img/icons/spot-illustrations/falcon.png') }}" alt=""
-                    width="40" /><span class="font-sans-serif text-primary">WCMS</span>
+                data-bs-placement="left" title="Toggle Navigation">
+                <span class="navbar-toggle-icon"><span class="toggle-line"></span></span>
+            </button>
+        </div>
+        <a class="navbar-brand" href="{{ route('dashboard') }}">
+            <div class="d-flex align-items-center py-3">
+                <img class="me-2" src="{{ asset('assets/img/icons/spot-illustrations/falcon.png') }}" alt="WCMS Logo"
+                    width="40" />
+                <span class="font-sans-serif text-primary">WCMS</span>
             </div>
         </a>
     </div>
+
+    {{-- Navigation Content --}}
     <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
         <div class="navbar-vertical-content scrollbar">
             <ul class="navbar-nav flex-column mb-3" id="navbarVerticalNav">
+
+                {{-- ==================== DASHBOARD ==================== --}}
                 <li class="nav-item">
-                    <!-- parent pages--><a class="nav-link dropdown-indicator" href="#dashboard" role="button"
-                        data-bs-toggle="collapse" aria-expanded="true" aria-controls="dashboard">
-                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                    class="fas fa-chart-pie"></span></span><span
-                                class="nav-link-text ps-1">Dashboard</span>
+                    <a class="nav-link {{ request()->routeIs('dashboard*') ? 'active' : '' }}"
+                        href="{{ route('dashboard') }}">
+                        <div class="d-flex align-items-center">
+                            <span class="nav-link-icon"><span class="fas fa-chart-pie"></span></span>
+                            <span class="nav-link-text ps-1">Dashboard</span>
                         </div>
                     </a>
-                    <ul class="nav collapse show" id="dashboard">
-                        <li class="nav-item"><a class="nav-link active" href="{{ route('dashboard') }}">
-                                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Home</span>
-                                </div>
-                            </a>
-                            <!-- more inner pages-->
-                        </li>
-                        <!-- parent pages--><a class="nav-link dropdown-indicator" href="#user" role="button"
-                            data-bs-toggle="collapse" aria-expanded="false" aria-controls="user">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-user"></span></span><span class="nav-link-text ps-1">User</span>
-                            </div>
-                        </a>
-                        <ul class="nav collapse" id="user">
-                            @can('read user')
-                                <li class="nav-item"><a class="nav-link" href="{{ route('profile.edit') }}">
-                                        <div class="d-flex align-items-center"><span
-                                                class="nav-link-text ps-1">Profile</span>
-                                        </div>
-                                    </a>
-                                    <!-- more inner pages-->
-                                </li>
-                            @endcan
-                            @can('crud users')
-                                <li class="nav-item"><a class="nav-link" href="{{ url('#') }}">
-                                        <div class="d-flex align-items-center"><span
-                                                class="nav-link-text ps-1">Settings</span>
-                                        </div>
-                                    </a>
-                                    <!-- more inner pages-->
-                                </li>
-                            @endcan
-                            @can('crud users')
-                                <li class="nav-item"><a class="nav-link" href="pages/user/settings.html">
-                                        <div class="d-flex align-items-center"><span class="nav-link-text ps-1">View
-                                                Users</span>
-                                        </div>
-                                    </a>
-                                    <!-- more inner pages-->
-                                </li>
-                            @endcan
-                        </ul>
-                    </ul>
                 </li>
-                {{-- Infrastructure --}}
-                @role('super_admin')
-                    <li class="nav-item">
-                        <!-- label-->
-                        <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                            <div class="col-auto navbar-vertical-label">Infrastructure
-                            </div>
-                            <div class="col ps-0">
-                                <hr class="mb-0 navbar-vertical-divider" />
-                            </div>
+
+                {{-- ==================== MEDICAL SECTION ==================== --}}
+                <li class="nav-item">
+                    <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                        <div class="col-auto navbar-vertical-label">Medical Services</div>
+                        <div class="col ps-0">
+                            <hr class="mb-0 navbar-vertical-divider" />
                         </div>
-                        <!-- parent pages--><a class="nav-link dropdown-indicator" href="#email" role="button"
-                            data-bs-toggle="collapse" aria-expanded="false" aria-controls="email">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-envelope-open"></span></span><span
-                                    class="nav-link-text ps-1">Infrastructure</span>
+                    </div>
+
+                    @can('create medical request')
+                        <a class="nav-link {{ request()->routeIs('medical-requests.create') ? 'active' : '' }}"
+                            href="{{ route('medical-requests.create') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-plus-circle"></span></span>
+                                <span class="nav-link-text ps-1">New Application</span>
                             </div>
                         </a>
-                        <ul class="nav collapse" id="email">
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('dumping-points.*') ? 'active' : '' }}"
-                                    href="{{ route('dumping-points.index') }}">
-                                    <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Dumping
-                                            Points</span></div>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('circles.*') ? 'active' : '' }}"
-                                    href="{{ route('circles.index') }}">
-                                    <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Circles</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('cities.*') ? 'active' : '' }}"
-                                    href="{{ route('cities.index') }}">
-                                    <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Cities</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('provinces.*') ? 'active' : '' }}"
-                                    href="{{ route('provinces.index') }}">
-                                    <div class="d-flex align-items-center"><span
-                                            class="nav-link-text ps-1">Provinces</span></div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                @endrole
+                    @endcan
 
-                {{-- Lifter --}}
+                    <a class="nav-link {{ request()->routeIs('medical-requests.index') || request()->routeIs('medical-requests.show') ? 'active' : '' }}"
+                        href="{{ route('medical-requests.index') }}">
+                        <div class="d-flex align-items-center">
+                            <span class="nav-link-icon"><span class="fas fa-list-alt"></span></span>
+                            <span class="nav-link-text ps-1">View Applications</span>
+                        </div>
+                    </a>
+                </li>
+
+                {{-- ==================== CHALLAN MANAGEMENT (TODO) ==================== --}}
                 @canany(['create challan', 'read challan'])
                     <li class="nav-item">
-                        <!-- label-->
                         <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                            <div class="col-auto navbar-vertical-label">Lifter
-                            </div>
+                            <div class="col-auto navbar-vertical-label">Challan Management</div>
                             <div class="col ps-0">
                                 <hr class="mb-0 navbar-vertical-divider" />
                             </div>
                         </div>
+
                         @can('create challan')
-                            <!-- parent pages-->
-                            <a class="nav-link" href="{{ url('/') }}" role="button">
-                                <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                            class="fas fa-calendar-alt"></span></span><span class="nav-link-text ps-1">New
-                                        Challan</span>
+                            <a class="nav-link disabled" href="#!" title="Coming Soon">
+                                <div class="d-flex align-items-center">
+                                    <span class="nav-link-icon"><span class="fas fa-file-invoice"></span></span>
+                                    <span class="nav-link-text ps-1">New Challan</span>
+                                    <span class="badge badge-soft-warning ms-auto">Soon</span>
                                 </div>
                             </a>
                         @endcan
+
                         @can('read challan')
-                            <!-- parent pages--><a class="nav-link" href="{{ url('/') }}" role="button">
-                                <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                            class="fas fa-calendar-alt"></span></span><span class="nav-link-text ps-1">View
-                                        Challans</span>
+                            <a class="nav-link disabled" href="#!" title="Coming Soon">
+                                <div class="d-flex align-items-center">
+                                    <span class="nav-link-icon"><span class="fas fa-receipt"></span></span>
+                                    <span class="nav-link-text ps-1">View Challans</span>
+                                    <span class="badge badge-soft-warning ms-auto">Soon</span>
                                 </div>
                             </a>
                         @endcan
                     </li>
                 @endcanany
 
-                {{-- Medical --}}
-                <li class="nav-item">
-                    <!-- label-->
-                    <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                        <div class="col-auto navbar-vertical-label">Medical
+                {{-- ==================== INFRASTRUCTURE (Super Admin) ==================== --}}
+                @role('super_admin')
+                    <li class="nav-item">
+                        <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                            <div class="col-auto navbar-vertical-label">Infrastructure</div>
+                            <div class="col ps-0">
+                                <hr class="mb-0 navbar-vertical-divider" />
+                            </div>
                         </div>
-                        <div class="col ps-0">
-                            <hr class="mb-0 navbar-vertical-divider" />
-                        </div>
-                    </div>
-                    @can('create medical request')
-                        <!-- parent pages--><a class="nav-link" href="{{ route('medical-requests.create') }}"
-                            role="button">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-flag"></span></span><span class="nav-link-text ps-1">New
-                                    Application</span>
+
+                        <a class="nav-link dropdown-indicator" href="#infrastructure" role="button"
+                            data-bs-toggle="collapse" aria-expanded="false" aria-controls="infrastructure">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-building"></span></span>
+                                <span class="nav-link-text ps-1">Locations</span>
                             </div>
                         </a>
-                    @endcan
-                    <!-- parent pages--><a class="nav-link" href="{{ route('medical-requests.index') }}"
-                        role="button">
-                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                    class="fas fa-globe"></span></span><span class="nav-link-text ps-1">View
-                                Applications</span>
-                        </div>
-                    </a>
-                </li>
+                        <ul class="nav collapse" id="infrastructure">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('provinces.*') ? 'active' : '' }}"
+                                    href="{{ route('provinces.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Provinces</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('cities.*') ? 'active' : '' }}"
+                                    href="{{ route('cities.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Cities</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('circles.*') ? 'active' : '' }}"
+                                    href="{{ route('circles.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Circles</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('dumping-points.*') ? 'active' : '' }}"
+                                    href="{{ route('dumping-points.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Dumping Points</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('medical-centers.*') ? 'active' : '' }}"
+                                    href="{{ route('medical-centers.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Medical Centers</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endrole
 
-                {{-- Staff --}}
+                {{-- ==================== STAFF MANAGEMENT (Super Admin) ==================== --}}
                 @can('crud staff')
                     <li class="nav-item">
-                        <!-- label-->
                         <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                            <div class="col-auto navbar-vertical-label">Staff Management
-                            </div>
+                            <div class="col-auto navbar-vertical-label">Staff Management</div>
                             <div class="col ps-0">
                                 <hr class="mb-0 navbar-vertical-divider" />
                             </div>
                         </div>
-                        <!-- parent pages--><a class="nav-link" href="{{ route('staff.create') }}" role="button">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-flag"></span></span><span class="nav-link-text ps-1">Add New
-                                    Staff</span>
+
+                        <a class="nav-link {{ request()->routeIs('staff.create') ? 'active' : '' }}"
+                            href="{{ route('staff.create') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-user-plus"></span></span>
+                                <span class="nav-link-text ps-1">Add Staff</span>
                             </div>
                         </a>
-                        <!-- parent pages--><a class="nav-link" href="{{ route('staff.index') }}" role="button">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-globe"></span></span><span class="nav-link-text ps-1">View
-                                    Staff</span>
+
+                        <a class="nav-link {{ request()->routeIs('staff.index') || request()->routeIs('staff.edit') ? 'active' : '' }}"
+                            href="{{ route('staff.index') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-users"></span></span>
+                                <span class="nav-link-text ps-1">View Staff</span>
                             </div>
                         </a>
-                        <!-- parent pages--><a class="nav-link" href="pages/landing.html" role="button">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-globe"></span></span><span class="nav-link-text ps-1">Transfer
-                                    Posting</span>
+
+                        <a class="nav-link {{ request()->routeIs('staff-postings.*') ? 'active' : '' }}"
+                            href="{{ route('staff-postings.index') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-exchange-alt"></span></span>
+                                <span class="nav-link-text ps-1">Staff Postings</span>
                             </div>
                         </a>
                     </li>
                 @endcan
 
-                {{-- Reports --}}
+                {{-- ==================== USER MANAGEMENT (TODO) ==================== --}}
+                @can('crud users')
+                    <li class="nav-item">
+                        <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                            <div class="col-auto navbar-vertical-label">User Management</div>
+                            <div class="col ps-0">
+                                <hr class="mb-0 navbar-vertical-divider" />
+                            </div>
+                        </div>
+
+                        <a class="nav-link disabled" href="#!" title="Coming Soon">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-users-cog"></span></span>
+                                <span class="nav-link-text ps-1">Manage Users</span>
+                                <span class="badge badge-soft-warning ms-auto">Soon</span>
+                            </div>
+                        </a>
+
+                        <a class="nav-link disabled" href="#!" title="Coming Soon">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-user-shield"></span></span>
+                                <span class="nav-link-text ps-1">Roles & Permissions</span>
+                                <span class="badge badge-soft-warning ms-auto">Soon</span>
+                            </div>
+                        </a>
+                    </li>
+                @endcan
+
+                {{-- ==================== REPORTS & ANALYTICS (TODO) ==================== --}}
                 @can('crud reports')
                     <li class="nav-item">
-                        <!-- label-->
                         <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                            <div class="col-auto navbar-vertical-label">Reporting & Finance
-                            </div>
+                            <div class="col-auto navbar-vertical-label">Reports & Analytics</div>
                             <div class="col ps-0">
                                 <hr class="mb-0 navbar-vertical-divider" />
                             </div>
                         </div>
-                        <!-- parent pages--><a class="nav-link" href="pages/starter.html" role="button">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-flag"></span></span><span class="nav-link-text ps-1">Report 1</span>
+
+                        <a class="nav-link disabled" href="#!" title="Coming Soon">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-chart-bar"></span></span>
+                                <span class="nav-link-text ps-1">Medical Reports</span>
+                                <span class="badge badge-soft-warning ms-auto">Soon</span>
                             </div>
                         </a>
-                        <!-- parent pages--><a class="nav-link" href="pages/landing.html" role="button">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-globe"></span></span><span class="nav-link-text ps-1">Report
-                                    2</span>
+
+                        <a class="nav-link disabled" href="#!" title="Coming Soon">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-file-invoice-dollar"></span></span>
+                                <span class="nav-link-text ps-1">Financial Reports</span>
+                                <span class="badge badge-soft-warning ms-auto">Soon</span>
                             </div>
                         </a>
-                        <!-- parent pages--><a class="nav-link" href="pages/landing.html" role="button">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-globe"></span></span><span class="nav-link-text ps-1">Report
-                                    3</span>
+
+                        <a class="nav-link disabled" href="#!" title="Coming Soon">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-chart-line"></span></span>
+                                <span class="nav-link-text ps-1">Analytics Dashboard</span>
+                                <span class="badge badge-soft-warning ms-auto">Soon</span>
                             </div>
                         </a>
                     </li>
                 @endcan
 
+                {{-- ==================== SUPPORT & HELP ==================== --}}
                 <li class="nav-item">
-                    <!-- label-->
                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                        <div class="col-auto navbar-vertical-label">Support
-                        </div>
+                        <div class="col-auto navbar-vertical-label">Support</div>
                         <div class="col ps-0">
                             <hr class="mb-0 navbar-vertical-divider" />
                         </div>
                     </div>
 
-                    <!-- parent pages--><a class="nav-link" href="documentation/faq.html" role="button">
-                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                    class="fas fa-question-circle"></span></span><span
-                                class="nav-link-text ps-1">Faq</span>
+                    {{-- TODO: Implement FAQ System --}}
+                    <a class="nav-link disabled" href="#!" title="Coming Soon">
+                        <div class="d-flex align-items-center">
+                            <span class="nav-link-icon"><span class="fas fa-question-circle"></span></span>
+                            <span class="nav-link-text ps-1">FAQ</span>
+                            <span class="badge badge-soft-warning ms-auto">Soon</span>
                         </div>
                     </a>
-                    {{-- Changelog --}}
-                    <a class="nav-link" href="{{ route('changelog.public') }}" role="button">
-                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                    class="fas fa-code-branch"></span></span><span
-                                class="nav-link-text ps-1">Changelog</span>
+
+                    <a class="nav-link {{ request()->routeIs('changelog.public') ? 'active' : '' }}"
+                        href="{{ route('changelog.public') }}">
+                        <div class="d-flex align-items-center">
+                            <span class="nav-link-icon"><span class="fas fa-code-branch"></span></span>
+                            <span class="nav-link-text ps-1">Changelog</span>
                         </div>
                     </a>
+
                     @role(['super_admin', 'admin'])
-                        <a class="nav-link" href="{{ route('changelog.index') }}" role="button">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span
-                                        class="fas fa-cog"></span></span><span class="nav-link-text ps-1">Manage
-                                    Changelog</span>
+                        <a class="nav-link {{ request()->routeIs('changelog.index') || request()->routeIs('changelog.create') || request()->routeIs('changelog.edit') ? 'active' : '' }}"
+                            href="{{ route('changelog.index') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-cog"></span></span>
+                                <span class="nav-link-text ps-1">Manage Changelog</span>
                             </div>
                         </a>
                     @endrole
+
+                    <a class="nav-link {{ request()->routeIs('feedback.*') ? 'active' : '' }}"
+                        href="{{ route('feedback.index') }}">
+                        <div class="d-flex align-items-center">
+                            <span class="nav-link-icon"><span class="fas fa-comments"></span></span>
+                            <span class="nav-link-text ps-1">Feedback</span>
+                        </div>
+                    </a>
                 </li>
 
             </ul>
+
+            {{-- ==================== FEEDBACK WIDGET (Non-Admin) ==================== --}}
             @unlessrole('super_admin')
                 <div class="settings my-3">
                     <div class="card shadow-none">
@@ -288,12 +317,15 @@
                                 <button class="btn btn-link btn-close-falcon p-0" aria-label="Close"
                                     data-bs-dismiss="alert"></button>
                             </div>
-                            <div class="text-center"><img
-                                    src="{{ asset('assets/img/icons/spot-illustrations/navbar-vertical.png') }}"
-                                    alt="" width="80" />
+                            <div class="text-center">
+                                <img src="{{ asset('assets/img/icons/spot-illustrations/navbar-vertical.png') }}"
+                                    alt="Feedback" width="80" />
                                 <p class="fs-11 mt-2">Loving what you see? <br />Give your feedback</p>
-                                <div class="d-grid"><a class="btn btn-sm btn-primary"
-                                        href="{{ route('feedback.create') }}">Submit Feedback</a></div>
+                                <div class="d-grid">
+                                    <a class="btn btn-sm btn-primary" href="{{ route('feedback.create') }}">
+                                        Submit Feedback
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
