@@ -64,6 +64,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Citizen::class, 'user_id');
     }
+
+    public function staff()
+    {
+        return $this->hasOne(Staff::class);
+    }
     /**
      * Get the user's initials
      */

@@ -115,6 +115,7 @@ class RolePermissionSeeder extends Seeder
         ];
         // Reports permissions
         $reportsPermissions = [
+            'crud reports',
             'crud finance reports',
             'create finance report',
             'read finance report',
@@ -169,6 +170,8 @@ class RolePermissionSeeder extends Seeder
         $systemPermissions = [
             'crud settings',
             'crud backups',
+            'create application log',
+            'read application log',
         ];
 
         // Combine all permissions
@@ -238,6 +241,7 @@ class RolePermissionSeeder extends Seeder
             'create medical request',
             'read medical request',
             'read challan',
+            'read application log'
         ];
         $citizenRole->givePermissionTo($citizenPermissions);
         $this->command->info('Created Citizen role with content management permissions');

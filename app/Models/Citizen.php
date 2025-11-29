@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Citizen extends Model
 {
     protected $fillable = [
-        'user_id','full_name','gender','cnic','email','phone','created_by'
+        'user_id','full_name','father_name','gender','cnic','email','phone','role_id','created_by'
     ];
 
     public function user()

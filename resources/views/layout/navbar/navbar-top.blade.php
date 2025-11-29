@@ -5,8 +5,7 @@
         aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
     <a class="navbar-brand me-1 me-sm-3" href="{{ url('/dashboard') }}">
         <div class="d-flex align-items-center">
-            <img class="me-2"
-                src="{{ asset('assets/img/icons/spot-illustrations/falcon.png') }}" alt=""
+            <img class="me-2" src="{{ asset('assets/img/icons/spot-illustrations/falcon.png') }}" alt=""
                 width="40" /><span class="font-sans-serif text-primary">Welfare - CMS</span>
         </div>
     </a>
@@ -123,7 +122,6 @@
             </ul> --}}
     {{-- Profile Options --}}
     <ul class="navbar-nav navbar-nav-icons ms-auto flex-row align-items-center">
-
         <li class="nav-item dropdown"><a class="nav-link pe-0 ps-2" id="navbarDropdownUser" role="button"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <div class="avatar avatar-xl">
@@ -147,22 +145,20 @@
                         </span></a>
 
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#!">Set status</a>
+                    {{-- <a class="dropdown-item" href="#!">Set status</a> --}}
                     <a class="dropdown-item" href="{{ route('profile.edit') }}">Profile &amp; account</a>
-                    <a class="dropdown-item" href="#!">Feedback</a>
+                    @unlessrole('super_admin')
+                    <a class="dropdown-item" href="{{ route('feedback.create') }}">Feedback</a>
+                    @endunlessrole
 
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{ url('#') }}">Settings</a>
+                    {{-- <a class="dropdown-item" href="{{ url('#') }}">Settings</a> --}}
                     <a class="dropdown-item" href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         Logout
                     </a>
-
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
-                        {# This @csrf Blade directive (if you're using Laravel/Blade,
-       or use the raw Twig equivalent if you're only using Twig)
-       adds the required CSRF token input field. #}
                     </form>
                 </div>
             </div>

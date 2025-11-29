@@ -41,9 +41,26 @@
                                                </selection>
                                            </strong>. Please click on the <br class="d-none d-sm-block d-md-none" />included
                                            link to reset <span class="white-space-nowrap">your password.</span>
-                                       </p><a class="btn btn-primary btn-sm mt-3" href="{{ route('login') }}"><span
-                                               class="fas fa-chevron-left me-1"
-                                               data-fa-transform="shrink-4 down-1"></span>Return to login</a>
+                                       </p>
+
+                                       @auth
+                                           <a class="btn btn-primary btn-sm mt-3" href="{{ route('logout') }}"
+                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                               Logout
+                                           </a>
+                                           <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                               style="display: none;">
+                                               @csrf
+                                           </form>
+                                       @endauth
+                                       @guest
+                                           <a class="btn btn-primary btn-sm mt-3" href="{{ route('login') }}"><span
+                                                   class="fas fa-chevron-left me-1"
+                                                   data-fa-transform="shrink-4 down-1"></span>Return to login</a>
+                                       @endguest
+
+
+
                                    </div>
                                </div>
                            </div>

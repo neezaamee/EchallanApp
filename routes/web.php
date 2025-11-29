@@ -51,7 +51,7 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [CustomAuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [CustomAuthenticatedSessionController::class, 'store']);
 
-    // Registration (for violator users only)
+    // Registration (for citizen users only)
     Route::get('register', [CustomRegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [CustomRegisteredUserController::class, 'store']);
 });
@@ -141,6 +141,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // User profile page
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Medical Requests
+    Route::resource('medical-requests', \App\Http\Controllers\MedicalRequestController::class);
+    Route::get('/api/cities/{city}/medical-centers', [\App\Http\Controllers\MedicalRequestController::class, 'getMedicalCenters'])->name('api.medical-centers');
+    Route::get('/api/provinces/{province}/cities', [\App\Http\Controllers\MedicalRequestController::class, 'getCities'])->name('api.cities');
+    Route::get('/api/citizens/check/{cnic}', [\App\Http\Controllers\MedicalRequestController::class, 'checkCitizen'])->name('api.citizens.check');
+
+    // Feedback
+    Route::resource('feedback', \App\Http\Controllers\FeedbackController::class);
+});
+
+// Public Changelog (accessible to all authenticated users)
+Route::get('/changelog', [\App\Http\Controllers\ChangelogController::class, 'publicView'])
+    ->middleware(['auth', 'verified'])
+    ->name('changelog.public');
+
+// Admin Changelog Routes
+Route::middleware(['auth', 'verified', 'role:super_admin|admin'])->group(function () {
+    Route::resource('admin/changelog', \App\Http\Controllers\ChangelogController::class)->names([
+        'index' => 'changelog.index',
+        'create' => 'changelog.create',
+        'store' => 'changelog.store',
+        'show' => 'changelog.show',
+        'edit' => 'changelog.edit',
+        'update' => 'changelog.update',
+        'destroy' => 'changelog.destroy',
+    ]);
 });
 
 

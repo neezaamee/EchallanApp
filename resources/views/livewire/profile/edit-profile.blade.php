@@ -9,9 +9,18 @@
 
     <form wire:submit.prevent="updateProfile">
         <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" wire:model="name" class="form-control">
-            @error('name') <small class="text-danger">{{ $message }}</small> @enderror
+
+            @if (Auth::user()->role == 'super_admin')
+                <label class="form-label">Name</label>
+                <input type="text" wire:model="name" class="form-control">
+            @else
+                <label class="form-label">Name (readonly)</label>
+                <input type="text" wire:model="name" class="form-control" readonly>
+            @endif
+
+            @error('name')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
         </div>
 
         <div class="mb-3">
@@ -22,7 +31,9 @@
         <div class="mb-3">
             <label class="form-label">New Password</label>
             <input type="password" wire:model="password" class="form-control">
-            @error('password') <small class="text-danger">{{ $message }}</small> @enderror
+            @error('password')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
         </div>
 
         <div class="mb-3">
