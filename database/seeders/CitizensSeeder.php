@@ -18,7 +18,7 @@ class CitizensSeeder extends Seeder
     {
         // All designations and roles mapping (as per your list)
         $roles = [
-            'citizen' => 15,
+            'citizen' => 4,
         ];
 
         foreach ($roles as $role => $roleId) {
@@ -41,6 +41,7 @@ class CitizensSeeder extends Seeder
                 Citizen::create([
                     'user_id' => $user->id,
                     'full_name' => $user->name,
+                    'father_name' => ucfirst(fake()->name()),
                     'gender' => 'male',
                     'cnic' => $user->cnic,
                     'email' => $user->email,

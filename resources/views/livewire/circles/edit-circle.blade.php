@@ -1,15 +1,14 @@
 <div>
     <div class="mb-3">
         <label for="city_id" class="form-label">City</label>
-        <select wire:model="city_id" id="city_id" class="form-control city-select">
+        <select wire:model="city_id" id="city_id" class="form-control select2 city-select">
             <option value="">Select City</option>
             @foreach ($cities as $city)
-                <option value="{{ $city->id }}">
+                <option value="{{ $city->id }}" {{ $city->id == $city_id ? 'selected' : '' }}>
                     {{ $city->name }} — {{ strtoupper($city->province->slug ?? '') }}
                 </option>
             @endforeach
         </select>
-
     </div>
 
     <div class="mb-3">
@@ -26,19 +25,27 @@
 </div>
 
 @push('scripts')
-    <script>
-        document.addEventListener('livewire:navigated', () => {
-            $('.city-select').select2({
-                placeholder: 'Search City...',
-                allowClear: true,
-                width: '100%'
-            });
+<script>
+document.addEventListener('livewire:initialized', function () {
+    // Initialize Select2
+    $('.city-select').select2({
+        placeholder: 'Search City...',
+        allowClear: true,
+        width: '100%'
+    });
 
-            $('.city-select').on('change', function(e) {
-                Livewire.dispatch('setCity', {
-                    cityId: $(this).val()
-                });
-            });
-        });
-    </script>
+    // Set initial value
+    $('.city-select').val(@this.city_id).trigger('change');
+
+    // Update Livewire when Select2 changes
+    $('.city-select').on('change', function(e) {
+        @this.set('city_id', $(this).val());
+    });
+
+    // Update Select2 when Livewire updates the value
+    Livewire.on('cityUpdated', (cityId) => {
+        $('.city-select').val(cityId).trigger('change');
+    });
+});
+</script>
 @endpush

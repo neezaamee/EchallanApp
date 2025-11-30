@@ -19,6 +19,7 @@ return new class extends Migration
 
             // personal info
             $table->string('full_name');
+            $table->string('father_name');
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->string('cnic')->unique();
             $table->string('email')->nullable();

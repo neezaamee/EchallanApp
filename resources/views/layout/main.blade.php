@@ -10,8 +10,7 @@
     <!-- ===============================================-->
     <!--    Document Title-->
     <!-- ===============================================-->
-    <title>@yield('page-title')CTPF Welfare</title>
-
+    <title>@yield('page-title')Welfare CMS</title>
 
     <!-- ===============================================-->
     <!--    Favicons-->
@@ -39,8 +38,10 @@
     <link href="{{ asset('assets/css/theme.css') }}" rel="stylesheet" id="style-default">
     <link href="{{ asset('assets/css/user-rtl.css') }}" rel="stylesheet" id="user-style-rtl">
     <link href="{{ asset('assets/css/user.css') }}" rel="stylesheet" id="user-style-default">
-    @livewireStyles
+
+
     @yield('add-css')
+    @livewireStyles
     <script>
         var isRTL = JSON.parse(localStorage.getItem('isRTL'));
         if (isRTL) {

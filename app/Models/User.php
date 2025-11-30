@@ -17,17 +17,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-    // check one or many roles
-    public function hasRole($roles)
-    {
-        // Convert to array if it's a single value
-        $roles = (array) $roles;
 
-        // Flatten in case it's nested
-        $roles = Arr::flatten($roles);
-
-        return $this->roles()->whereIn('name', $roles)->exists();
-    }
 
 
 
@@ -73,6 +63,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function citizen()
     {
         return $this->hasOne(Citizen::class, 'user_id');
+    }
+
+    public function staff()
+    {
+        return $this->hasOne(Staff::class);
     }
     /**
      * Get the user's initials

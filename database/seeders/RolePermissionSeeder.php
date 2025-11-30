@@ -45,19 +45,114 @@ class RolePermissionSeeder extends Seeder
      */
     private function createPermissions(): void
     {
-        // User management permissions
-        $userPermissions = [
+        
+        // Medical permissions
+        $medicalCenterPermissions = [
+            'crud medical centers',
+            'create medical center',
+            'read medical center',
+            'update medical center',
+            'delete medical center',
+            'crud medical requests',
+            'create medical request',
+            'read medical request',
+            'update medical request',
+            'delete medical request',
+            'crud medical request status',
+            'create medical request status',
+            'read medical request status',
+            'update medical request status',
+            'delete medical request status',
+        ];
+        // Lifter Squad permissions
+        $lifterSquadPermissions = [
+            'crud challans',
+            'create challan',
+            'read challan',
+            'update challan',
+            'delete challan',
+        ];
+        // Infrastructure permissions
+        $infrastructurePermissions = [
+            'crud infrastructure',
+            'create infrastructure',
+            'read infrastructure',
+            'update infrastructure',
+            'delete infrastructure',
+            'crud provinces',
+            'create province',
+            'read province',
+            'update province',
+            'delete province',
+            'crud cities',
+            'create city',
+            'read city',
+            'update city',
+            'delete city',
+            'crud circles',
+            'create circle',
+            'read circle',
+            'update circle',
+            'delete circle',
+            'crud dumping points',
+            'create dumping point',
+            'read dumping point',
+            'update dumping point',
+            'delete dumping point',
+        ];
+        // Staff permissions
+        $staffPermissions = [
+            'crud staff',
+            'create staff',
+            'read staff',
+            'update staff',
+            'delete staff',
+            'crud staff postings',
+            'create staff posting',
+            'read staff posting',
+            'update staff posting',
+            'delete staff posting',
+        ];
+        // Reports permissions
+        $reportsPermissions = [
+            'crud reports',
+            'crud finance reports',
+            'create finance report',
+            'read finance report',
+            'update finance report',
+            'delete finance report',
+            'crud medical reports',
+            'create medical report',
+            'read medical report',
+            'update medical report',
+            'delete medical report',
+            'crud lifter squad reports',
+            'create lifter squad report',
+            'read lifter squad report',
+            'update lifter squad report',
+            'delete lifter squad report',
+        ];
+        // Users management permissions
+        $usersPermissions = [
             'crud users',
             'create users',
             'read users',
             'update users',
             'delete users',
+            'crud user',
             'create user',
             'read user',
             'update user',
             'delete user',
         ];
-
+        //Logs permissions
+        $logsPermissions = [
+            'crud logs',
+            'create log',
+            'read log',
+            'update log',
+            'delete log',
+        ];
         // Role and permission management
         $rolePermissions = [
             'crud permissions',
@@ -71,42 +166,25 @@ class RolePermissionSeeder extends Seeder
             'update roles',
             'delete roles',
         ];
-
-        // Content management permissions
-        $provincePermissions = [
-            'crud provinces',
-            'create provinces',
-            'read provinces',
-            'update provinces',
-            'delete provinces',
-        ];
-
         // System management permissions
         $systemPermissions = [
-            'view dashboard',
-            'view admin dashboard',
-            'view editor dashboard',
-            'manage settings',
-            'view logs',
-            'manage backups',
-        ];
-
-        // City management permissions (from previous CRUD example)
-        $cityPermissions = [
-            'view cities',
-            'create cities',
-            'edit cities',
-            'delete cities',
-            'manage city status',
+            'crud settings',
+            'crud backups',
+            'create application log',
+            'read application log',
         ];
 
         // Combine all permissions
         $allPermissions = array_merge(
-            $userPermissions,
+            $medicalCenterPermissions,
+            $lifterSquadPermissions,
+            $infrastructurePermissions,
+            $staffPermissions,
+            $reportsPermissions,
+            $usersPermissions,
+            $logsPermissions,
             $rolePermissions,
-            $provincePermissions,
-            $systemPermissions,
-            $cityPermissions
+            $systemPermissions
         );
 
         // Create permissions
@@ -130,17 +208,43 @@ class RolePermissionSeeder extends Seeder
         //$superAdmin->givePermissionTo(Permission::all());
         $this->command->info('Created Super Admin role with all permissions');
 
-        // Editor role - content management and some user management
+        // Admin role - content management and some user management
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $adminPermissions = [
             // Provinces
-            'create provinces',
-            'read provinces',
+            'crud provinces',
+            'create province',
+            'read province',
+            'update province',
+            'delete province',
         ];
         $adminRole->givePermissionTo($adminPermissions);
         $this->command->info('Created Admin role with content management permissions');
 
+        // Doctor role - content management and some user management
+        $doctorRole = Role::firstOrCreate(['name' => 'doctor', 'guard_name' => 'web']);
+        $doctorPermissions = [
+            'read user',
+            'update user',
+            'create medical request',
+            'read medical request',
+            'update medical request',
+        ];
+        $doctorRole->givePermissionTo($doctorPermissions);
+        $this->command->info('Created Doctor role with content management permissions');
 
+        // Citizen role - content management and some user management
+        $citizenRole = Role::firstOrCreate(['name' => 'citizen', 'guard_name' => 'web']);
+        $citizenPermissions = [
+            'read user',
+            'update user',
+            'create medical request',
+            'read medical request',
+            'read challan',
+            'read application log'
+        ];
+        $citizenRole->givePermissionTo($citizenPermissions);
+        $this->command->info('Created Citizen role with content management permissions');
     }
 
     /**

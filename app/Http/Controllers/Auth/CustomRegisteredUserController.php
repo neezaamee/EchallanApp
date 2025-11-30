@@ -29,17 +29,20 @@ class CustomRegisteredUserController extends Controller
         // Validate registration data
         $request->validate([
     'name' => 'required|string|max:255',
-    'gender' => 'required|string',
+    'father_name' => 'required|string|max:255',
+    'gender' => 'required|string|max:10',
     'cnic' => [
         'required',
-        'string',
+        'numeric',
+        'max_digits: 13',
+        'min_digits: 13',
         //'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/', // Proper CNIC pattern
         'unique:users,cnic',
     ],
 
     'phone' => [
         'required',
-        'string',
+        'numeric',
         'regex:/^03[0-9]{9}$/', // Pakistani mobile format: 03xxxxxxxxx
     ],
 
@@ -54,15 +57,15 @@ class CustomRegisteredUserController extends Controller
         'required',
         'string',
         'confirmed',
-        Password::min(8)
+        Password::min(8),
+        /* Password::min(8)
             ->letters()
             ->mixedCase()
             ->numbers()
-            ->symbols(),
+            ->symbols(), */
             //->uncompromised(), // avoid leaked passwords
     ],
 ]);
-
         // Create user as violator with email unverified
         $user = User::create([
             'name' => $request->name,
@@ -71,15 +74,30 @@ class CustomRegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'is_department_user' => false,
         ]);
-        // Create user as violator with email unverified
-        $citizen = Citizen::create([
-            'full_name' => $request->name,
-            'gender' => $request->gender,
-            'cnic' => $request->cnic,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'role_id' => 15,
-        ]);
+
+        // Check if Citizen with this CNIC already exists (created by Doctor)
+        $citizen = Citizen::where('cnic', $request->cnic)->first();
+
+        if ($citizen) {
+            // Link existing citizen to new user
+            $citizen->update([
+                'user_id' => $user->id,
+                'email' => $request->email, // Update email if needed
+                // 'phone' => $request->phone, // Update phone if needed, or keep original
+            ]);
+        } else {
+            // Create user as citizen with email unverified
+            $citizen = Citizen::create([
+                'user_id' => $user->id,
+                'full_name' => $request->name,
+                'father_name' => $request->father_name,
+                'gender' => $request->gender,
+                'cnic' => $request->cnic,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'role_id' => 4,
+            ]);
+        }
 
         // Fire the Registered event
         event(new Registered($user));
@@ -90,7 +108,7 @@ class CustomRegisteredUserController extends Controller
         $user->sendEmailVerificationNotification();
 
         // ✅ Log in the user
-        //Auth::login($user);
+        Auth::login($user);
 
         // Redirect to the email verification notice
         return redirect()

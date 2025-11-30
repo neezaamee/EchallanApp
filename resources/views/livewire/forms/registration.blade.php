@@ -10,6 +10,14 @@
         @enderror
     </div>
     <div class="mb-3">
+        <label class="form-label">Father Name</label>
+        <input type="text" name="father_name" value="{{ old('father_name') }}"
+            class="form-control @error('father_name') is-invalid @enderror" required>
+        @error('father_name')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+    <div class="mb-3">
         <label class="form-label">Gender</label>
         <select name="gender" class="form-control @error('gender') is-invalid @enderror" required>
             <option value="">Select Gender</option>
