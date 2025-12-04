@@ -32,21 +32,19 @@
                     <table class="table table-striped table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>ID</th>
+                                <th>Sr No</th>
                                 <th>Citizen</th>
                                 <th>Medical Center</th>
                                 <th>PSID</th>
                                 <th>Payment Status</th>
                                 <th>Status</th>
-                                @role('doctor')
-                                    <th>Action</th>
-                                @endrole
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($requests as $request)
                                 <tr>
-                                    <td>{{ $request->id }}</td>
+                                    <td>{{ $loop->iteration + ($requests->currentPage() - 1) * $requests->perPage() }}</td>
                                     <td>
                                         <div>{{ $request->citizen->full_name ?? 'N/A' }}</div>
                                         <small class="text-muted">{{ $request->citizen->cnic ?? '' }}</small>
@@ -65,34 +63,90 @@
                                             {{ ucfirst($request->status) }}
                                         </span>
                                     </td>
-                                    @role('doctor')
-                                        <td>
-                                            @if ($request->payment_status === 'paid' && $request->status === 'pending')
-                                                <form action="{{ route('medical-requests.update', $request->id) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <button type="submit" name="action" value="passed"
-                                                        class="btn btn-sm btn-success me-1">Pass</button>
-                                                </form>
-                                                <form action="{{ route('medical-requests.update', $request->id) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <button type="submit" name="action" value="failed"
-                                                        class="btn btn-sm btn-danger">Fail</button>
-                                                </form>
-                                            @elseif($request->payment_status !== 'paid')
-                                                <span class="text-muted small">Wait for Payment</span>
+                                    <td>
+                                        @if ($request->payment_status === 'unpaid')
+                                            {{-- Unpaid: Show Pay Now button --}}
+                                            <a href="{{ route('payments.create', $request->psid) }}"
+                                                class="btn btn-sm btn-success">
+                                                <i class="bi bi-credit-card"></i> Pay Now
+                                            </a>
+                                        @else
+                                            {{-- Paid: Show payment info and receipt options --}}
+                                            @php
+                                                $latestPayment = $request->latestPayment;
+                                            @endphp
+                                            @if ($latestPayment)
+                                                <div class="d-flex flex-column gap-2">
+                                                    <div class="d-flex align-items-center gap-1 flex-wrap">
+                                                        <span class="badge bg-success">
+                                                            <i class="bi bi-check-circle"></i> Paid
+                                                        </span>
+                                                        <a href="{{ route('payments.success', $latestPayment->id) }}"
+                                                            class="btn btn-outline-primary btn-sm"
+                                                            title="View Payment Details">
+                                                            <i class="bi bi-eye"></i> View
+                                                        </a>
+                                                        <div class="btn-group btn-group-sm" role="group">
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="bi bi-download"></i> Receipt
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li><a class="dropdown-item"
+                                                                        href="{{ route('payments.receipt.download', $latestPayment->id) }}">
+                                                                        <i class="bi bi-file-pdf"></i> Standard PDF
+                                                                    </a></li>
+                                                                <li><a class="dropdown-item"
+                                                                        href="{{ route('payments.receipt.thermal', $latestPayment->id) }}">
+                                                                        <i class="bi bi-printer"></i> Thermal Receipt
+                                                                    </a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        TXN: {{ $latestPayment->transaction_id }}
+                                                    </small>
+
+                                                    @role('doctor')
+                                                        {{-- Doctor-specific actions --}}
+                                                        @if ($request->status === 'pending')
+                                                            <div class="btn-group btn-group-sm mt-1" role="group">
+                                                                <form
+                                                                    action="{{ route('medical-requests.update', $request->id) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <button type="submit" name="action" value="passed"
+                                                                        class="btn btn-sm btn-success">
+                                                                        <i class="bi bi-check-lg"></i> Pass
+                                                                    </button>
+                                                                </form>
+                                                                <form
+                                                                    action="{{ route('medical-requests.update', $request->id) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <button type="submit" name="action" value="failed"
+                                                                        class="btn btn-sm btn-danger">
+                                                                        <i class="bi bi-x-lg"></i> Fail
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        @else
+                                                            <span class="badge bg-secondary">Actioned</span>
+                                                        @endif
+                                                    @endrole
+                                                </div>
                                             @else
-                                                <span class="text-muted small">Actioned</span>
+                                                <span class="badge bg-success">Paid</span>
                                             @endif
-                                        </td>
-                                    @endrole
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ auth()->user()->hasRole('doctor') ? 7 : 6 }}" class="text-center py-4">
+                                    <td colspan="7" class="text-center py-4">
                                         No requests found.
                                     </td>
                                 </tr>

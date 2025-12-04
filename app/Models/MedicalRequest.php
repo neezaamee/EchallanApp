@@ -56,4 +56,36 @@ class MedicalRequest extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    /**
+     * Get all payments for this medical request
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get the latest payment for this medical request
+     */
+    public function latestPayment()
+    {
+        return $this->hasOne(Payment::class)->latestOfMany();
+    }
+
+    /**
+     * Check if this medical request has been paid
+     */
+    public function isPaid()
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    /**
+     * Check if this medical request is unpaid
+     */
+    public function isUnpaid()
+    {
+        return $this->payment_status === 'unpaid';
+    }
 }

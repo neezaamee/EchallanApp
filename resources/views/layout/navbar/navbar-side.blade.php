@@ -67,6 +67,116 @@
                     </a>
                 </li>
 
+                {{-- ==================== PAYMENTS & FINANCE (Admin/Accountant) ==================== --}}
+                @role(['super_admin', 'admin', 'accountant'])
+                    <li class="nav-item">
+                        <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                            <div class="col-auto navbar-vertical-label">Payments & Finance</div>
+                            <div class="col ps-0">
+                                <hr class="mb-0 navbar-vertical-divider" />
+                            </div>
+                        </div>
+
+                        <a class="nav-link {{ request()->routeIs('dashboard.payments') ? 'active' : '' }}"
+                            href="{{ route('dashboard.payments') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-chart-pie"></span></span>
+                                <span class="nav-link-text ps-1">Payment Dashboard</span>
+                            </div>
+                        </a>
+
+                        <a class="nav-link {{ request()->routeIs('payments.index') ? 'active' : '' }}"
+                            href="{{ route('payments.index') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-money-check-alt"></span></span>
+                                <span class="nav-link-text ps-1">All Payments</span>
+                            </div>
+                        </a>
+
+                        <a class="nav-link {{ request()->routeIs('payments.search') ? 'active' : '' }}"
+                            href="{{ route('payments.search') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-search-dollar"></span></span>
+                                <span class="nav-link-text ps-1">Advanced Search</span>
+                            </div>
+                        </a>
+
+                        <a class="nav-link dropdown-indicator" href="#payment-reports" role="button"
+                            data-bs-toggle="collapse" aria-expanded="false" aria-controls="payment-reports">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-file-invoice-dollar"></span></span>
+                                <span class="nav-link-text ps-1">Reports</span>
+                            </div>
+                        </a>
+                        <ul class="nav collapse" id="payment-reports">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.payments.daily') ? 'active' : '' }}"
+                                    href="{{ route('reports.payments.daily') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Daily Report</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.payments.monthly') ? 'active' : '' }}"
+                                    href="{{ route('reports.payments.monthly') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Monthly Report</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.payments.by-method') ? 'active' : '' }}"
+                                    href="{{ route('reports.payments.by-method') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">By Payment Method</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.payments.by-center') ? 'active' : '' }}"
+                                    href="{{ route('reports.payments.by-center') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">By Medical Center</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <a class="nav-link {{ request()->routeIs('refunds.*') ? 'active' : '' }}"
+                            href="{{ route('refunds.index') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-undo-alt"></span></span>
+                                <span class="nav-link-text ps-1">Refund Management</span>
+                            </div>
+                        </a>
+
+                        <a class="nav-link dropdown-indicator" href="#payment-export" role="button"
+                            data-bs-toggle="collapse" aria-expanded="false" aria-controls="payment-export">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-download"></span></span>
+                                <span class="nav-link-text ps-1">Export Data</span>
+                            </div>
+                        </a>
+                        <ul class="nav collapse" id="payment-export">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('payments.export.excel') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Export to Excel</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('payments.export.csv') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Export to CSV</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endrole
+
                 {{-- ==================== CHALLAN MANAGEMENT (TODO) ==================== --}}
                 @canany(['create challan', 'read challan'])
                     <li class="nav-item">

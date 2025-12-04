@@ -148,6 +148,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/provinces/{province}/cities', [\App\Http\Controllers\MedicalRequestController::class, 'getCities'])->name('api.cities');
     Route::get('/api/citizens/check/{cnic}', [\App\Http\Controllers\MedicalRequestController::class, 'checkCitizen'])->name('api.citizens.check');
 
+    // Payment Routes
+    Route::get('/payments/pay/{psid}', [\App\Http\Controllers\PaymentController::class, 'create'])->name('payments.create');
+    Route::post('/payments/process', [\App\Http\Controllers\PaymentController::class, 'process'])->name('payments.process');
+    Route::get('/payments/success/{payment}', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payments.success');
+    Route::get('/payments/failed/{payment}', [\App\Http\Controllers\PaymentController::class, 'failed'])->name('payments.failed');
+    
+    // Receipt Routes
+    Route::get('/payments/{payment}/receipt', [\App\Http\Controllers\PaymentController::class, 'viewReceipt'])->name('payments.receipt');
+    Route::get('/payments/{payment}/receipt/download', [\App\Http\Controllers\PaymentController::class, 'downloadReceipt'])->name('payments.receipt.download');
+    Route::get('/payments/{payment}/receipt/thermal', [\App\Http\Controllers\PaymentController::class, 'downloadThermalReceipt'])->name('payments.receipt.thermal');
+
+
     // Feedback
     Route::resource('feedback', \App\Http\Controllers\FeedbackController::class);
 });
@@ -169,6 +181,41 @@ Route::middleware(['auth', 'verified', 'role:super_admin|admin'])->group(functio
         'destroy' => 'changelog.destroy',
     ]);
 });
+
+// Admin/Accountant Payment Management Routes
+Route::middleware(['auth', 'verified', 'role:super_admin|admin|accountant'])->group(function () {
+    Route::get('/payments', [\App\Http\Controllers\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/search', [\App\Http\Controllers\PaymentController::class, 'search'])->name('payments.search');
+    Route::get('/payments/{payment}', [\App\Http\Controllers\PaymentController::class, 'show'])->name('payments.show');
+    
+    // Payment Dashboard
+    Route::get('/dashboard/payments', [\App\Http\Controllers\PaymentDashboardController::class, 'index'])->name('dashboard.payments');
+
+    // Payment Reports
+    Route::prefix('reports/payments')->group(function () {
+        Route::get('/daily', [\App\Http\Controllers\PaymentReportController::class, 'daily'])->name('reports.payments.daily');
+        Route::get('/monthly', [\App\Http\Controllers\PaymentReportController::class, 'monthly'])->name('reports.payments.monthly');
+        Route::get('/by-method', [\App\Http\Controllers\PaymentReportController::class, 'byMethod'])->name('reports.payments.by-method');
+        Route::get('/by-center', [\App\Http\Controllers\PaymentReportController::class, 'byCenter'])->name('reports.payments.by-center');
+    });
+
+    // Refund Management
+    Route::prefix('refunds')->group(function () {
+        Route::get('/', [\App\Http\Controllers\RefundController::class, 'index'])->name('refunds.index');
+        Route::get('/create/{payment}', [\App\Http\Controllers\RefundController::class, 'create'])->name('refunds.create');
+        Route::post('/', [\App\Http\Controllers\RefundController::class, 'store'])->name('refunds.store');
+        Route::get('/{refund}', [\App\Http\Controllers\RefundController::class, 'show'])->name('refunds.show');
+        Route::post('/{refund}/approve', [\App\Http\Controllers\RefundController::class, 'approve'])->name('refunds.approve');
+        Route::post('/{refund}/reject', [\App\Http\Controllers\RefundController::class, 'reject'])->name('refunds.reject');
+    });
+
+    // Payment Export
+    Route::prefix('payments/export')->group(function () {
+        Route::get('/excel', [\App\Http\Controllers\PaymentExportController::class, 'excel'])->name('payments.export.excel');
+        Route::get('/csv', [\App\Http\Controllers\PaymentExportController::class, 'csv'])->name('payments.export.csv');
+    });
+});
+
 
 
 // ==========================
