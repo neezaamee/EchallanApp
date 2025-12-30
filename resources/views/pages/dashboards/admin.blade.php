@@ -1,40 +1,92 @@
 @extends('layout.cms-layout')
-@section('page-title', 'Dashboard Admin - ')
+@section('page-title', 'Admin Dashboard')
 @section('cms-main-content')
     <div class="row mb-3">
         <div class="col">
             <div class="card bg-100 shadow-none border">
                 <div class="row gx-0 flex-between-center">
                     <div class="col-sm-auto d-flex align-items-center"><img class="ms-n2"
-                            src="../assets/img/illustrations/crm-bar-chart.png" alt="" width="90" />
+                            src="{{ asset('assets/img/illustrations/crm-bar-chart.png') }}" alt="" width="90" />
                         <div>
                             <h6 class="text-primary fs-10 mb-0">Welcome to </h6>
-                            <h4 class="text-primary fw-bold mb-0">Welfare CMS <span class="text-info fw-medium">CTPF</span></h4>
-                        </div><img class="ms-n4 d-md-none d-lg-block" src="{{ asset('assets/img/illustrations/crm-line-chart.png') }}"
-                            alt="" width="150" />
-                    </div>
-                    <div class="col-md-auto p-3">
-                        <form class="row align-items-center g-3">
-                            <div class="col-auto">
-                                <h6 class="text-700 mb-0">Showing Data For: </h6>
-                            </div>
-                            <div class="col-md-auto position-relative">
-                                <input class="form-control form-control-sm datetimepicker ps-4" id="CRMDateRange"
-                                    type="text"
-                                    data-options="{&quot;mode&quot;:&quot;range&quot;,&quot;dateFormat&quot;:&quot;M d&quot;,&quot;disableMobile&quot;:true , &quot;defaultDate&quot;: [&quot;Jul 10&quot;, &quot;Jul 17&quot;] }" /><span
-                                    class="fas fa-calendar-alt text-primary position-absolute top-50 translate-middle-y ms-2">
-                                </span>
-                            </div>
-                        </form>
+                            <h4 class="text-primary fw-bold mb-0">
+                                Admin
+                                <span class="text-danger fw-medium"> - </span><span class="text-info fw-medium"> Dashboard
+                                    Welfare CMS</span>
+                            </h4>
+                        </div><img class="ms-n4 d-md-none d-lg-block"
+                            src="{{ asset('assets/img/illustrations/crm-line-chart.png') }}" alt=""
+                            width="150" />
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    @auth
-    <h1>{{ ucfirst(auth()->user()->getRoleNames()->first()) }} Dashboard</h1>
-    <p>Welcome, {{ auth()->user()->name }}</p>
-    @endauth
 
-    <p>Use this page to manage admins, permissions, and system settings.</p>
+    <div class="row g-3 mb-3">
+        <div class="col-md-6 col-xxl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="mb-1">Regions</h5>
+                            <h6 class="text-700 mb-0">Cities & Circles</h6>
+                        </div>
+                        <div class="fs-4 text-primary"><span class="fas fa-map-marked-alt"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xxl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="mb-1">Medical</h5>
+                            <h6 class="text-700 mb-0">Centers Management</h6>
+                        </div>
+                        <div class="fs-4 text-info"><span class="fas fa-hospital"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xxl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="mb-1">Staff</h5>
+                            <h6 class="text-700 mb-0">Operations</h6>
+                        </div>
+                        <div class="fs-4 text-warning"><span class="fas fa-user-tie"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xxl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="mb-1">Reports</h5>
+                            <h6 class="text-700 mb-0">Regional Statistics</h6>
+                        </div>
+                        <div class="fs-4 text-success"><span class="fas fa-chart-pie"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Administrative Dashboard</h5>
+                    <p class="card-text">Manage regional infrastructure, medical centers, and staff operations. Use the
+                        sidebar to navigate through the available administrative tools.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

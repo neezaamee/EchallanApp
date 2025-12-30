@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Livewire\Staff;
+use Illuminate\Support\Facades\Auth;
 
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -56,7 +57,19 @@ class StaffTable extends Component
 
     public function render()
     {
+        $user = Auth::user();
+        $cityId = null;
+
+        if (!$user->hasRole(['super_admin', 'admin'])) {
+            $cityId = $user->staff?->activePosting?->city_id;
+        }
+
         $query = Staff::with(['rank', 'city', 'province', 'roles', 'activePosting.province', 'activePosting.city', 'activePosting.circle', 'activePosting.dumpingPoint', 'activePosting.medicalCenter'])
+            ->when($cityId, function ($q) use ($cityId) {
+                $q->whereHas('activePosting', function ($q2) use ($cityId) {
+                    $q2->where('city_id', $cityId);
+                });
+            })
             ->when(trim($this->search) !== '', function ($q) {
                 $s = '%' . $this->search . '%';
                 $q->where('first_name', 'like', $s)

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Livewire;
+use Illuminate\Support\Facades\Auth;
 
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -64,7 +65,17 @@ class CitiesTable extends Component
     // ✅ Query builder with safe grouping
     public function render()
     {
+        $user = Auth::user();
+        $cityId = null;
+
+        if (!$user->hasRole(['super_admin', 'admin'])) {
+            $cityId = $user->staff?->activePosting?->city_id;
+        }
+
         $cities = City::with('province')
+            ->when($cityId, function ($q) use ($cityId) {
+                $q->where('id', $cityId);
+            })
             ->where(function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                     ->orWhereHas('province', function ($q) {

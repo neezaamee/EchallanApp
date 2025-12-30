@@ -1,5 +1,5 @@
 @extends('layout.cms-layout')
-@section('page-title', 'Doctor Dashboard')
+@section('page-title', 'CTO Dashboard')
 @section('cms-main-content')
     <div class="row mb-3">
         <div class="col">
@@ -10,7 +10,7 @@
                         <div>
                             <h6 class="text-primary fs-10 mb-0">Welcome to </h6>
                             <h4 class="text-primary fw-bold mb-0">
-                                Doctor
+                                CTO
                                 @if ($cityName ?? null)
                                     - {{ $cityName }}
                                 @endif
@@ -81,25 +81,11 @@
         </div>
     </div>
 
-    @if ($medicalCenter ?? null)
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="mb-3"><span class="fas fa-hospital me-2"></span>My Medical Center</h5>
-                        <p class="mb-1"><strong>Name:</strong> {{ $medicalCenter->name }}</p>
-                        <p class="mb-0"><strong>Location:</strong> {{ $medicalCenter->location ?? 'N/A' }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Recent Medical Requests</h5>
+                    <h5 class="mb-0">Recent Medical Requests ({{ $cityName ?? 'All' }})</h5>
                     <a href="{{ route('medical-requests.index') }}" class="btn btn-sm btn-primary">View All</a>
                 </div>
                 <div class="card-body p-0">

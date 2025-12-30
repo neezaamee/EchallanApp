@@ -23,6 +23,10 @@ class AddCircle extends Component
 
     public function mount()
     {
+        $user = auth()->user();
+        if (!$user->hasRole(['super_admin', 'admin'])) {
+            $this->city_id = $user->staff?->activePosting?->city_id;
+        }
         $this->cities = City::orderBy('name')->get();
     }
 

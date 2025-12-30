@@ -177,11 +177,11 @@
                     </li>
                 @endrole
 
-                {{-- ==================== CHALLAN MANAGEMENT (TODO) ==================== --}}
+                {{-- ==================== CHALLAN Services (TODO) ==================== --}}
                 @canany(['create challan', 'read challan'])
                     <li class="nav-item">
                         <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                            <div class="col-auto navbar-vertical-label">Challan Management</div>
+                            <div class="col-auto navbar-vertical-label">Challan Services</div>
                             <div class="col ps-0">
                                 <hr class="mb-0 navbar-vertical-divider" />
                             </div>
@@ -209,8 +209,8 @@
                     </li>
                 @endcanany
 
-                {{-- ==================== INFRASTRUCTURE (Super Admin) ==================== --}}
-                @role('super_admin')
+                {{-- ==================== INFRASTRUCTURE ==================== --}}
+                @canany(['read province', 'read city', 'read circle', 'read dumping point', 'read medical center'])
                     <li class="nav-item">
                         <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                             <div class="col-auto navbar-vertical-label">Infrastructure</div>
@@ -269,6 +269,18 @@
                             </li>
                         </ul>
                     </li>
+                @endcanany
+
+                @role('super_admin|admin')
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}"
+                            href="{{ route('activity-logs.index') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-list-alt"></span></span>
+                                <span class="nav-link-text ps-1">System Logs</span>
+                            </div>
+                        </a>
+                    </li>
                 @endrole
 
                 {{-- ==================== STAFF MANAGEMENT (Super Admin) ==================== --}}
@@ -308,6 +320,7 @@
                 @endcan
 
                 {{-- ==================== USER MANAGEMENT (TODO) ==================== --}}
+                {{-- ==================== USER MANAGEMENT ==================== --}}
                 @can('crud users')
                     <li class="nav-item">
                         <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
@@ -317,21 +330,40 @@
                             </div>
                         </div>
 
-                        <a class="nav-link disabled" href="#!" title="Coming Soon">
+                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}"
+                            href="{{ route('users.index') }}">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-icon"><span class="fas fa-users-cog"></span></span>
                                 <span class="nav-link-text ps-1">Manage Users</span>
-                                <span class="badge badge-soft-warning ms-auto">Soon</span>
                             </div>
                         </a>
 
-                        <a class="nav-link disabled" href="#!" title="Coming Soon">
+                        <a class="nav-link {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}"
+                            href="#roles-permissions" data-bs-toggle="collapse" role="button" aria-expanded="false"
+                            aria-controls="roles-permissions">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-icon"><span class="fas fa-user-shield"></span></span>
                                 <span class="nav-link-text ps-1">Roles & Permissions</span>
-                                <span class="badge badge-soft-warning ms-auto">Soon</span>
                             </div>
                         </a>
+                        <ul class="nav collapse" id="roles-permissions">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}"
+                                    href="{{ route('roles.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Roles</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}"
+                                    href="{{ route('permissions.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Permissions</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 @endcan
 
@@ -415,7 +447,9 @@
                         </div>
                     </a>
                 </li>
-
+                @can('read staff')
+                    {{-- Future: Add more support links here --}}
+                @endcan
             </ul>
 
             {{-- ==================== FEEDBACK WIDGET (Non-Admin) ==================== --}}

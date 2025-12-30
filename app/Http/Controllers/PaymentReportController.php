@@ -26,7 +26,7 @@ class PaymentReportController extends Controller
     public function monthly()
     {
         $monthlyPayments = \App\Models\Payment::select(
-            \Illuminate\Support\Facades\DB::raw('DATE_FORMAT(paid_at, "%Y-%m") as month'),
+            \Illuminate\Support\Facades\DB::raw("strftime('%Y-%m', paid_at) as month"),
             \Illuminate\Support\Facades\DB::raw('count(*) as total_transactions'),
             \Illuminate\Support\Facades\DB::raw('sum(amount) as total_revenue'),
             \Illuminate\Support\Facades\DB::raw('avg(amount) as average_amount')

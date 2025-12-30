@@ -22,6 +22,17 @@ class AddMedicalCenter extends Component
 
     public function mount()
     {
+        $user = auth()->user();
+        if (!$user->hasRole(['super_admin', 'admin'])) {
+            $cityId = $user->staff?->activePosting?->city_id;
+            if ($cityId) {
+                $city = City::find($cityId);
+                $this->province_id = $city->province_id;
+                $this->city_id = $cityId;
+                $this->updatedProvinceId($this->province_id);
+                $this->updatedCityId($this->city_id);
+            }
+        }
         $this->provinces = Province::orderBy('name')->get();
     }
 

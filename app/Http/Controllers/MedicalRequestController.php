@@ -27,8 +27,6 @@ class MedicalRequestController extends Controller
                 ->latest()
                 ->paginate(10);
         } elseif ($user->hasRole('doctor')) {
-            // Find the medical center the doctor is assigned to
-            // Assuming doctor is linked via staff -> staff_posting -> medical_center
             $staff = $user->staff;
             if (!$staff) {
                 return redirect()->back()->with('error', 'You are not registered as staff.');
@@ -37,9 +35,7 @@ class MedicalRequestController extends Controller
             $posting = $staff->activeDoctorPosting;
 
             if (!$posting || !$posting->medical_center_id) {
-                 // Fallback or empty if no active posting
-                 $requests = collect(); // Empty collection
-                 // You might want to show a message
+                 $requests = MedicalRequest::where('id', 0)->paginate(10);
                  session()->flash('error', 'No active medical center posting found.');
             } else {
                 $requests = MedicalRequest::where('medical_center_id', $posting->medical_center_id)
@@ -47,8 +43,23 @@ class MedicalRequestController extends Controller
                     ->latest()
                     ->paginate(10);
             }
+        } elseif ($user->hasRole('cto')) {
+            $staff = $user->staff;
+            $cityId = $staff?->activePosting?->city_id;
+
+            if (!$cityId) {
+                $requests = MedicalRequest::where('id', 0)->paginate(10);
+                session()->flash('error', 'No active city posting found for CTO.');
+            } else {
+                $requests = MedicalRequest::whereHas('medicalCenter.circle', function ($query) use ($cityId) {
+                    $query->where('city_id', $cityId);
+                })
+                ->with(['citizen.user', 'medicalCenter'])
+                ->latest()
+                ->paginate(10);
+            }
         } else {
-            // Admin or others? For now just empty or all
+            // Admin or others
              $requests = MedicalRequest::with(['citizen.user', 'medicalCenter'])->latest()->paginate(10);
         }
 

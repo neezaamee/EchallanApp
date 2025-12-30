@@ -19,7 +19,7 @@ class DumpingPointController extends Controller
     }
 
     // Show the edit form page, passing the specific point
-    public function edit(DumpingPointController $dumpingPoint)
+    public function edit(\App\Models\DumpingPoint $dumpingPoint)
 {
     return view('pages.infrastructure.dumping-points.edit', compact('dumpingPoint'));
 }
