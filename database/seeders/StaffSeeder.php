@@ -85,35 +85,41 @@ class StaffSeeder extends Seeder
             for ($i = 1; $i <= $count; $i++) {
 
                 // Create user
-                $user = User::create([
-                    'name' => ucfirst(str_replace('_', ' ', $role)) . " $i",
-                    'email' => $role . $i . '@example.com',
-                    'password' => Hash::make('password'),
-                    'cnic' => fake()->unique()->numerify('3############'),
-                    'email_verified_at' => now(),
-                    'is_department_user' => true,
-                ]);
+                $user = User::firstOrCreate(
+                    ['email' => $role . $i . '@example.com'],
+                    [
+                        'name' => ucfirst(str_replace('_', ' ', $role)) . " $i",
+                        'password' => Hash::make('password'),
+                        'cnic' => fake()->unique()->numerify('3############'),
+                        'email_verified_at' => now(),
+                        'is_department_user' => true,
+                    ]
+                );
 
                 // Assign Spatie role
-                $user->assignRole($role);
+                if (!$user->hasRole($role)) {
+                    $user->assignRole($role);
+                }
 
                 // Create staff record
-                Staff::create([
-                    'user_id' => $user->id,
-                    'first_name' => ucfirst($role),
-                    'last_name' => "User $i",
-                    'belt_no' => fake()->numerify('B####'),
-                    'phone' => fake()->phoneNumber(),
-                    'email' => $user->email,
-                    'cnic' => $user->cnic,
-                    'gender' => 'male',
-                    'role_id' => $roleIds[$role],
-                    // 🎉 Role-wise clean rank logic
-                    'rank_id' => $this->resolveRank($role, $rankRules),
-                    'status' => 'active',
-                    'photo' => null,
-                    'created_by' => 1,
-                ]);
+                Staff::firstOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'first_name' => ucfirst($role),
+                        'last_name' => "User $i",
+                        'belt_no' => fake()->numerify('B####'),
+                        'phone' => fake()->phoneNumber(),
+                        'email' => $user->email,
+                        'cnic' => $user->cnic,
+                        'gender' => 'male',
+                        'role_id' => $roleIds[$role],
+                        // 🎉 Role-wise clean rank logic
+                        'rank_id' => $this->resolveRank($role, $rankRules),
+                        'status' => 'active',
+                        'photo' => null,
+                        'created_by' => 1,
+                    ]
+                );
             }
         }
     }

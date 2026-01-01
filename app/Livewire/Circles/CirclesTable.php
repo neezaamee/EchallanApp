@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Livewire\Circles;
+use Illuminate\Support\Facades\Auth;
 
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -57,7 +58,17 @@ class CirclesTable extends Component
 
     public function render()
     {
+        $user = Auth::user();
+        $cityId = null;
+
+        if (!$user->hasRole(['super_admin', 'admin'])) {
+            $cityId = $user->staff?->activePosting?->city_id;
+        }
+
         $query = Circle::with('city')
+            ->when($cityId, function ($q) use ($cityId) {
+                $q->where('city_id', $cityId);
+            })
             ->when(trim($this->search) !== '', function ($q) {
                 $s = '%' . $this->search . '%';
                 $q->where('name', 'like', $s)

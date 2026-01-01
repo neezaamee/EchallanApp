@@ -5,10 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class MedicalRequest extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty();
+    }
 
     protected $fillable = [
         'citizen_id',
@@ -55,5 +64,37 @@ class MedicalRequest extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get all payments for this medical request
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get the latest payment for this medical request
+     */
+    public function latestPayment()
+    {
+        return $this->hasOne(Payment::class)->latestOfMany();
+    }
+
+    /**
+     * Check if this medical request has been paid
+     */
+    public function isPaid()
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    /**
+     * Check if this medical request is unpaid
+     */
+    public function isUnpaid()
+    {
+        return $this->payment_status === 'unpaid';
     }
 }

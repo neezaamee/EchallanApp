@@ -1,46 +1,139 @@
 @extends('layout.cms-layout')
-@section('page-title', 'Dashboard Admin - ')
+@section('page-title', 'Citizen Dashboard')
 @section('cms-main-content')
     <div class="row mb-3">
         <div class="col">
             <div class="card bg-100 shadow-none border">
                 <div class="row gx-0 flex-between-center">
                     <div class="col-sm-auto d-flex align-items-center"><img class="ms-n2"
-                            src="../assets/img/illustrations/crm-bar-chart.png" alt="" width="90" />
+                            src="{{ asset('assets/img/illustrations/crm-bar-chart.png') }}" alt="" width="90" />
                         <div>
                             <h6 class="text-primary fs-10 mb-0">Welcome to </h6>
                             <h4 class="text-primary fw-bold mb-0">
-                                {{ ucfirst(auth()->user()->getRoleNames()->first()) }} Dashboard
-                                <span class="text-danger fw-medium"> - </span><span class="text-info fw-medium">Welfare CMS</span></h4>
-                        </div><img class="ms-n4 d-md-none d-lg-block" src="{{ asset('assets/img/illustrations/crm-line-chart.png') }}"
-                            alt="" width="150" />
-                    </div>
-                    <div class="col-md-auto p-3">
-                        <form class="row align-items-center g-3">
-                            <div class="col-auto">
-                                <h6 class="text-700 mb-0">Showing Data For: </h6>
-                            </div>
-                            <div class="col-md-auto position-relative">
-                                <input class="form-control form-control-sm datetimepicker ps-4" id="CRMDateRange"
-                                    type="text"
-                                    data-options="{&quot;mode&quot;:&quot;range&quot;,&quot;dateFormat&quot;:&quot;M d&quot;,&quot;disableMobile&quot;:true , &quot;defaultDate&quot;: [&quot;Jul 10&quot;, &quot;Jul 17&quot;] }" /><span
-                                    class="fas fa-calendar-alt text-primary position-absolute top-50 translate-middle-y ms-2">
-                                </span>
-                            </div>
-                        </form>
+                                Citizen
+                                <span class="text-danger fw-medium"> - </span><span class="text-info fw-medium"> Dashboard
+                                    Welfare CMS</span>
+                            </h4>
+                        </div><img class="ms-n4 d-md-none d-lg-block"
+                            src="{{ asset('assets/img/illustrations/crm-line-chart.png') }}" alt=""
+                            width="150" />
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    @auth
 
-    <p>Welcome, {{ auth()->user()->name }}</p>
-    <p>Your CNIC: {{ auth()->user()->cnic }}</p>
-    <p>Your Gender: {{ auth()->user()->citizen->gender }}</p>
-    <p>Your Email: {{ auth()->user()->citizen->email }}</p>
-    <p>Your Phone: {{ auth()->user()->citizen->phone }}</p>
+    <div class="row g-3 mb-3">
+        <div class="col-md-6 col-xxl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="mb-1">{{ $totalRequests ?? 0 }}</h5>
+                            <h6 class="text-700 mb-0">Total Requests</h6>
+                        </div>
+                        <div class="fs-4 text-primary"><span class="fas fa-file-medical"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xxl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="mb-1">{{ $pendingRequests ?? 0 }}</h5>
+                            <h6 class="text-700 mb-0">Pending Requests</h6>
+                        </div>
+                        <div class="fs-4 text-warning"><span class="fas fa-clock"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xxl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="mb-1">{{ $approvedRequests ?? 0 }}</h5>
+                            <h6 class="text-700 mb-0">Approved Requests</h6>
+                        </div>
+                        <div class="fs-4 text-success"><span class="fas fa-check-circle"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xxl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="mb-1">{{ $unpaidRequests ?? 0 }}</h5>
+                            <h6 class="text-700 mb-0">Unpaid Requests</h6>
+                        </div>
+                        <div class="fs-4 text-danger"><span class="fas fa-exclamation-circle"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    @endauth
-
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">My Recent Medical Requests</h5>
+                    <div>
+                        <a href="{{ route('medical-requests.create') }}" class="btn btn-sm btn-success me-2">
+                            <span class="fas fa-plus me-1"></span>New Request
+                        </a>
+                        <a href="{{ route('medical-requests.index') }}" class="btn btn-sm btn-primary">View All</a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>PSID</th>
+                                    <th>Medical Center</th>
+                                    <th>Payment Status</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentRequests ?? [] as $request)
+                                    <tr>
+                                        <td><strong>{{ $request->psid }}</strong></td>
+                                        <td>{{ $request->medicalCenter?->name ?? 'N/A' }}</td>
+                                        <td>
+                                            <span
+                                                class="badge badge-sm {{ ($request->payment_status ?? '') === 'paid' ? 'bg-success' : 'bg-danger' }}">
+                                                {{ ucfirst($request->payment_status ?? 'N/A') }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="badge badge-sm {{ ($request->status ?? '') === 'passed' ? 'bg-success' : (($request->status ?? '') === 'failed' ? 'bg-danger' : 'bg-warning') }}">
+                                                {{ ucfirst($request->status ?? 'N/A') }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $request->created_at?->format('M d, Y') ?? 'N/A' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-3">
+                                            No requests found. <a href="{{ route('medical-requests.create') }}">Create
+                                                your first request</a>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

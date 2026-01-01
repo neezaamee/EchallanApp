@@ -1,0 +1,167 @@
+@extends('layout.cms-layout')
+@section('page-title', 'Advanced Payment Search - ')
+
+@section('cms-main-content')
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4>Advanced Payment Search</h4>
+            <a href="{{ route('payments.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Search Criteria</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('payments.search') }}" method="GET">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Keyword (PSID / Txn ID)</label>
+                            <input type="text" name="keyword" class="form-control" value="{{ request('keyword') }}"
+                                placeholder="Enter PSID or Transaction ID">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Citizen CNIC</label>
+                            <input type="text" name="cnic" class="form-control" value="{{ request('cnic') }}"
+                                placeholder="Enter CNIC">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Medical Center</label>
+                            <select name="medical_center_id" class="form-select">
+                                <option value="">All Medical Centers</option>
+                                @foreach ($medicalCenters as $center)
+                                    <option value="{{ $center->id }}"
+                                        {{ request('medical_center_id') == $center->id ? 'selected' : '' }}>
+                                        {{ $center->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date From</label>
+                            <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date To</label>
+                            <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="">All Statuses</option>
+                                <option value="success" {{ request('status') == 'success' ? 'selected' : '' }}>Success
+                                </option>
+                                <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed
+                                </option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Payment Method</label>
+                            <select name="payment_method" class="form-select">
+                                <option value="">All Methods</option>
+                                <option value="credit_card"
+                                    {{ request('payment_method') == 'credit_card' ? 'selected' : '' }}>Credit Card</option>
+                                <option value="debit_card"
+                                    {{ request('payment_method') == 'debit_card' ? 'selected' : '' }}>Debit Card</option>
+                                <option value="bank_transfer"
+                                    {{ request('payment_method') == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer
+                                </option>
+                                <option value="mobile_wallet"
+                                    {{ request('payment_method') == 'mobile_wallet' ? 'selected' : '' }}>Mobile Wallet
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-12 text-end">
+                            <a href="{{ route('payments.search') }}" class="btn btn-light me-2">Reset</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Search Payments
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Table -->
+        @if (isset($payments) && $payments->count() > 0)
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Search Results ({{ $payments->total() }})</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Transaction ID</th>
+                                    <th>PSID</th>
+                                    <th>Citizen</th>
+                                    <th>Medical Center</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($payments as $payment)
+                                    <tr>
+                                        <td>{{ $payment->created_at->format('d-M-Y h:i A') }}</td>
+                                        <td><span class="font-monospace small">{{ $payment->transaction_id }}</span></td>
+                                        <td><span class="font-monospace small">{{ $payment->psid }}</span></td>
+                                        <td>
+                                            <div>{{ $payment->medicalRequest->citizen->full_name ?? 'N/A' }}</div>
+                                            <small
+                                                class="text-muted">{{ $payment->medicalRequest->citizen->cnic ?? '' }}</small>
+                                        </td>
+                                        <td>{{ $payment->medicalRequest->medicalCenter->name ?? 'N/A' }}</td>
+                                        <td>PKR {{ number_format($payment->amount) }}</td>
+                                        <td>
+                                            <span
+                                                class="badge bg-{{ $payment->status === 'success' ? 'success' : ($payment->status === 'pending' ? 'warning' : 'danger') }}">
+                                                {{ ucfirst($payment->status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-light"
+                                                    title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                @if ($payment->isSuccess())
+                                                    <button type="button"
+                                                        class="btn btn-light dropdown-toggle dropdown-toggle-split"
+                                                        data-bs-toggle="dropdown"></button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item"
+                                                                href="{{ route('payments.receipt.download', $payment->id) }}">Download
+                                                                PDF</a></li>
+                                                        <li><a class="dropdown-item"
+                                                                href="{{ route('payments.receipt.thermal', $payment->id) }}">Thermal
+                                                                Receipt</a></li>
+                                                    </ul>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    {{ $payments->links() }}
+                </div>
+            </div>
+        @elseif(request()->has('keyword') || request()->has('status'))
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i> No payments found matching your criteria.
+            </div>
+        @endif
+    </div>
+@endsection

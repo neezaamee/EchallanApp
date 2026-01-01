@@ -10,9 +10,12 @@
                         <div>
                             <h6 class="text-primary fs-10 mb-0">Welcome to </h6>
                             <h4 class="text-primary fw-bold mb-0">
-                                {{ ucwords(str_replace('_', ' ', auth()->user()->getRoleNames()->first())) }} Dashboard
-                                <span class="text-danger fw-medium"> - </span><span class="text-info fw-medium">Welfare
-                                    CMS</span>
+                                {{ ucwords(str_replace('_', ' ', auth()->user()->getRoleNames()->first())) }}
+                                @if ($cityName ?? null)
+                                    {{ $cityName }}
+                                @endif
+                                <span class="text-danger fw-medium"> - </span><span class="text-info fw-medium"> Dashboard
+                                    Welfare CMS</span>
                             </h4>
                         </div><img class="ms-n4 d-md-none d-lg-block"
                             src="{{ asset('assets/img/illustrations/crm-line-chart.png') }}" alt=""
@@ -22,8 +25,8 @@
             </div>
         </div>
     </div>
-    @role('doctor')
-        {{-- Doctor Dashboard --}}
+    @hasanyrole('doctor|cto')
+        {{-- Staff Dashboard (Doctor/CTO) --}}
         <div class="row g-3 mb-3">
             <div class="col-md-6 col-xxl-3">
                 <div class="card h-100">
@@ -107,6 +110,7 @@
                                     <tr>
                                         <th>Citizen</th>
                                         <th>PSID</th>
+                                        <th>Medical Center</th>
                                         <th>Payment</th>
                                         <th>Status</th>
                                         <th>Date</th>
@@ -117,6 +121,7 @@
                                         <tr>
                                             <td>{{ $request->citizen->full_name ?? 'N/A' }}</td>
                                             <td>{{ $request->psid }}</td>
+                                            <td>{{ $request->medicalCenter?->name ?? 'N/A' }}</td>
                                             <td>
                                                 <span
                                                     class="badge badge-sm {{ $request->payment_status === 'paid' ? 'bg-success' : 'bg-danger' }}">
@@ -133,7 +138,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-3">No requests found</td>
+                                            <td colspan="6" class="text-center py-3">No requests found</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -143,7 +148,7 @@
                 </div>
             </div>
         </div>
-    @endrole
+    @endhasanyrole
 
     @role('citizen')
         {{-- Citizen Dashboard --}}
