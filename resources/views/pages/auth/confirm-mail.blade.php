@@ -37,27 +37,33 @@
                                        <h3 class="mb-2">Please check your email!</h3>
                                        <p>An email has been sent to <strong>
                                                <selection>
-                                                   {{ session('registered_email') ?: 'Your email address' }}
-                                               </selection>
+                                               {{ session('registered_email') ?: 'Your email address' }}
                                            </strong>. Please click on the <br class="d-none d-sm-block d-md-none" />included
                                            link to reset <span class="white-space-nowrap">your password.</span>
                                        </p>
 
-                                       @auth
-                                           <a class="btn btn-primary btn-sm mt-3" href="{{ route('logout') }}"
-                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                               Logout
-                                           </a>
-                                           <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                               style="display: none;">
-                                               @csrf
-                                           </form>
-                                       @endauth
-                                       @guest
-                                           <a class="btn btn-primary btn-sm mt-3" href="{{ route('login') }}"><span
-                                                   class="fas fa-chevron-left me-1"
-                                                   data-fa-transform="shrink-4 down-1"></span>Return to login</a>
-                                       @endguest
+                                        @auth
+                                            <div class="d-flex flex-column gap-2 mt-3 justify-content-center align-items-center">
+                                                <form method="POST" action="{{ route('verification.send') }}">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-secondary btn-sm">Resend Verification Email</button>
+                                                </form>
+
+                                                <a class="btn btn-primary btn-sm" href="{{ route('logout') }}"
+                                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                    Logout
+                                                </a>
+                                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                                    style="display: none;">
+                                                    @csrf
+                                                </form>
+                                            </div>
+                                        @endauth
+                                        @guest
+                                            <a class="btn btn-primary btn-sm mt-3" href="{{ route('login') }}"><span
+                                                    class="fas fa-chevron-left me-1"
+                                                    data-fa-transform="shrink-4 down-1"></span>Return to login</a>
+                                        @endguest
 
 
 

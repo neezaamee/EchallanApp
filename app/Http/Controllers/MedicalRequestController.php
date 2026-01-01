@@ -126,11 +126,12 @@ class MedicalRequestController extends Controller
             $medicalCenterId = $request->medical_center_id;
         }
 
-        // Generate PSID (Simple random for now, can be more complex)
-        $psid = strtoupper(Str::random(10)); 
+       // Generate PSID (Numeric 12 digits, prefixed with year maybe? or just random)
+        // User asked for numeric only. Let's do 12 digits random to mimic substantial IDs.
+        $psid = str_pad(mt_rand(1, 999999999999), 12, '0', STR_PAD_LEFT);
         // Ensure uniqueness
         while(MedicalRequest::where('psid', $psid)->exists()){
-             $psid = strtoupper(Str::random(10));
+             $psid = str_pad(mt_rand(1, 999999999999), 12, '0', STR_PAD_LEFT);
         }
 
         MedicalRequest::create([
