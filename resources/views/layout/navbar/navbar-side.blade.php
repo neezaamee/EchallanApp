@@ -437,6 +437,14 @@
                                 <span class="nav-link-text ps-1">Manage Changelog</span>
                             </div>
                         </a>
+
+                        <a class="nav-link {{ request()->routeIs('backups.index') ? 'active' : '' }}"
+                            href="{{ route('backups.index') }}">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-database"></span></span>
+                                <span class="nav-link-text ps-1">Database Backup</span>
+                            </div>
+                        </a>
                     @endrole
 
                     <a class="nav-link {{ request()->routeIs('feedback.*') ? 'active' : '' }}"

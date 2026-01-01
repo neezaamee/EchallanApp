@@ -342,6 +342,15 @@ Route::middleware(['auth', 'role:super_admin|admin'])->group(function () {
     Route::get('activity-logs/{activity}', [ActivityLogController::class, 'show'])->name('activity-logs.show');
 });
 
+// Database Backups (Super Admin & Admin)
+Route::middleware(['auth', 'role:super_admin|admin'])->group(function () {
+    Route::get('/backups', [App\Http\Controllers\BackupController::class, 'index'])->name('backups.index');
+    Route::post('/backups/create', [App\Http\Controllers\BackupController::class, 'create'])->name('backups.create');
+    Route::get('/backups/download/{filename}', [App\Http\Controllers\BackupController::class, 'download'])->name('backups.download');
+    Route::delete('/backups/delete/{filename}', [App\Http\Controllers\BackupController::class, 'delete'])->name('backups.delete');
+    Route::post('/backups/restore/{filename}', [App\Http\Controllers\BackupController::class, 'restore'])->name('backups.restore');
+});
+
 /* Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->group(function () {
     // Dashboard overview
     Route::get('/locations', [LocationController::class, 'index'])->name('admin.locations');
