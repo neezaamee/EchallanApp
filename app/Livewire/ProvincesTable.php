@@ -65,7 +65,7 @@ class ProvincesTable extends Component
     {
         $provinces = Province::query()
             ->where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('code', 'like', '%' . $this->search . '%')
+            ->orWhere('slug', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 

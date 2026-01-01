@@ -148,7 +148,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('dashboard.citizen')->middleware(['role:citizen', 'verified']);
 
     // User profile page
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Medical Requests
@@ -353,12 +353,12 @@ Route::middleware(['auth', 'role:super_admin|admin'])->group(function () {
     Route::get('/locations/medical-centers', [LocationController::class, 'medicalCenters'])->name('admin.medical-centers');
 }); */
 Route::prefix('staffq')->middleware('auth')->group(function(){
-    Route::get('/', [StaffqController::class, 'index'])->name('staff.index');
-    Route::get('/create', [StaffqController::class, 'create'])->name('staff.create');
-    Route::post('/store', [StaffqController::class, 'store'])->name('staff.store');
-    Route::get('/{staff}/edit', [StaffqController::class, 'edit'])->name('staff.edit');
-    Route::put('/{staff}', [StaffqController::class, 'update'])->name('staff.update');
-    Route::delete('/{staff}', [StaffqController::class, 'destroy'])->name('staff.destroy');
+    Route::get('/', [StaffqController::class, 'index'])->name('staffq.index');
+    Route::get('/create', [StaffqController::class, 'create'])->name('staffq.create');
+    Route::post('/store', [StaffqController::class, 'store'])->name('staffq.store');
+    Route::get('/{staff}/edit', [StaffqController::class, 'edit'])->name('staffq.edit');
+    Route::put('/{staff}', [StaffqController::class, 'update'])->name('staffq.update');
+    Route::delete('/{staff}', [StaffqController::class, 'destroy'])->name('staffq.destroy');
 });
 
 Route::get('/force-verify', function () {

@@ -30,22 +30,22 @@
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="form-group">
                     <strong>Name:</strong>
-                    <input type="text" name="name" value="{{ $user->name }}" class="form-control"
-                        placeholder="Name">
+                    <input type="text" name="name" value="{{ $user->name }}" class="form-control" placeholder="Name"
+                        readonly>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="form-group">
                     <strong>Email:</strong>
                     <input type="text" name="email" value="{{ $user->email }}" class="form-control"
-                        placeholder="Email">
+                        placeholder="Email" readonly>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="form-group">
                     <strong>CNIC:</strong>
-                    <input type="text" name="cnic" value="{{ $user->cnic }}" class="form-control"
-                        placeholder="CNIC">
+                    <input type="text" name="cnic" value="{{ $user->cnic }}" class="form-control" placeholder="CNIC"
+                        readonly>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12">
@@ -54,6 +54,15 @@
                     <input type="password" name="password" class="form-control" placeholder="Password">
                 </div>
             </div>
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="form-group">
+                    <strong>Password:</strong>
+                    <input type="password" name="password" class="form-control" placeholder="Password">
+                </div>
+            </div>
+            @role('super_admin')
+                {{-- Password hidden in edit, available in show --}}
+            @endrole
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="form-group">
                     <strong>Confirm Password:</strong>

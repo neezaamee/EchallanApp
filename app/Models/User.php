@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'cnic',
         'password',
+        'plain_password',
         'is_department_user',
     ];
 

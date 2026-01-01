@@ -15,9 +15,19 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->paginate(10);
+        $query = User::with('roles');
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        $users = $query->paginate(10);
         return view('admin.users.index', compact('users'));
     }
 
@@ -59,6 +69,7 @@ class UserController extends Controller
             'email' => $request->email,
             'cnic' => $request->cnic, // Save CNIC
             'password' => Hash::make($request->password),
+            'plain_password' => $request->password,
         ]);
 
         $user->syncRoles($request->roles);
@@ -121,6 +132,7 @@ class UserController extends Controller
         
         $input = $request->all();
         if(!empty($input['password'])){ 
+            $input['plain_password'] = $input['password'];
             $input['password'] = Hash::make($input['password']);
         }else{
             $input = \Illuminate\Support\Arr::except($input,array('password'));    

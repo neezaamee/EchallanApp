@@ -189,7 +189,7 @@ class RolePermissionSeeder extends Seeder
 
         // Create permissions
         foreach ($allPermissions as $permission) {
-            Permission::create(['name' => $permission, 'guard_name' => 'web']);
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
         $this->command->info('Created ' . count($allPermissions) . ' permissions');

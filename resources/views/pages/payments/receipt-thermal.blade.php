@@ -204,8 +204,18 @@
         </div>
         @if ($payment->medicalRequest->doctor_action_at)
             <div class="row">
-                <span class="label">Action:</span>
+                <span class="label">Time:</span>
                 <span class="value">{{ $payment->medicalRequest->doctor_action_at->format('d-M-Y') }}</span>
+            </div>
+        @endif
+        {{-- Pass/Fail Status --}}
+        @if ($payment->medicalRequest->status)
+            <div class="row">
+                <span class="label">Result:</span>
+                <span class="value bold"
+                    style="font-size: 14px; {{ $payment->medicalRequest->status == 'passed' ? 'text-transform:uppercase;' : '' }}">
+                    {{ strtoupper($payment->medicalRequest->status) }}
+                </span>
             </div>
         @endif
     @endif

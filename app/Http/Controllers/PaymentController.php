@@ -147,7 +147,7 @@ class PaymentController extends Controller
     {
         $request->validate([
             'psid' => 'required|exists:medical_requests,psid',
-            'payment_method' => 'required|in:credit_card,debit_card,bank_transfer,mobile_wallet',
+            'payment_method' => 'required|in:credit_card,debit_card,bank_transfer,mobile_wallet,cash',
         ]);
 
         $medicalRequest = MedicalRequest::where('psid', $request->psid)->firstOrFail();
@@ -167,21 +167,33 @@ class PaymentController extends Controller
         DB::beginTransaction();
 
         try {
-            // Generate unique transaction ID
-            $transactionId = 'TXN' . strtoupper(Str::random(12));
-
-            // Simulate payment processing (80% success rate by default)
-            $isSuccess = rand(1, 100) <= 80;
-            $status = $isSuccess ? 'success' : 'failed';
-
-            // Simulate gateway response
-            $gatewayResponse = [
-                'gateway' => 'Dummy Payment Gateway',
-                'response_code' => $isSuccess ? '00' : '05',
-                'response_message' => $isSuccess ? 'Transaction Successful' : 'Transaction Failed - Insufficient Funds',
-                'timestamp' => now()->toIso8601String(),
-                'card_last_four' => rand(1000, 9999),
-            ];
+            $isCash = $request->payment_method === 'cash';
+            
+            if ($isCash) {
+                // Cash Payment Logic - Always Successful
+                $transactionId = 'CASH-' . strtoupper(Str::random(8));
+                $isSuccess = true;
+                $status = 'success';
+                $gatewayResponse = [
+                    'gateway' => 'Cash Payment',
+                    'response_code' => '00',
+                    'response_message' => 'Cash Payment Received',
+                    'timestamp' => now()->toIso8601String(),
+                ];
+            } else {
+                // Dummy Gateway Logic
+                $transactionId = 'TXN' . strtoupper(Str::random(12));
+                // Simulate payment processing (80% success rate by default)
+                $isSuccess = rand(1, 100) <= 80;
+                $status = $isSuccess ? 'success' : 'failed';
+                $gatewayResponse = [
+                    'gateway' => 'Dummy Payment Gateway',
+                    'response_code' => $isSuccess ? '00' : '05',
+                    'response_message' => $isSuccess ? 'Transaction Successful' : 'Transaction Failed - Insufficient Funds',
+                    'timestamp' => now()->toIso8601String(),
+                    'card_last_four' => rand(1000, 9999),
+                ];
+            }
 
             // Create payment record
             $payment = Payment::create([
