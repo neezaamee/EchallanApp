@@ -20,12 +20,12 @@ class StaffController extends Controller
 
     public function index(Request $request)
     {
-        return view('pages.staff.index');
+        return view('app.staff.index');
     }
 
     public function create()
     {
-        return view('pages.staff.create');
+        return view('app.staff.create');
     }
 
     public function store(StoreStaffRequest $request)
@@ -39,7 +39,7 @@ class StaffController extends Controller
 
     public function edit(Staff $staff)
     {
-        return view('pages.staff.edit', compact('staff'));
+        return view('app.staff.edit', compact('staff'));
     }
 
     public function update(UpdateStaffRequest $request, Staff $staff)

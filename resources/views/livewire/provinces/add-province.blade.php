@@ -1,6 +1,9 @@
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary">
-        <h5 class="mb-0 text-white">Add New Province</h5>
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Add New Province</h5>
+        <a href="{{ route('provinces.index') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Back
+        </a>
     </div>
 
     <div class="card-body">
@@ -24,10 +27,7 @@
                 @error('code') <span class="text-danger small">{{ $message }}</span> @enderror
             </div>
 
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{{ route('provinces.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-1"></i> Back
-                </a>
+            <div class="d-flex justify-content-end mt-4">
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-save me-1"></i> Add Province
                 </button>

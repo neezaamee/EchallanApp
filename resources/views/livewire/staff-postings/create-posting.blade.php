@@ -1,6 +1,9 @@
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Transfer / Post Staff</h5>
+        <a href="{{ route('staff-postings.index') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Back
+        </a>
     </div>
 
     <div class="card-body">
@@ -199,10 +202,7 @@
                 </div>
             @endif
 
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{{ route('staff-postings.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-1"></i> Back
-                </a>
+            <div class="d-flex justify-content-end mt-4">
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-save me-1"></i> Post / Transfer Staff
                 </button>

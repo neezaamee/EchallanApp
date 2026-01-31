@@ -8,15 +8,15 @@ class CityController extends Controller
 {
     public function index()
     {
-        return view('pages.infrastructure.cities.index');
+        return view('app.infrastructure.cities.index');
     }
     public function create()
     {
-        return view('pages.infrastructure.cities.create');
+        return view('app.infrastructure.cities.create');
     }
 
     public function edit($id)
     {
-        return view('pages.infrastructure.cities.edit', compact('id'));
+        return view('app.infrastructure.cities.edit', compact('id'));
     }
 }

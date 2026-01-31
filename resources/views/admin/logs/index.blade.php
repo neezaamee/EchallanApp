@@ -1,4 +1,4 @@
-@extends('layout.cms-layout')
+@extends('layouts.app')
 @section('page-title', 'System Logs - ')
 @section('cms-main-content')
     <div class="row mb-3">

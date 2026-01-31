@@ -19,7 +19,7 @@ class ChangelogController extends Controller
         }
 
         $changelogs = Changelog::ordered()->paginate(20);
-        return view('pages.changelog.admin.index', compact('changelogs'));
+        return view('app.changelog.admin.index', compact('changelogs'));
     }
 
     /**
@@ -32,7 +32,7 @@ class ChangelogController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        return view('pages.changelog.admin.create');
+        return view('app.changelog.admin.create');
     }
 
     /**
@@ -78,7 +78,7 @@ class ChangelogController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        return view('pages.changelog.admin.edit', compact('changelog'));
+        return view('app.changelog.admin.edit', compact('changelog'));
     }
 
     /**
@@ -140,6 +140,6 @@ class ChangelogController extends Controller
             ->get()
             ->groupBy('version');
 
-        return view('pages.changelog.public', compact('changelogs'));
+        return view('app.changelog.public', compact('changelogs'));
     }
 }

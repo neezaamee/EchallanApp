@@ -1,19 +1,12 @@
-@extends('layout.cms-layout')
+@extends('layouts.app')
 @section('page-title', 'Show User - ')
 @section('cms-main-content')
-    <div class="row">
-        <div class="col-lg-12 margin-tb">
-            <div class="pull-left">
-                <h2> Show User</h2>
-            </div>
-            <div class="pull-right">
-                <a class="btn btn-primary" href="{{ route('users.index') }}"> Back</a>
-            </div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+             <h5 class="mb-0">Show User</h5>
+             <a class="btn btn-primary btn-sm" href="{{ route('users.index') }}"> Back</a>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
+        <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
                     <tbody>

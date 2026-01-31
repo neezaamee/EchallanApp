@@ -38,7 +38,7 @@ class PaymentDashboardController extends Controller
             ->groupBy('payment_method')
             ->pluck('total', 'payment_method');
 
-        return view('pages.dashboard.payments.index', compact(
+        return view('app.dashboard.payments.index', compact(
             'todayRevenue',
             'todayTransactions',
             'monthlyRevenue',

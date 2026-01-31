@@ -20,19 +20,19 @@ class RoleDashboardController extends Controller
         if ($user->hasRole('citizen')) return $this->citizen();
 
         // Fallback or generic dashboard
-        return view('pages.dashboards.index');
+        return view('app.dashboards.index');
     }
 
     public function superAdmin()
     {
         // Add stats for super admin here if needed
-        return view('pages.dashboards.super-admin');
+        return view('app.dashboards.super-admin');
     }
 
     public function admin()
     {
         // Add stats for admin here if needed
-        return view('pages.dashboards.admin');
+        return view('app.dashboards.admin');
     }
 
     public function cto()
@@ -100,7 +100,7 @@ class RoleDashboardController extends Controller
             }
         }
 
-        return view('pages.dashboards.cto', $data);
+        return view('app.dashboards.cto', $data);
     }
 
     public function doctor()
@@ -157,17 +157,17 @@ class RoleDashboardController extends Controller
                 ->get();
         }
 
-        return view('pages.dashboards.doctor', $data);
+        return view('app.dashboards.doctor', $data);
     }
 
     public function officer()
     {
-        return view('pages.dashboards.officer');
+        return view('app.dashboards.officer');
     }
 
     public function accountant()
     {
-        return view('pages.dashboards.accountant');
+        return view('app.dashboards.accountant');
     }
 
     public function citizen()
@@ -210,6 +210,6 @@ class RoleDashboardController extends Controller
                 ->get();
         }
 
-        return view('pages.dashboards.citizen', $data);
+        return view('app.dashboards.citizen', $data);
     }
 }

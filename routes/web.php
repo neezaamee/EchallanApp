@@ -40,10 +40,10 @@ use App\Http\Controllers\PermissionController;
 // ==========================
 
 
-Route::get('/', fn() => view('landing'))->name('home');
+Route::get('/', fn() => view('public.landing'))->name('home');
 
 // User profile (public or static page)
-Route::get('/user', fn() => view('pages.users.profile-setting'))->name('user.profile');
+Route::get('/user', fn() => view('app.users.profile-setting'))->name('user.profile');
 
 
 // ==========================
@@ -83,7 +83,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Verification notice page
 Route::get('/email/verify', function () {
-    return view('pages.auth.confirm-mail');
+    return view('auth.confirm-mail');
 })->middleware('auth')->name('verification.notice');
 
 // Handle actual verification link (signed)

@@ -9,11 +9,11 @@ class StaffPostingController extends Controller
 {
     public function index()
     {
-        return view('pages.staff-postings.index');
+        return view('app.staff-postings.index');
     }
 
     public function create()
     {
-        return view('pages.staff-postings.create');
+        return view('app.staff-postings.create');
     }
 }

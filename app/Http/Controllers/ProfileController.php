@@ -14,7 +14,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('pages.profile.edit');
+        return view('app.profile.edit');
     }
 
     /**

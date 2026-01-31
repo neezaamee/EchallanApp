@@ -20,7 +20,7 @@ class PaymentReportController extends Controller
         ->orderBy('date', 'desc')
         ->get();
 
-        return view('pages.reports.payments.daily', compact('dailyPayments'));
+        return view('app.reports.payments.daily', compact('dailyPayments'));
     }
 
     public function monthly()
@@ -36,7 +36,7 @@ class PaymentReportController extends Controller
         ->orderBy('month', 'desc')
         ->get();
 
-        return view('pages.reports.payments.monthly', compact('monthlyPayments'));
+        return view('app.reports.payments.monthly', compact('monthlyPayments'));
     }
 
     public function byMethod()
@@ -51,7 +51,7 @@ class PaymentReportController extends Controller
         ->groupBy('payment_method')
         ->get();
 
-        return view('pages.reports.payments.by-method', compact('methodStats'));
+        return view('app.reports.payments.by-method', compact('methodStats'));
     }
 
     public function byCenter()
@@ -69,6 +69,6 @@ class PaymentReportController extends Controller
             ->orderBy('total_revenue', 'desc')
             ->get();
 
-        return view('pages.reports.payments.by-center', compact('centerStats'));
+        return view('app.reports.payments.by-center', compact('centerStats'));
     }
 }

@@ -16,16 +16,33 @@ class MedicalRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        $query = MedicalRequest::query();
 
+        // Apply Search Filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('psid', 'like', "%{$search}%")
+                  ->orWhereHas('citizen', function ($cQuery) use ($search) {
+                      $cQuery->where('full_name', 'like', "%{$search}%")
+                             ->orWhere('cnic', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Apply Role-Based Constraints
         if ($user->hasRole('citizen')) {
             $citizen = Citizen::where('user_id', $user->id)->first();
-            $requests = MedicalRequest::where('citizen_id', $citizen->id)
-                ->with('medicalCenter')
-                ->latest()
-                ->paginate(10);
+            if (!$citizen) {
+                // Should not happen if registered correctly, but handle safety
+                $requests = MedicalRequest::where('id', 0)->paginate(10);
+            } else {
+                $query->where('citizen_id', $citizen->id);
+                $requests = $query->with('medicalCenter')->latest()->paginate(10);
+            }
         } elseif ($user->hasRole('doctor')) {
             $staff = $user->staff;
             if (!$staff) {
@@ -38,10 +55,8 @@ class MedicalRequestController extends Controller
                  $requests = MedicalRequest::where('id', 0)->paginate(10);
                  session()->flash('error', 'No active medical center posting found.');
             } else {
-                $requests = MedicalRequest::where('medical_center_id', $posting->medical_center_id)
-                    ->with('citizen.user')
-                    ->latest()
-                    ->paginate(10);
+                $query->where('medical_center_id', $posting->medical_center_id);
+                $requests = $query->with('citizen.user')->latest()->paginate(10);
             }
         } elseif ($user->hasRole('cto')) {
             $staff = $user->staff;
@@ -51,19 +66,17 @@ class MedicalRequestController extends Controller
                 $requests = MedicalRequest::where('id', 0)->paginate(10);
                 session()->flash('error', 'No active city posting found for CTO.');
             } else {
-                $requests = MedicalRequest::whereHas('medicalCenter.circle', function ($query) use ($cityId) {
-                    $query->where('city_id', $cityId);
-                })
-                ->with(['citizen.user', 'medicalCenter'])
-                ->latest()
-                ->paginate(10);
+                $query->whereHas('medicalCenter.circle', function ($q) use ($cityId) {
+                    $q->where('city_id', $cityId);
+                });
+                $requests = $query->with(['citizen.user', 'medicalCenter'])->latest()->paginate(10);
             }
         } else {
-            // Admin or others
-             $requests = MedicalRequest::with(['citizen.user', 'medicalCenter'])->latest()->paginate(10);
+            // Admin or others (Super Admin, etc.)
+             $requests = $query->with(['citizen.user', 'medicalCenter'])->latest()->paginate(10);
         }
 
-        return view('pages.medical-requests.index', compact('requests'));
+        return view('app.medical-requests.index', compact('requests'));
     }
 
     /**
@@ -72,7 +85,7 @@ class MedicalRequestController extends Controller
     public function create()
     {
         $provinces = Province::all();
-        return view('pages.medical-requests.create', compact('provinces'));
+        return view('app.medical-requests.create', compact('provinces'));
     }
 
     /**
@@ -126,11 +139,12 @@ class MedicalRequestController extends Controller
             $medicalCenterId = $request->medical_center_id;
         }
 
-        // Generate PSID (Simple random for now, can be more complex)
-        $psid = strtoupper(Str::random(10)); 
+        // Generate PSID (18 digits numeric)
+        // Using string concatenation to ensure 18 digits even on systems where PHP_INT_MAX might be an edge case (though 64bit handles 18 digits)
+        $psid = $this->generatePsid(); 
         // Ensure uniqueness
         while(MedicalRequest::where('psid', $psid)->exists()){
-             $psid = strtoupper(Str::random(10));
+             $psid = $this->generatePsid();
         }
 
         MedicalRequest::create([
@@ -198,6 +212,11 @@ class MedicalRequestController extends Controller
                 'citizen' => $citizen
             ]);
         }
-        return response()->json(['found' => false]);
+    }
+
+    private function generatePsid()
+    {
+        // 18 digits: 9 random digits + 9 random digits
+        return sprintf('%09d', random_int(0, 999999999)) . sprintf('%09d', random_int(0, 999999999));
     }
 }

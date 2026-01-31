@@ -12,7 +12,7 @@ class RefundController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('pages.refunds.index', compact('refunds'));
+        return view('app.refunds.index', compact('refunds'));
     }
 
     public function create(\App\Models\Payment $payment)
@@ -27,7 +27,7 @@ class RefundController extends Controller
             return redirect()->back()->with('error', 'A refund request already exists for this payment.');
         }
 
-        return view('pages.refunds.create', compact('payment'));
+        return view('app.refunds.create', compact('payment'));
     }
 
     public function store(\Illuminate\Http\Request $request)
@@ -63,7 +63,7 @@ class RefundController extends Controller
     public function show(\App\Models\Refund $refund)
     {
         $refund->load('payment.medicalRequest.citizen', 'requestedBy', 'approvedBy');
-        return view('pages.refunds.show', compact('refund'));
+        return view('app.refunds.show', compact('refund'));
     }
 
     public function approve(\App\Models\Refund $refund)

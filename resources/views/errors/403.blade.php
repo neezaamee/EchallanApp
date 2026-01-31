@@ -1,4 +1,4 @@
-@extends('layout.cms-layout')
+@extends('layouts.app')
 @section('page-title', 'Dashboard Super Admin - ')
 @section('cms-main-content')
 

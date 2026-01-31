@@ -1,4 +1,4 @@
-@extends('layout.cms-layout')
+@extends('layouts.app')
 @section('page-title', 'Database Backups - ')
 
 @section('cms-main-content')
@@ -32,7 +32,7 @@
         </div>
     @endif
 
-    <div class="card shadow-sm border-0">
+  <div class="card border-0">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-striped align-middle mb-0">
