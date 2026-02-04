@@ -57,6 +57,12 @@ new class extends Component
                         </x-dropdown-link>
 
                         <!-- Authentication -->
+                        @if(session('original_user_id'))
+                            <x-dropdown-link :href="route('impersonate.stop')" wire:navigate class="text-red-600">
+                                {{ __('Stop Impersonating') }}
+                            </x-dropdown-link>
+                        @endif
+
                         <button wire:click="logout" class="w-full text-start">
                             <x-dropdown-link>
                                 {{ __('Log Out') }}
@@ -99,6 +105,12 @@ new class extends Component
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
+                @if(session('original_user_id'))
+                    <x-responsive-nav-link :href="route('impersonate.stop')" wire:navigate class="text-red-600">
+                        {{ __('Stop Impersonating') }}
+                    </x-responsive-nav-link>
+                @endif
+
                 <button wire:click="logout" class="w-full text-start">
                     <x-responsive-nav-link>
                         {{ __('Log Out') }}

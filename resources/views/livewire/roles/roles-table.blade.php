@@ -37,6 +37,12 @@
                         <td class="text-end">
                             <a href="{{ route('roles.show', $role->id) }}" class="btn btn-info btn-sm" title="Show">Show</a>
                             
+                            @if($role->name !== 'super_admin')
+                                <a href="{{ route('roles.impersonate', $role->id) }}" class="btn btn-warning btn-sm ms-1" title="View Project as Role">
+                                    <i class="fas fa-eye"></i> View as
+                                </a>
+                            @endif
+                            
                             @can('role-edit')
                                 <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-primary btn-sm ms-1" title="Edit">Edit</a>
                             @endcan

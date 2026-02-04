@@ -168,9 +168,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payments/{payment}/receipt/download', [\App\Http\Controllers\PaymentController::class, 'downloadReceipt'])->name('payments.receipt.download');
     Route::get('/payments/{payment}/receipt/thermal', [\App\Http\Controllers\PaymentController::class, 'downloadThermalReceipt'])->name('payments.receipt.thermal');
 
+    // Pick Up Points
+    Route::resource('pick-up-points', \App\Http\Controllers\PickUpPointController::class);
 
     // Feedback
     Route::resource('feedback', \App\Http\Controllers\FeedbackController::class);
+
+    // Lifter Challans
+    Route::resource('challans', \App\Http\Controllers\ChallanController::class);
+    Route::post('/challans/{challan}/validate-payment', [\App\Http\Controllers\ChallanController::class, 'validatePayment'])->name('challans.validate-payment');
+    Route::post('/challans/{challan}/release', [\App\Http\Controllers\ChallanController::class, 'releaseVehicle'])->name('challans.release');
 });
 
 // Public Changelog (accessible to all authenticated users)
@@ -330,7 +337,10 @@ Route::middleware(['auth', 'can:read users'])->group(function () {
 
 Route::middleware(['auth', 'can:read roles'])->group(function () {
     Route::resource('roles', RoleController::class);
+    Route::get('roles/{role}/impersonate', [RoleController::class, 'impersonate'])->name('roles.impersonate');
 });
+
+Route::get('/stop-impersonation', [RoleController::class, 'stopImpersonation'])->name('impersonate.stop');
 
 Route::middleware(['auth', 'can:read permissions'])->group(function () {
     Route::resource('permissions', PermissionController::class);
@@ -386,3 +396,9 @@ Route::middleware(['auth'])->get('/test-permissions', function () {
         'permissions' => $user->getAllPermissions()->pluck('name')
     ]);
 })->name('test.permissions');
+
+if (config('bank.sandbox.enabled')) {
+    Route::get('/developer/sandbox', function () {
+        return view('developer.sandbox');
+    })->middleware('auth')->name('developer.sandbox');
+}

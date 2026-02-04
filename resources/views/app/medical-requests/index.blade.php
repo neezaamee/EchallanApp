@@ -155,6 +155,14 @@
                                                 <span class="badge bg-success">Paid</span>
                                             @endif
                                         @endif
+                                        
+                                        @if(auth()->user()->hasRole('super_admin'))
+                                            <form action="{{ route('medical-requests.destroy', $request->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this request?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

@@ -40,6 +40,7 @@
                 </li>
 
                 {{-- ==================== MEDICAL SECTION ==================== --}}
+                @can('view medical requests')
                 <li class="nav-item">
                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                         <div class="col-auto navbar-vertical-label">Medical Services</div>
@@ -57,7 +58,7 @@
                             </div>
                         </a>
                     @endcan
-
+                    @can('view medical requests')
                     <a class="nav-link {{ request()->routeIs('medical-requests.index') || request()->routeIs('medical-requests.show') ? 'active' : '' }}"
                         href="{{ route('medical-requests.index') }}">
                         <div class="d-flex align-items-center">
@@ -65,7 +66,9 @@
                             <span class="nav-link-text ps-1">View Applications</span>
                         </div>
                     </a>
+                    @endcan
                 </li>
+                @endcan
 
                 {{-- ==================== PAYMENTS & FINANCE (Admin/Accountant) ==================== --}}
                 @role(['super_admin', 'admin', 'accountant'])
@@ -188,21 +191,19 @@
                         </div>
 
                         @can('create challan')
-                            <a class="nav-link disabled" href="#!" title="Coming Soon">
+                            <a class="nav-link {{ request()->routeIs('challans.create') ? 'active' : '' }}" href="{{ route('challans.create') }}">
                                 <div class="d-flex align-items-center">
                                     <span class="nav-link-icon"><span class="fas fa-file-invoice"></span></span>
                                     <span class="nav-link-text ps-1">New Challan</span>
-                                    <span class="badge badge-soft-warning ms-auto">Soon</span>
                                 </div>
                             </a>
                         @endcan
 
                         @can('read challan')
-                            <a class="nav-link disabled" href="#!" title="Coming Soon">
+                            <a class="nav-link {{ request()->routeIs('challans.index') ? 'active' : '' }}" href="{{ route('challans.index') }}">
                                 <div class="d-flex align-items-center">
                                     <span class="nav-link-icon"><span class="fas fa-receipt"></span></span>
                                     <span class="nav-link-text ps-1">View Challans</span>
-                                    <span class="badge badge-soft-warning ms-auto">Soon</span>
                                 </div>
                             </a>
                         @endcan
@@ -256,6 +257,14 @@
                                     href="{{ route('dumping-points.index') }}">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-text ps-1">Dumping Points</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('pick-up-points.*') ? 'active' : '' }}"
+                                    href="{{ route('pick-up-points.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Pick Up Points</span>
                                     </div>
                                 </a>
                             </li>

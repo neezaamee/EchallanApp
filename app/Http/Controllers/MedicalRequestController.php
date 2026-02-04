@@ -139,12 +139,12 @@ class MedicalRequestController extends Controller
             $medicalCenterId = $request->medical_center_id;
         }
 
-        // Generate PSID (18 digits numeric)
-        // Using string concatenation to ensure 18 digits even on systems where PHP_INT_MAX might be an edge case (though 64bit handles 18 digits)
-        $psid = $this->generatePsid(); 
-        // Ensure uniqueness
+        // Generate PSID via BankService
+        $psid = \App\Services\BankService::generatePsid('MEDICAL', 500);
+        
+        // Ensure uniqueness (though very unlikely to collide with 18 digits + time)
         while(MedicalRequest::where('psid', $psid)->exists()){
-             $psid = $this->generatePsid();
+             $psid = \App\Services\BankService::generatePsid('MEDICAL', 500);
         }
 
         MedicalRequest::create([
@@ -214,9 +214,14 @@ class MedicalRequestController extends Controller
         }
     }
 
-    private function generatePsid()
+    public function destroy(\App\Models\MedicalRequest $medicalRequest)
     {
-        // 18 digits: 9 random digits + 9 random digits
-        return sprintf('%09d', random_int(0, 999999999)) . sprintf('%09d', random_int(0, 999999999));
+        if (!auth()->user()->hasRole('super_admin')) {
+             abort(403);
+        }
+        
+        $medicalRequest->delete(); 
+        
+        return back()->with('success', 'Medical Request deleted successfully.');
     }
 }

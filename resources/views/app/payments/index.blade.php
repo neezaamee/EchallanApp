@@ -71,9 +71,8 @@
                                     <td><span class="font-monospace small">{{ $payment->transaction_id }}</span></td>
                                     <td><span class="font-monospace small">{{ $payment->psid }}</span></td>
                                     <td>
-                                        <div>{{ $payment->medicalRequest->citizen->full_name ?? 'N/A' }}</div>
-                                        <small
-                                            class="text-muted">{{ $payment->medicalRequest->citizen->cnic ?? '' }}</small>
+                                        <div>{{ $payment->medicalRequest?->citizen?->full_name ?? 'N/A' }}</div>
+                                        <small class="text-muted">{{ $payment->medicalRequest?->citizen?->cnic ?? '' }}</small>
                                     </td>
                                     <td>PKR {{ number_format($payment->amount) }}</td>
                                     <td>{{ ucwords(str_replace('_', ' ', $payment->payment_method)) }}</td>

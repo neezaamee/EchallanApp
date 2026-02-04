@@ -120,6 +120,15 @@
                 </div>
               </li>
             </ul> --}}
+
+    @if(session()->has('original_user_id'))
+        <div class="alert alert-soft-warning d-flex align-items-center mb-0 px-3 py-1 me-2" role="alert">
+            <span class="fas fa-user-secret me-2"></span>
+            <span class="fs--1 me-2 d-none d-sm-inline">Viewing as Role</span>
+            <a href="{{ route('impersonate.stop') }}" class="btn btn-sm btn-warning rounded-pill border-0 py-0">Stop</a>
+        </div>
+    @endif
+
     {{-- Profile Options --}}
     <ul class="navbar-nav navbar-nav-icons ms-auto flex-row align-items-center">
         <li class="nav-item dropdown"><a class="nav-link pe-0 ps-2" id="navbarDropdownUser" role="button"

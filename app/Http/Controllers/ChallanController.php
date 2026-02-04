@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class ChallanController extends Controller
+{
+    public function index()
+    {
+        $user = auth()->user();
+        
+        // Super Admin & Admin see ALL challans
+        if ($user->hasRole(['super_admin', 'admin'])) {
+            $challans = \App\Models\Challan::latest()->paginate(10);
+        } else {
+            // Officers see only their own
+            $challans = \App\Models\Challan::where('officer_id', $user->id)
+                ->latest()
+                ->paginate(10);
+        }
+            
+        return view('app.challans.index', compact('challans'));
+    }
+
+    public function create()
+    {
+        $officer = auth()->user();
+        $staff = $officer->staff;
+        
+        $posting = $staff ? $staff->activePosting : null;
+        $dumpingPoint = $posting ? $posting->dumpingPoint : null;
+        
+        if (!$dumpingPoint) {
+           // Fallback or error if officer not assigned to dumping point
+           // For now, let's fetch all dumping points if none is assigned (super admin testing)
+           // Or strictly require it. I'll return a view with error/empty message if null.
+           return view('app.challans.create', [
+               'dumpingPoint' => null,
+               'pickUpPoints' => [],
+               'violations' => $this->getViolations()
+           ])->with('error', 'You are not assigned to a Dumping Point.');
+        }
+
+        $pickUpPoints = \App\Models\PickUpPoint::where('dumping_point_id', $dumpingPoint->id)
+            ->where('is_active', true)
+            ->get();
+
+        return view('app.challans.create', [
+            'dumpingPoint' => $dumpingPoint,
+            'pickUpPoints' => $pickUpPoints,
+            'violations' => $this->getViolations()
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'dumping_point_id' => 'required|exists:dumping_points,id',
+            'pick_up_point_id' => 'required|exists:pick_up_points,id',
+            'violator_name' => 'required|string',
+            'violator_cnic' => 'required|string',
+            'violator_mobile' => 'required|string',
+            'vehicle_type' => 'required|in:motorcycle,car,other',
+            'vehicle_number' => 'required|string',
+            'violation' => 'required|string', // "Name|Amount"
+        ]);
+
+        list($violationName, $amount) = explode('|', $request->violation);
+
+        // Determine Payment Head based on Vehicle Type
+        $headType = ($request->vehicle_type === 'motorcycle') ? 'TRAFFIC_BIKE' : 'TRAFFIC_CAR';
+
+        // Generate PSID via Bank Service
+        $psid = \App\Services\BankService::generatePsid($headType, $amount, $request->all());
+
+        \App\Models\Challan::create([
+            'officer_id' => auth()->id(),
+            'dumping_point_id' => $request->dumping_point_id,
+            'pick_up_point_id' => $request->pick_up_point_id,
+            'violator_name' => $request->violator_name,
+            'violator_cnic' => $request->violator_cnic,
+            'violator_mobile' => $request->violator_mobile,
+            'vehicle_type' => $request->vehicle_type,
+            'vehicle_number' => $request->vehicle_number,
+            'violation_name' => $violationName,
+            'fine_amount' => $amount,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'psid' => $psid,
+        ]);
+
+        return redirect()->route('challans.index')->with('success', 'Challan issued successfully with PSID: ' . $psid);
+    }
+    
+    public function show(\App\Models\Challan $challan)
+    {
+        return view('app.challans.show', compact('challan'));
+    }
+
+    public function validatePayment(Request $request, \App\Models\Challan $challan)
+    {
+        $request->validate([
+            'transaction_id' => 'required|string'
+        ]);
+
+        $challan->update([
+            'status' => 'paid', // Or 'ready_for_release'
+            'payment_status' => 'paid',
+            'transaction_id' => $request->transaction_id
+        ]);
+
+        return back()->with('success', 'Payment verified.');
+    }
+
+    public function releaseVehicle(\App\Models\Challan $challan)
+    {
+        if ($challan->payment_status !== 'paid') {
+            return back()->with('error', 'Cannot release vehicle. Payment not cleared.');
+        }
+
+        $challan->update([
+            'status' => 'released'
+        ]);
+
+        return back()->with('success', 'Vehicle released successfully.');
+    }
+
+    private function getViolations()
+    {
+        return [
+            ['name' => 'Wrong Parking', 'fine_car' => 2000, 'fine_bike' => 500],
+            ['name' => 'No Parking Zone', 'fine_car' => 3000, 'fine_bike' => 1000],
+            ['name' => 'Obstruction of Traffic', 'fine_car' => 1500, 'fine_bike' => 400],
+            ['name' => 'Double Parking', 'fine_car' => 2500, 'fine_bike' => 800],
+        ];
+    }
+
+    public function destroy(\App\Models\Challan $challan)
+    {
+        if (!auth()->user()->hasRole('super_admin')) {
+             abort(403);
+        }
+        
+        $challan->delete(); // Soft delete if model has SoftDeletes, or hard delete
+        
+        return back()->with('success', 'Challan deleted successfully.');
+    }
+}
