@@ -23,9 +23,9 @@ class DatabaseSeeder extends Seeder
             DumpingPointSeeder::class,
             FaisalabadMedicalCentersSeeder::class,
             DesignationsSeeder::class,
-            StaffSeeder::class,
-            FaisalabadStaffPostingSeeder::class,
-            CitizensSeeder::class,
+            //StaffSeeder::class,
+            //FaisalabadStaffPostingSeeder::class,
+            //CitizensSeeder::class,
         ]);
 
         /* User::factory()->create([

@@ -1,4 +1,4 @@
-@extends('layout.cms-layout')
+@extends('layouts.app')
 @section('page-title', 'Medical Centers - ')
 @section('cms-main-content')
 <livewire:admin.locations.medical-centers />

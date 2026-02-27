@@ -9,19 +9,19 @@ class DumpingPointController extends Controller
     // Show the list page
     public function index()
     {
-        return view('pages.infrastructure.dumping-points.index');
+        return view('app.infrastructure.dumping-points.index');
     }
 
     // Show the create form page
     public function create()
     {
-        return view('pages.infrastructure.dumping-points.create');
+        return view('app.infrastructure.dumping-points.create');
     }
 
     // Show the edit form page, passing the specific point
     public function edit(\App\Models\DumpingPoint $dumpingPoint)
 {
-    return view('pages.infrastructure.dumping-points.edit', compact('dumpingPoint'));
+    return view('app.infrastructure.dumping-points.edit', compact('dumpingPoint'));
 }
 
 }

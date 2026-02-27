@@ -23,7 +23,7 @@ class FeedbackController extends Controller
             $feedbacks = Feedback::where('user_id', $user->id)->latest()->paginate(15);
         }
 
-        return view('pages.feedback.index', compact('feedbacks'));
+        return view('app.feedback.index', compact('feedbacks'));
     }
 
     /**
@@ -31,7 +31,7 @@ class FeedbackController extends Controller
      */
     public function create()
     {
-        return view('pages.feedback.create');
+        return view('app.feedback.create');
     }
 
     /**
@@ -68,7 +68,7 @@ class FeedbackController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        return view('pages.feedback.show', compact('feedback'));
+        return view('app.feedback.show', compact('feedback'));
     }
 
     /**

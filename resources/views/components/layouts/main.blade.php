@@ -76,7 +76,7 @@
     <!-- ===============================================-->
     @yield('after-main-content')
 
-    @include('layout.js')
+    @include('layouts.js')
     @livewireScripts
     @stack('scripts')
     @yield('add-js-bottom')

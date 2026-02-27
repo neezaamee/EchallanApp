@@ -9,11 +9,11 @@ class ProvinceController extends Controller
 {
     public function index(){
         //$provinces = Province::all();
-        return view('pages.infrastructure.provinces.index');
+        return view('app.infrastructure.provinces.index');
     }
     public function create()
     {
-        return view('pages.infrastructure.provinces.create');
+        return view('app.infrastructure.provinces.create');
     }
     public function update(Request $request, $id)
     {

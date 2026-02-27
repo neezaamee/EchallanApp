@@ -1,5 +1,5 @@
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
+<div class="card mb-4">
+    <div class="card-header">
         <h5 class="mb-0">Edit Medical Center</h5>
     </div>
 

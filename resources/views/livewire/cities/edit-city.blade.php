@@ -7,7 +7,7 @@
         </div>
     @endif
 
-    <form wire:submit.prevent="updateCity" class="card p-4 shadow-sm">
+  <form wire:submit.prevent="updateCity" class="card p-4 ">
 
         <div class="mb-3">
             <label class="form-label">City Name</label>

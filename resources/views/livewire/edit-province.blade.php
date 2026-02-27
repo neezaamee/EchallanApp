@@ -1,6 +1,6 @@
 <div class="container py-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+  <div class="card ">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Edit Province</h5>
             <a href="{{ route('provinces.index') }}" class="btn btn-light btn-sm">← Back</a>
         </div>

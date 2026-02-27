@@ -18,7 +18,7 @@ class CustomRegisteredUserController extends Controller
      */
     public function create()
     {
-        return view('pages.auth.register');
+        return view('auth.register');
     }
 
     /**

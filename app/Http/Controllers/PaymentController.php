@@ -7,6 +7,7 @@ use App\Models\MedicalRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\PaymentSearchRequest;
 
 class PaymentController extends Controller
 {
@@ -33,69 +34,30 @@ class PaymentController extends Controller
 
         $payments = $query->latest()->paginate(20);
 
-        return view('pages.payments.index', compact('payments'));
+        return view('app.payments.index', compact('payments'));
     }
 
     /**
      * Advanced Search for Payments
      */
-    public function search(Request $request)
+    public function search(PaymentSearchRequest $request)
     {
-        $query = Payment::with('medicalRequest.citizen', 'medicalRequest.medicalCenter');
-
-        // Filter by PSID or Transaction ID
-        if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
-            $query->where(function($q) use ($keyword) {
-                $q->where('psid', 'like', "%{$keyword}%")
-                  ->orWhere('transaction_id', 'like', "%{$keyword}%");
-            });
-        }
-
-        // Filter by Citizen CNIC
-        if ($request->filled('cnic')) {
-            $cnic = $request->cnic;
-            $query->whereHas('medicalRequest.citizen', function($q) use ($cnic) {
-                $q->where('cnic', 'like', "%{$cnic}%");
-            });
-        }
-
-        // Filter by Date Range
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        // Filter by Status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Filter by Payment Method
-        if ($request->filled('payment_method')) {
-            $query->where('payment_method', $request->payment_method);
-        }
-
-        // Filter by Medical Center
-        if ($request->filled('medical_center_id')) {
-            $centerId = $request->medical_center_id;
-            $query->whereHas('medicalRequest', function($q) use ($centerId) {
-                $q->where('medical_center_id', $centerId);
-            });
-        }
+        $filters = $request->validated();
 
         // Get results if any filter is applied, otherwise return empty or latest
         if ($request->anyFilled(['keyword', 'cnic', 'date_from', 'date_to', 'status', 'payment_method', 'medical_center_id'])) {
-            $payments = $query->latest()->paginate(20)->withQueryString();
+            $payments = Payment::with('medicalRequest.citizen', 'medicalRequest.medicalCenter')
+                ->filter($filters)
+                ->latest()
+                ->paginate(20)
+                ->withQueryString();
         } else {
             $payments = collect([]); // Start empty or show latest
         }
 
         $medicalCenters = \App\Models\MedicalCenter::all();
 
-        return view('pages.payments.search', compact('payments', 'medicalCenters'));
+        return view('app.payments.search', compact('payments', 'medicalCenters'));
     }
 
     /**
@@ -114,7 +76,7 @@ class PaymentController extends Controller
             'user_agent' => request()->userAgent(),
         ]);
 
-        return view('pages.payments.show', compact('payment'));
+        return view('app.payments.show', compact('payment'));
     }
 
     /**
@@ -137,7 +99,7 @@ class PaymentController extends Controller
             $medicalRequest->amount = 500.00; // Default amount
         }
 
-        return view('pages.payments.create', compact('medicalRequest'));
+        return view('app.payments.create', compact('medicalRequest'));
     }
 
     /**
@@ -241,7 +203,7 @@ class PaymentController extends Controller
         }
 
         $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter');
-        return view('pages.payments.success', compact('payment'));
+        return view('app.payments.success', compact('payment'));
     }
 
     /**
@@ -254,7 +216,7 @@ class PaymentController extends Controller
         }
 
         $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter');
-        return view('pages.payments.failed', compact('payment'));
+        return view('app.payments.failed', compact('payment'));
     }
 
     /**
@@ -268,7 +230,7 @@ class PaymentController extends Controller
         }
 
         $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter');
-        return view('pages.payments.receipt', compact('payment'));
+        return view('app.payments.receipt', compact('payment'));
     }
 
     /**
@@ -283,7 +245,7 @@ class PaymentController extends Controller
 
         $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter');
         
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pages.payments.receipt', compact('payment'));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('app.payments.receipt', compact('payment'));
         
         $filename = 'receipt-' . $payment->transaction_id . '.pdf';
         
@@ -304,7 +266,7 @@ class PaymentController extends Controller
         
         // Set custom paper size for 80mm thermal printer
         // 80mm = 226.77 points, height auto
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pages.payments.receipt-thermal', compact('payment'))
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('app.payments.receipt-thermal', compact('payment'))
             ->setPaper([0, 0, 226.77, 841.89], 'portrait');
         
         $filename = 'thermal-receipt-' . $payment->transaction_id . '.pdf';

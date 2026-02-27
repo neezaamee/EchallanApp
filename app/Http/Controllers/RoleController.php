@@ -14,9 +14,7 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::where('name', '!=', 'super_admin')->orderBy('id','DESC')->paginate(10);
-        return view('admin.roles.index',compact('roles'))
-            ->with('i', ($request->input('page', 1) - 1) * 10);
+        return view('admin.roles.index');
     }
 
     /**
@@ -102,6 +100,49 @@ class RoleController extends Controller
         $role->delete();
         return redirect()->route('roles.index')
                         ->with('success','Role deleted successfully');
+    }
+
+    public function impersonate($roleId)
+    {
+        $role = Role::findOrFail($roleId);
+        
+        // Find a user with this role
+        // Note: This assumes users are assigned roles directly or via model_has_roles
+        $user = \App\Models\User::role($role->name)->first();
+
+        if (!$user) {
+            return redirect()->back()->with('error', "No user found with the role '{$role->name}' to impersonate.");
+        }
+
+        // Prevent recursive impersonation or impersonating oneself if already that role (though less critical here)
+        if (auth()->id() === $user->id) {
+            return redirect()->back()->with('warning', "You are already logged in as this user.");
+        }
+
+        // Save original user ID if not already saved (nested impersonation prevention)
+        if (!session()->has('original_user_id')) {
+            session(['original_user_id' => auth()->id()]);
+        }
+
+        auth()->login($user);
+
+        return redirect()->route('dashboard')->with('success', "You are now viewing as '{$role->name}'.");
+    }
+
+    public function stopImpersonation()
+    {
+        if (session()->has('original_user_id')) {
+            $originalUserId = session('original_user_id');
+            session()->forget('original_user_id');
+            
+            $user = \App\Models\User::find($originalUserId);
+            if ($user) {
+                auth()->login($user);
+                return redirect()->route('roles.index')->with('success', 'Welcome back! Impersonation ended.');
+            }
+        }
+
+        return redirect()->route('dashboard')->with('error', 'Could not restore original session.');
     }
 
     private function groupPermissions($permissions)

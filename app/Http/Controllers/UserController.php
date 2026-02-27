@@ -17,18 +17,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with('roles');
-
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('email', 'like', '%' . $search . '%');
-            });
-        }
-
-        $users = $query->paginate(10);
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index');
     }
 
     /**
@@ -126,6 +115,7 @@ class UserController extends Controller
             'cnic' => ['required', 'string', 'max:20', 'unique:users,cnic,'.$id], // Added CNIC validation
             'roles' => ['required', 'array'],
             'permissions' => ['nullable', 'array'], // Validate permissions
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::find($id);

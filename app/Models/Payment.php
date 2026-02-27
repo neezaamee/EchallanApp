@@ -98,4 +98,33 @@ class Payment extends Model
     {
         return 'PKR ' . number_format((float) $this->amount, 2);
     }
+
+    /**
+     * Scope to filter payments based on search criteria
+     */
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['keyword'] ?? null, function ($q, $keyword) {
+            $q->where(function ($subQ) use ($keyword) {
+                $subQ->where('psid', 'like', "%{$keyword}%")
+                    ->orWhere('transaction_id', 'like', "%{$keyword}%");
+            });
+        })->when($filters['cnic'] ?? null, function ($q, $cnic) {
+            $q->whereHas('medicalRequest.citizen', function ($subQ) use ($cnic) {
+                $subQ->where('cnic', 'like', "%{$cnic}%");
+            });
+        })->when($filters['date_from'] ?? null, function ($q, $date) {
+            $q->whereDate('created_at', '>=', $date);
+        })->when($filters['date_to'] ?? null, function ($q, $date) {
+            $q->whereDate('created_at', '<=', $date);
+        })->when($filters['status'] ?? null, function ($q, $status) {
+            $q->where('status', $status);
+        })->when($filters['payment_method'] ?? null, function ($q, $method) {
+            $q->where('payment_method', $method);
+        })->when($filters['medical_center_id'] ?? null, function ($q, $centerId) {
+            $q->whereHas('medicalRequest', function ($subQ) use ($centerId) {
+                $subQ->where('medical_center_id', $centerId);
+            });
+        });
+    }
 }

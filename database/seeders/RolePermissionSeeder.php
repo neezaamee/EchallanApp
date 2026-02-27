@@ -245,6 +245,22 @@ class RolePermissionSeeder extends Seeder
         ];
         $citizenRole->givePermissionTo($citizenPermissions);
         $this->command->info('Created Citizen role with content management permissions');
+
+        // Challan Officer role
+        $officerRole = Role::firstOrCreate(['name' => 'challan_officer', 'guard_name' => 'web']);
+        $officerPermissions = [
+            'create challan',
+            'read challan',
+            'update challan',
+            'delete challan',
+            // Add other necessary permissions e.g. read infrastructure if needed
+             'read dumping point',
+             'read circle',
+             'read city',
+             'read province',
+        ];
+        $officerRole->givePermissionTo($officerPermissions);
+        $this->command->info('Created Challan Officer role with permissions');
     }
 
     /**

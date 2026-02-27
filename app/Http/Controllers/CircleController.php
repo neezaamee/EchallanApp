@@ -9,12 +9,12 @@ class CircleController extends Controller
     // index uses a blade that embeds Livewire component
     public function index()
     {
-        return view('pages.infrastructure.circles.index'); // view should render <livewire:circles.circles-table />
+        return view('app.infrastructure.circles.index'); // view should render <livewire:circles.circles-table />
     }
 
     public function create()
     {
-        return view('pages.infrastructure.circles.create'); // view contains <livewire:circles.add-circle />
+        return view('app.infrastructure.circles.create'); // view contains <livewire:circles.add-circle />
     }
 
     public function store(Request $request)
@@ -30,7 +30,7 @@ class CircleController extends Controller
 
     public function edit($id)
     {
-        return view('pages.infrastructure.circles.edit', compact('id')); // contains <livewire:circles.edit-circle :id="$id" />
+        return view('app.infrastructure.circles.edit', compact('id')); // contains <livewire:circles.edit-circle :id="$id" />
     }
 
     public function update(Request $request, $id)

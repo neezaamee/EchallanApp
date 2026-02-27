@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Livewire\Users;
+
+use Livewire\Component;
+use Livewire\WithPagination;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
+class UsersTable extends Component
+{
+    use WithPagination;
+
+    public $search = '';
+    public $sortField = 'id';
+    public $sortDirection = 'desc';
+    public $confirmingUserDeletion = null;
+    public $deleteId = null;
+
+    protected $paginationTheme = 'bootstrap';
+    protected $queryString = ['search'];
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
+
+    public function confirmDelete($id)
+    {
+        if (!Auth::user()->can('delete users')) {
+            abort(403, 'Unauthorized');
+        }
+        $this->confirmingUserDeletion = true;
+        $this->deleteId = $id;
+    }
+
+    public function deleteUser()
+    {
+        if (!Auth::user()->can('delete users') || !$this->deleteId) {
+            return;
+        }
+
+        $user = User::find($this->deleteId);
+        if ($user) {
+            $user->delete();
+            session()->flash('message', 'User deleted successfully.');
+        }
+
+        $this->reset(['confirmingUserDeletion', 'deleteId']);
+    }
+
+    public function render()
+    {
+        $users = User::with('roles')
+            ->where(function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('email', 'like', '%' . $this->search . '%');
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate(10);
+
+        return view('livewire.users.users-table', compact('users'));
+    }
+}
