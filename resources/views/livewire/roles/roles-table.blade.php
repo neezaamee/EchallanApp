@@ -3,7 +3,7 @@
         <input type="text" class="form-control w-25" placeholder="Search roles..."
             wire:model.live.debounce.500ms="search">
 
-        @can('role-create')
+        @can('roles:create')
             <a href="{{ route('roles.create') }}" class="btn btn-success">Create New Role</a>
         @endcan
     </div>
@@ -43,11 +43,11 @@
                                 </a>
                             @endif
                             
-                            @can('role-edit')
+                            @can('roles:edit')
                                 <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-primary btn-sm ms-1" title="Edit">Edit</a>
                             @endcan
 
-                            @can('role-delete')
+                            @can('roles:delete')
                                 @if($role->name !== 'super_admin' && $role->name !== 'admin')
                                     <button wire:click.prevent="confirmDelete({{ $role->id }})" class="btn btn-danger btn-sm ms-1" title="Delete">
                                         Delete

@@ -12,6 +12,7 @@ class Payment extends Model
 
     protected $fillable = [
         'medical_request_id',
+        'challan_id',
         'psid',
         'amount',
         'transaction_id',
@@ -33,6 +34,14 @@ class Payment extends Model
     public function medicalRequest()
     {
         return $this->belongsTo(MedicalRequest::class);
+    }
+
+    /**
+     * Get the challan associated with this payment
+     */
+    public function challan()
+    {
+        return $this->belongsTo(Challan::class);
     }
 
     /**

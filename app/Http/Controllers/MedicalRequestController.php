@@ -212,6 +212,10 @@ class MedicalRequestController extends Controller
                 'citizen' => $citizen
             ]);
         }
+
+        return response()->json([
+            'found' => false
+        ]);
     }
 
     public function destroy(\App\Models\MedicalRequest $medicalRequest)

@@ -113,17 +113,72 @@ class ChallanController extends Controller
         return back()->with('success', 'Payment verified.');
     }
 
-    public function releaseVehicle(\App\Models\Challan $challan)
+    public function checkStatusForm()
+    {
+        return view('app.impound.check-status');
+    }
+
+    public function checkStatus(Request $request)
+    {
+        $request->validate([
+            'psid' => 'required|string'
+        ]);
+
+        $challan = \App\Models\Challan::where('psid', $request->psid)->first();
+
+        if (!$challan) {
+            return back()->with('error', 'PSID not found.')->withInput();
+        }
+
+        return view('app.impound.status-result', compact('challan'));
+    }
+
+    public function releaseForm(\App\Models\Challan $challan)
     {
         if ($challan->payment_status !== 'paid') {
-            return back()->with('error', 'Cannot release vehicle. Payment not cleared.');
+            return redirect()->route('dashboard')->with('error', 'Cannot release vehicle. Payment not cleared.');
+        }
+
+        if ($challan->released_at) {
+            return redirect()->route('dashboard')->with('error', 'Vehicle already released on ' . $challan->released_at->format('d M, Y'));
+        }
+
+        return view('app.impound.release', compact('challan'));
+    }
+
+    public function release(Request $request, \App\Models\Challan $challan)
+    {
+        $request->validate([
+            'receiver_name' => 'required|string|max:255',
+            'receiver_cnic' => 'required|string|digits:13',
+            'receiver_father_name' => 'required|string|max:255',
+        ]);
+
+        if ($challan->payment_status !== 'paid') {
+            return back()->with('error', 'Payment must be verified before release.');
         }
 
         $challan->update([
-            'status' => 'released'
+            'status' => 'released',
+            'released_at' => now(),
+            'released_by_staff_id' => auth()->user()->staff?->id,
+            'receiver_name' => $request->receiver_name,
+            'receiver_cnic' => $request->receiver_cnic,
+            'receiver_father_name' => $request->receiver_father_name,
         ]);
 
-        return back()->with('success', 'Vehicle released successfully.');
+        return redirect()->route('dashboard')->with('success', 'Vehicle released successfully to ' . $request->receiver_name);
+    }
+
+    public function destroy(\App\Models\Challan $challan)
+    {
+        if (!auth()->user()->hasRole('super_admin')) {
+             abort(403);
+        }
+        
+        $challan->delete(); 
+        
+        return back()->with('success', 'Challan deleted successfully.');
     }
 
     private function getViolations()
@@ -134,16 +189,5 @@ class ChallanController extends Controller
             ['name' => 'Obstruction of Traffic', 'fine_car' => 1500, 'fine_bike' => 400],
             ['name' => 'Double Parking', 'fine_car' => 2500, 'fine_bike' => 800],
         ];
-    }
-
-    public function destroy(\App\Models\Challan $challan)
-    {
-        if (!auth()->user()->hasRole('super_admin')) {
-             abort(403);
-        }
-        
-        $challan->delete(); // Soft delete if model has SoftDeletes, or hard delete
-        
-        return back()->with('success', 'Challan deleted successfully.');
     }
 }

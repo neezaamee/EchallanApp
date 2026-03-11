@@ -9,4 +9,5 @@
     <script src="{{ asset('vendors/fontawesome/all.min.js') }}"></script>
     <script src="{{ asset('vendors/lodash/lodash.min.js') }}"></script>
     <script src="{{ asset('vendors/list.js/list.min.js') }}"></script>
+    <script src="{{ asset('vendors/inputmask/inputmask.min.js') }}"></script>
     <script src="{{ asset('assets/js/theme.js') }}"></script>

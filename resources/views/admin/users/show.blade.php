@@ -12,7 +12,15 @@
                     <tbody>
                         <tr>
                             <th style="width: 200px;">Name</th>
-                            <td>{{ $user->name }}</td>
+                            <td>
+                                @if($user->staff)
+                                    <a href="{{ route('staff.edit', $user->staff->id) }}" title="View Staff Details">
+                                        {{ $user->name }} <span class="fas fa-external-link-alt ms-1 fs--2"></span>
+                                    </a>
+                                @else
+                                    {{ $user->name }}
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th>Email</th>

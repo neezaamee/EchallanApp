@@ -8,9 +8,11 @@
                     <h5 class="mb-0">Pick Up Points</h5>
                 </div>
                 <div class="col-auto ms-auto">
+                    @can('pick-up-points:create')
                     <a href="{{ route('pick-up-points.create') }}" class="btn btn-primary btn-sm">
                         <span class="fas fa-plus me-1"></span> Add New
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -42,9 +44,13 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
+                                    @can('pick-up-points:edit')
                                     <a href="{{ route('pick-up-points.edit', $point->id) }}" class="btn btn-link p-0 ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                         <span class="fas fa-edit text-500"></span>
                                     </a>
+                                    @endcan
+
+                                    @can('pick-up-points:delete')
                                     <form action="{{ route('pick-up-points.destroy', $point->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
                                         @csrf
                                         @method('DELETE')
@@ -52,6 +58,7 @@
                                             <span class="fas fa-trash-alt text-danger"></span>
                                         </button>
                                     </form>
+                                    @endcan
                                 </td>
                             </tr>
                         @empty

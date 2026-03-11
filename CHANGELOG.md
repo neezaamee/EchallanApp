@@ -5,9 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.0] - 2026-03-12
 
-## [1.2.0] - 2025-11-29
+### Added
+
+-   **Challan & Impound Workflow**: Comprehensive system for traffic enforcement.
+    -   Vehicle bounding at dumping points upon challan issuance.
+    -   Integration with Bank Service for PSID generation.
+    -   Duty Officer dashboard with real-time bounded vehicle tracking.
+    -   Secure vehicle release process with receiver details (CNIC, Name, Father Name).
+    -   Payment status verification for impounded vehicles.
+-   **Pick Up Point CRUD**: Full management interface for Pick Up Points.
+    -   Role-based access control (Super Admin, Admin, Officer).
+    -   Integration into the Infrastructure navigation menu.
+    -   Active/Inactive status tracking.
+
+### Changed
+
+-   Standardized permissions format across the application (e.g., `module:action`).
+-   Refactored `RolePermissionSeeder` to include `pick-up-points` and `dumping-points` modules.
+-   Enhanced User Show page with direct links to Staff Profile details.
+-   Updated sidebar navigation with dynamic `@can` checks for all infrastructure modules.
+-   Standardized layout section names to `cms-main-content` for all app views.
+
+### Fixed
+
+-   Corrected route name mismatches in `ChallanController`.
+-   Fixed `BadMethodCallException` in `getViolations` method.
+-   Resolved blank page issue in impound views caused by section name mismatch.
+-   Corrected `RouteNotFoundException` for vehicle release status.
+
+## [1.2.1] - 2026-03-11
+
+### Added
+- Initial implementation of Impound workflow placeholders.
+
+### Fixed
+- UI inconsistencies in sidebar dropdowns.
+
 
 ### Added
 

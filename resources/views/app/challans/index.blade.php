@@ -63,10 +63,9 @@
                                     Verify Payment
                                 </button>
                             @elseif($challan->status == 'paid')
-                                <form action="{{ route('challans.release', $challan) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-primary">Release Vehicle</button>
-                                </form>
+                                <a href="{{ route('impound.release.form', $challan->id) }}" class="btn btn-sm btn-primary">
+                                    Release Vehicle
+                                </a>
                             @endif
 
                             @if(auth()->user()->hasRole('super_admin'))
