@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Cities;
 use Illuminate\Support\Facades\Auth;
 
 use Livewire\Component;
@@ -85,6 +85,6 @@ class CitiesTable extends Component
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
-        return view('livewire.cities-table', compact('cities'));
+        return view('livewire.cities.cities-table', compact('cities'));
     }
 }

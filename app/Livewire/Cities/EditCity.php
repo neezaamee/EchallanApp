@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Cities;
 
 use Livewire\Component;
 use App\Models\City;
@@ -59,6 +59,6 @@ class EditCity extends Component
 
     public function render()
     {
-        return view('livewire.edit-city');
+        return view('livewire.cities.edit-city');
     }
 }

@@ -37,6 +37,18 @@ class StaffController extends Controller
         return redirect()->route('staff.index')->with('success','Staff created.');
     }
 
+    public function show(Staff $staff)
+    {
+        $staff->load(['rank', 'city', 'province', 'user', 'activePosting.province', 'activePosting.city', 'activePosting.circle', 'activePosting.dumpingPoint', 'activePosting.medicalCenter']);
+        
+        $postings = \App\Models\StaffPosting::where('staff_id', $staff->id)
+            ->with(['province', 'city', 'circle', 'dumpingPoint', 'medicalCenter'])
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('app.staff.show', compact('staff', 'postings'));
+    }
+
     public function edit(Staff $staff)
     {
         return view('app.staff.edit', compact('staff'));

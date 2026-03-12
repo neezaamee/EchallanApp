@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-03-12
+
+### Added
+
+-   **Falcon v3.26.0 UI Standardization**: Comprehensive refactor of the entire UI system to align with Falcon's design patterns.
+    -   **Card-Wrapper Pattern**: Unified containerization for all index tables and management pages.
+    -   **Global Soft-Badge System**: Standardized color-coded status representation (Paid, Active, Pending, etc.) across all modules.
+    -   **Standardized Actions**: Unified button styles (`btn-falcon-default`, `btn-link`) and placement project-wide.
+
+### Changed
+
+-   Refactored 15+ modules to adopt the card-wrapper pattern, including Infrastructure, Management, and Workflow sections.
+-   Standardized typography (`fs--1`), alignment (`align-middle`), and row hover effects project-wide.
+-   Improved mobile responsiveness using Falcon's `scrollbar` and `table-responsive` utilities.
+-   Consolidated redundant Blade templates into cleaner, Livewire-integrated views.
+
+### Fixed
+
+-   Resolved `Undefined variable $sortField` error in multiple Livewire components.
+-   Cleaned up redundant Livewire component duplicates causing architectural conflicts.
+-   Corrected namespace and view path mismatches in location-related components (Provinces, Cities).
+
 ## [1.3.0] - 2026-03-12
 
 ### Added

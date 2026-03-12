@@ -234,7 +234,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin|admin|accountant'])->gr
 
 // Staff Management
 Route::middleware(['auth', 'can:staff:view'])->group(function () {
-    Route::resource('staff', StaffController::class)->except(['show']);
+    Route::resource('staff', StaffController::class);
     Route::resource('staff-postings', StaffPostingController::class);
 });
 

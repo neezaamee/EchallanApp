@@ -1,0 +1,74 @@
+# Bank Integration Handover Guide
+
+This document provides the technical details required for the bank to integrate with the ECchallanApp payment system.
+
+## 1. Connection Details
+- **Base URL**: `https://[YOUR_DOMAIN]/api`
+- **Security**: 
+    - **Header**: `Authorization: Bearer [YOUR_TOKEN]`
+    - **Whitelisting**: Please provide your Production/Sandbox Server IPs.
+
+## 2. Bill Inquiry API
+The bank calls this to verify the PSID and fetch consumer details.
+
+- **Endpoint**: `POST /payment/inquiry`
+- **Request Payload**:
+```json
+{
+    "consumer_number": "10260227123456789012"
+}
+```
+
+- **Response Payload (Success)**:
+```json
+{
+    "status": "00",
+    "message": "Record Found",
+    "data": {
+        "consumer_number": "10260227123456789012",
+        "consumer_name": "John Doe",
+        "amount_due": 500.00,
+        "amount_within_due_date": 500.00,
+        "amount_after_due_date": 500.00,
+        "billing_month": "202602",
+        "due_date": "20260329",
+        "status": "U"
+    }
+}
+```
+
+## 3. Payment Notification API (Callback)
+The bank calls this to notify the system of a successful payment.
+
+- **Endpoint**: `POST /payment/callback`
+- **Request Payload**:
+```json
+{
+    "consumer_number": "10260227123456789012",
+    "transaction_id": "BANK_TXN_998877",
+    "amount_paid": 500.00,
+    "transaction_date": "2026-02-27 12:30:00"
+}
+```
+
+- **Response Payload (Success)**:
+```json
+{
+    "status": "00",
+    "message": "Payment Successful"
+}
+```
+
+## 4. Response Codes
+| Code | Meaning |
+|------|---------|
+| 00   | Success / Approved |
+| 01   | Record Not Found (Invalid PSID) |
+| 02   | Already Paid |
+| 03   | Insufficient Amount |
+| 99   | System Error |
+
+## 5. PSID Structure (Reference)
+- **Digits 1-2**: Head Type (10=Medical, 20=Car, 30=Bike)
+- **Digits 3-8**: Date (YYMMDD)
+- **Digits 9-20**: Random Unique Number

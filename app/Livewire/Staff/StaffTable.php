@@ -64,7 +64,7 @@ class StaffTable extends Component
             $cityId = $user->staff?->activePosting?->city_id;
         }
 
-        $query = Staff::with(['rank', 'city', 'province', 'roles', 'activePosting.province', 'activePosting.city', 'activePosting.circle', 'activePosting.dumpingPoint', 'activePosting.medicalCenter'])
+        $query = Staff::with(['rank', 'user.roles', 'activePosting.province', 'activePosting.city', 'activePosting.circle.city.province', 'activePosting.dumpingPoint.circle.city.province', 'activePosting.medicalCenter.circle.city.province'])
             ->when($cityId, function ($q) use ($cityId) {
                 $q->whereHas('activePosting', function ($q2) use ($cityId) {
                     $q2->where('city_id', $cityId);
