@@ -10,6 +10,7 @@ use App\Models\Rank;
 use App\Models\City;
 use App\Models\Province;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StaffController extends Controller
 {
@@ -29,7 +30,7 @@ class StaffController extends Controller
     {
         $this->authorize('staff:create');
         $data = $request->validated();
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::id();
         $staff = Staff::create($data);
 
         return redirect()->route('staff.index')->with('success','Staff created.');
