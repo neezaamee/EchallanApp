@@ -6,10 +6,12 @@
             </div>
             <div class="col-8 col-sm-auto ms-auto text-end ps-0">
                 <div id="table-simple-pagination-actions">
+                    @can('staff:create')
                     <a href="{{ route('staff.create') }}" class="btn btn-falcon-default btn-sm" type="button">
                         <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
                         <span class="d-none d-sm-inline-block ms-1">New Staff</span>
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -93,9 +95,11 @@
                                     @endphp
                                     <span class="badge badge-soft-info text-dark fs--2"><i class="fas fa-map-marker-alt me-1"></i>{{ $place }}</span>
                                 @else
+                                    @can('staff-postings:create')
                                     <a href="{{ route('staff-postings.create', ['staff_id' => $s->id]) }}" class="btn btn-link p-0 fs--2 text-decoration-none">
                                         <span class="fas fa-plus-circle me-1"></span>Assign Now
                                     </a>
+                                    @endcan
                                 @endif
                             </td>
                             <td>
@@ -118,15 +122,21 @@
                             </td>
                             <td class="text-end pe-3">
                                 <div class="btn-group btn-group-sm">
+                                    @can('staff:view')
                                     <a href="{{ route('staff.show', $s->id) }}" class="btn btn-link p-0 text-info" title="View Profile">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    @endcan
+                                    @can('staff:edit')
                                     <a href="{{ route('staff.edit', $s->id) }}" class="btn btn-link p-0 text-primary ms-2" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    @endcan
+                                    @can('staff:delete')
                                     <button type="button" class="btn btn-link p-0 text-danger ms-2" wire:click.prevent="confirmDelete({{ $s->id }})" title="Delete">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

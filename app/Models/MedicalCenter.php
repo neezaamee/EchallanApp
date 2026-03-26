@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
+use App\Traits\HasJurisdiction;
+
 class MedicalCenter extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, HasJurisdiction;
 
     public function getActivitylogOptions(): LogOptions
     {

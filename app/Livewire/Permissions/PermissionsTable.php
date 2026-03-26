@@ -37,25 +37,15 @@ class PermissionsTable extends Component
 
     public function confirmDelete($id)
     {
-        // Assuming there isn't a specific 'permission-delete' permission, 
-        // usually admins manage permissions. Adjust if specific permission exists.
-        // For now, I'll rely on the blade view check or common admin check.
-        if (!Auth::user()->hasRole('super_admin')) {
-             // Or check functionality if 'permission-delete' exists
-        }
-
+        $this->authorize('permissions:delete');
         $this->confirmingPermissionDeletion = true;
         $this->deleteId = $id;
     }
 
     public function deletePermission()
     {
+        $this->authorize('permissions:delete');
         if (!$this->deleteId) return;
-        
-        // Strict check for safety
-        if (!Auth::user()->hasRole(['super_admin', 'admin'])) {
-             return;
-        }
 
         $permission = Permission::find($this->deleteId);
         if ($permission) {

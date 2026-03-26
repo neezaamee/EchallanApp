@@ -10,10 +10,12 @@
                         <input class="form-control form-control-sm shadow-none search" type="search" placeholder="Search Staff..." wire:model.live.debounce.500ms="search" />
                         <span class="fas fa-search position-absolute top-50 end-0 translate-middle-y me-2 text-400"></span>
                     </form>
+                    @can('staff-postings:create')
                     <a href="{{ route('staff-postings.create') }}" class="btn btn-falcon-default btn-sm">
                         <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
                         <span class="d-none d-sm-inline-block ms-1">New Posting</span>
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -42,11 +44,14 @@
                         <tr>
                             <td class="ps-3 text-muted fw-bold">#{{ $posting->id }}</td>
                             <td>
-                                <div class="fw-bold text-dark">{{ $posting->staff->fullName() }}</div>
-                                <small class="text-muted">{{ $posting->staff->email }}</small>
+                                @if($posting->staff)
+                                    <div class="fw-bold text-dark">{{ $posting->staff->fullName() }}</div>
+                                    <small class="text-muted">{{ $posting->staff->email }}</small>
+                                @else
+                                    <div class="text-danger fw-bold italic fs--2">Staff data unavailable</div>
+                                @endif
                             </td>
-                            <td><span class="font-monospace text-muted">{{ $posting->staff->cnic }}</span></td>
-                            <td>
+                            <td><span class="font-monospace text-muted">{{ $posting->staff->cnic ?? 'N/A' }}</span></td>                      <td>
                                 @php
                                     $place = 'N/A';
                                     if ($posting->medical_center_id) $place = $posting->medicalCenter->name ?? 'N/A';
@@ -64,9 +69,11 @@
                                 </span>
                             </td>
                             <td class="text-end pe-3">
+                                @can('staff-postings:create')
                                 <a href="{{ route('staff-postings.create') }}?staff_id={{ $posting->staff_id }}" class="btn btn-link p-0 text-primary" title="Transfer Staff">
                                     <i class="fas fa-exchange-alt"></i>
                                 </a>
+                                @endcan
                             </td>
                         </tr>
                     @empty

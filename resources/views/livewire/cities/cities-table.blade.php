@@ -6,10 +6,12 @@
             </div>
             <div class="col-8 col-sm-auto ms-auto text-end ps-0">
                 <div id="table-simple-pagination-actions">
+                    @can('cities:create')
                     <a href="{{ route('cities.create') }}" class="btn btn-falcon-default btn-sm" type="button">
                         <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
                         <span class="d-none d-sm-inline-block ms-1">New City</span>
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -64,12 +66,16 @@
                             <td class="text-muted">{{ $city->created_at->format('M d, Y') }}</td>
                             <td class="text-end pe-3">
                                 <div class="btn-group btn-group-sm">
+                                    @can('cities:edit')
                                     <a href="{{ route('cities.edit', $city->id) }}" class="btn btn-link p-0 text-primary" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    @endcan
+                                    @can('cities:delete')
                                     <button type="button" class="btn btn-link p-0 text-danger ms-2" title="Delete" wire:click="confirmDelete({{ $city->id }})">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

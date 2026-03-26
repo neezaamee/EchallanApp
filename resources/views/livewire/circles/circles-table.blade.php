@@ -6,10 +6,12 @@
             </div>
             <div class="col-8 col-sm-auto ms-auto text-end ps-0">
                 <div id="table-simple-pagination-actions">
+                    @can('circles:create')
                     <a href="{{ route('circles.create') }}" class="btn btn-falcon-default btn-sm" type="button">
                         <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
                         <span class="d-none d-sm-inline-block ms-1">New Circle</span>
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -60,12 +62,16 @@
                             <td class="text-muted">{{ $circle->created_at->format('M d, Y') }}</td>
                             <td class="text-end pe-3">
                                 <div class="btn-group btn-group-sm">
+                                    @can('circles:edit')
                                     <a href="{{ route('circles.edit', $circle->id) }}" class="btn btn-link p-0 text-primary" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    @endcan
+                                    @can('circles:delete')
                                     <button type="button" class="btn btn-link p-0 text-danger ms-2" wire:click.prevent="confirmDelete({{ $circle->id }})" title="Delete">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

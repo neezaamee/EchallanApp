@@ -112,11 +112,13 @@
                     <p class="mb-0 fw-semi-bold">{{ ucfirst($staff->gender) }}</p>
                 </div>
             </div>
+            @can('staff:edit')
             <div class="card-footer bg-light text-end">
                 <a href="{{ route('staff.edit', $staff->id) }}" class="btn btn-falcon-default btn-sm">
                     <span class="fas fa-edit me-1"></span>Edit Profile
                 </a>
             </div>
+            @endcan
         </div>
 
         @if(!$staff->activePosting)
@@ -124,9 +126,11 @@
                 <div class="card-body">
                     <h5 class="text-primary"><span class="fas fa-info-circle me-2"></span>Not Posted</h5>
                     <p class="fs--1 text-primary">This staff member is currently not assigned to any station.</p>
+                    @can('staff-postings:create')
                     <a href="{{ route('staff-postings.create', ['staff_id' => $staff->id]) }}" class="btn btn-primary btn-sm w-100">
                         Assign Posting Now
                     </a>
+                    @endcan
                 </div>
             </div>
         @endif

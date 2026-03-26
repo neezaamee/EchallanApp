@@ -39,12 +39,14 @@ class StaffTable extends Component
 
     public function confirmDelete($id)
     {
+        $this->authorize('staff:delete');
         $this->confirmingStaffDeletion = true;
         $this->deleteId = $id;
     }
 
     public function deleteStaff()
     {
+        $this->authorize('staff:delete');
         if (!$this->deleteId) return;
 
         $staff = Staff::find($this->deleteId);
@@ -57,19 +59,7 @@ class StaffTable extends Component
 
     public function render()
     {
-        $user = Auth::user();
-        $cityId = null;
-
-        if (!$user->hasRole(['super_admin', 'admin'])) {
-            $cityId = $user->staff?->activePosting?->city_id;
-        }
-
         $query = Staff::with(['rank', 'user.roles', 'activePosting.province', 'activePosting.city', 'activePosting.circle.city.province', 'activePosting.dumpingPoint.circle.city.province', 'activePosting.medicalCenter.circle.city.province'])
-            ->when($cityId, function ($q) use ($cityId) {
-                $q->whereHas('activePosting', function ($q2) use ($cityId) {
-                    $q2->where('city_id', $cityId);
-                });
-            })
             ->when(trim($this->search) !== '', function ($q) {
                 $s = '%' . $this->search . '%';
                 $q->where('first_name', 'like', $s)

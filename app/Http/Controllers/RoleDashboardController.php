@@ -99,7 +99,7 @@ class RoleDashboardController extends Controller
     private function getDoctorData()
     {
         $user = Auth::user();
-        $staff = $user->staff;
+        $staff = $user->staff ?? null;
 
         $data = [
             'pendingUnpaid' => 0,

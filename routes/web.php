@@ -113,23 +113,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     */
     Route::get('/dashboard', [RoleDashboardController::class, 'index'])->name('dashboard');
 
-    // Role-specific dashboards
+    // Role-specific dashboards (all point to index which handles logic)
     Route::get('/dashboard/super-admin', [RoleDashboardController::class, 'index'])
         ->name('dashboard.super-admin')->middleware('role:super_admin');
     
-    Route::get('/dashboard/cto', [RoleDashboardController::class, 'cto'])
+    Route::get('/dashboard/cto', [RoleDashboardController::class, 'index'])
         ->name('dashboard.cto')->middleware('role:cto');
 
-    Route::get('/dashboard/admin', [RoleDashboardController::class, 'admin'])
+    Route::get('/dashboard/admin', [RoleDashboardController::class, 'index'])
         ->name('dashboard.admin')->middleware('role:admin');
     
-    Route::get('/dashboard/doctor', [RoleDashboardController::class, 'doctor'])
+    Route::get('/dashboard/doctor', [RoleDashboardController::class, 'index'])
         ->name('dashboard.doctor')->middleware('role:doctor');
 
-    Route::get('/dashboard/officer', [RoleDashboardController::class, 'officer'])
+    Route::get('/dashboard/officer', [RoleDashboardController::class, 'index'])
         ->name('dashboard.officer')->middleware('role:challan_officer');
 
-    Route::get('/dashboard/accountant', [RoleDashboardController::class, 'accountant'])
+    Route::get('/dashboard/accountant', [RoleDashboardController::class, 'index'])
         ->name('dashboard.accountant')->middleware('role:accountant');
 
     Route::get('/dashboard/citizen', [RoleDashboardController::class, 'citizen'])
@@ -347,6 +347,7 @@ Route::middleware(['auth', 'can:users:view'])->group(function () {
 });
 
 Route::middleware(['auth', 'can:roles:view'])->group(function () {
+    Route::get('roles/matrix', [RoleController::class, 'matrix'])->name('roles.matrix')->middleware('role:super_admin');
     Route::resource('roles', RoleController::class);
     Route::get('roles/{role}/impersonate', [RoleController::class, 'impersonate'])->name('roles.impersonate');
 });

@@ -145,6 +145,15 @@ class RoleController extends Controller
         return redirect()->route('dashboard')->with('error', 'Could not restore original session.');
     }
 
+    public function matrix()
+    {
+        $roles = Role::with('permissions')->get();
+        $permissions = Permission::get();
+        $groupedPermissions = $this->groupPermissions($permissions);
+
+        return view('admin.roles.matrix', compact('roles', 'permissions', 'groupedPermissions'));
+    }
+
     private function groupPermissions($permissions)
     {
         $groups = [];

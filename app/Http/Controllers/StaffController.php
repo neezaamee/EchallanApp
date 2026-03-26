@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth','role:admin|super_admin']);
-    }
 
     public function index(Request $request)
     {
@@ -25,11 +21,13 @@ class StaffController extends Controller
 
     public function create()
     {
+        $this->authorize('staff:create');
         return view('app.staff.create');
     }
 
     public function store(StoreStaffRequest $request)
     {
+        $this->authorize('staff:create');
         $data = $request->validated();
         $data['created_by'] = auth()->id();
         $staff = Staff::create($data);
@@ -51,11 +49,13 @@ class StaffController extends Controller
 
     public function edit(Staff $staff)
     {
+        $this->authorize('staff:edit');
         return view('app.staff.edit', compact('staff'));
     }
 
     public function update(UpdateStaffRequest $request, Staff $staff)
     {
+        $this->authorize('staff:edit');
         $data = $request->validated();
         $staff->update($data);
         return redirect()->route('staff.index')->with('success','Staff updated.');
@@ -63,7 +63,7 @@ class StaffController extends Controller
 
     public function destroy(Staff $staff)
     {
-        $this->authorize('delete', $staff); // optional
+        $this->authorize('staff:delete');
         $staff->delete();
         return redirect()->route('staff.index')->with('success','Staff deleted.');
     }

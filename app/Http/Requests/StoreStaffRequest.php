@@ -9,7 +9,7 @@ class StoreStaffRequest extends FormRequest
 {
     public function authorize()
     {
-        return $this->user() && ($this->user()->hasRole(['super_admin','admin']));
+        return $this->user() && $this->user()->can('staff:create');
     }
 
     public function rules()

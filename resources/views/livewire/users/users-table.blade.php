@@ -6,10 +6,12 @@
             </div>
             <div class="col-8 col-sm-auto ms-auto text-end ps-0">
                 <div id="table-simple-pagination-actions">
+                    @can('users:create')
                     <a href="{{ route('users.create') }}" class="btn btn-falcon-default btn-sm" type="button">
                         <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
                         <span class="d-none d-sm-inline-block ms-1">New User</span>
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -64,17 +66,21 @@
                             </td>
                             <td class="text-end pe-3">
                                 <div class="btn-group btn-group-sm">
+                                    @can('users:view')
                                     <a href="{{ route('users.show', $user->id) }}" class="btn btn-link p-0 text-info" title="View Details">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    @endcan
+                                    @can('users:edit')
                                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-link p-0 text-primary ms-2" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    @if(auth()->user()->can('delete users'))
+                                    @endcan
+                                    @can('users:delete')
                                         <button type="button" class="btn btn-link p-0 text-danger ms-2" wire:click.prevent="confirmDelete({{ $user->id }})" title="Delete">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
-                                    @endif
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

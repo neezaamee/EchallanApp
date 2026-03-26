@@ -9,7 +9,7 @@ class UpdateStaffRequest extends FormRequest
 {
     public function authorize()
     {
-        return $this->user() && ($this->user()->hasRole(['super_admin','admin']));
+        return $this->user() && $this->user()->can('staff:edit');
     }
 
     public function rules()

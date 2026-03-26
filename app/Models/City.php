@@ -9,9 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
+use App\Traits\HasJurisdiction;
+
 class City extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity, HasJurisdiction;
 
     public function getActivitylogOptions(): LogOptions
     {

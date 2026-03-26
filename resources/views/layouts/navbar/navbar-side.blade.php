@@ -40,7 +40,7 @@
                 </li>
 
                 {{-- ==================== MEDICAL SECTION ==================== --}}
-                @can('medical-centers:view')
+                @canany(['medical-centers:view', 'medical-requests:view', 'medical-requests:create'])
                 <li class="nav-item">
                     <a class="nav-link dropdown-indicator {{ request()->routeIs('medical-requests.*') ? '' : 'collapsed' }}" 
                         href="#medical-services" role="button" data-bs-toggle="collapse" 
@@ -76,7 +76,7 @@
                         @endcan
                     </ul>
                 </li>
-                @endcan
+                @endcanany
 
                 {{-- ==================== PAYMENTS & FINANCE (Admin/Accountant) ==================== --}}
                 @role(['super_admin', 'admin', 'accountant'])
@@ -255,6 +255,7 @@
                             </div>
                         </a>
                         <ul class="nav collapse {{ request()->routeIs('provinces.*') || request()->routeIs('cities.*') || request()->routeIs('circles.*') || request()->routeIs('dumping-points.*') || request()->routeIs('pick-up-points.*') || request()->routeIs('medical-centers.*') ? 'show' : '' }}" id="infrastructure">
+                            @can('provinces:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('provinces.*') ? 'active' : '' }}"
                                     href="{{ route('provinces.index') }}">
@@ -263,6 +264,8 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
+                            @can('cities:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('cities.*') ? 'active' : '' }}"
                                     href="{{ route('cities.index') }}">
@@ -271,6 +274,8 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
+                            @can('circles:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('circles.*') ? 'active' : '' }}"
                                     href="{{ route('circles.index') }}">
@@ -279,6 +284,8 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
+                            @can('dumping-points:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('dumping-points.*') ? 'active' : '' }}"
                                     href="{{ route('dumping-points.index') }}">
@@ -287,6 +294,7 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
                             @can('pick-up-points:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('pick-up-points.*') ? 'active' : '' }}"
@@ -297,6 +305,7 @@
                                 </a>
                             </li>
                             @endcan
+                            @can('medical-centers:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('medical-centers.*') ? 'active' : '' }}"
                                     href="{{ route('medical-centers.index') }}">
@@ -305,12 +314,13 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
                         </ul>
                     </li>
                 @endcanany
 
                 {{-- ==================== SYSTEM ADMINISTRATION ==================== --}}
-                @role('super_admin|admin')
+                @canany(['logs:view', 'backups:view'])
                     <li class="nav-item">
                         <a class="nav-link dropdown-indicator {{ request()->routeIs('activity-logs.*') || request()->routeIs('backups.*') || request()->routeIs('changelog.index') ? '' : 'collapsed' }}" 
                             href="#system-admin" role="button" data-bs-toggle="collapse" 
@@ -322,6 +332,7 @@
                             </div>
                         </a>
                         <ul class="nav collapse {{ request()->routeIs('activity-logs.*') || request()->routeIs('backups.*') || request()->routeIs('changelog.index') ? 'show' : '' }}" id="system-admin">
+                            @can('logs:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}"
                                     href="{{ route('activity-logs.index') }}">
@@ -331,6 +342,8 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
+                            @can('backups:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('backups.index') ? 'active' : '' }}"
                                     href="{{ route('backups.index') }}">
@@ -340,6 +353,8 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
+                            @can('settings:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('changelog.index') || request()->routeIs('changelog.create') || request()->routeIs('changelog.edit') ? 'active' : '' }}"
                                     href="{{ route('changelog.index') }}">
@@ -349,12 +364,13 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
                         </ul>
                     </li>
-                @endrole
+                @endcanany
 
                 {{-- ==================== STAFF MANAGEMENT ==================== --}}
-                @can('staff:view')
+                @canany(['staff:view', 'staff-postings:view'])
                     <li class="nav-item">
                         <a class="nav-link dropdown-indicator {{ request()->routeIs('staff.*') || request()->routeIs('staff-postings.*') ? '' : 'collapsed' }}" 
                             href="#staff-management" role="button" data-bs-toggle="collapse" 
@@ -362,20 +378,12 @@
                             aria-controls="staff-management">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-icon"><span class="fas fa-users"></span></span>
-                                <span class="nav-link-text ps-1">Staff Management</span>
+                                <span class="nav-link-text ps-1">Staff and Postings</span>
                             </div>
                         </a>
                         <ul class="nav collapse {{ request()->routeIs('staff.*') || request()->routeIs('staff-postings.*') ? 'show' : '' }}" id="staff-management">
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('staff.create') ? 'active' : '' }}"
-                                    href="{{ route('staff.create') }}">
-                                    <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><span class="fas fa-user-plus"></span></span>
-                                        <span class="nav-link-text ps-1">Add Staff</span>
-                                    </div>
-                                </a>
-                            </li>
 
+                            @can('staff:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('staff.index') || request()->routeIs('staff.edit') ? 'active' : '' }}"
                                     href="{{ route('staff.index') }}">
@@ -385,7 +393,9 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
 
+                            @can('staff-postings:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('staff-postings.*') ? 'active' : '' }}"
                                     href="{{ route('staff-postings.index') }}">
@@ -395,13 +405,13 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
                         </ul>
                     </li>
-                @endcan
+                @endcanany
 
-                {{-- ==================== USER MANAGEMENT (TODO) ==================== --}}
                 {{-- ==================== USER MANAGEMENT ==================== --}}
-                @can('users:view')
+                @canany(['users:view', 'roles:view', 'permissions:view'])
                     <li class="nav-item">
                         <a class="nav-link dropdown-indicator {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? '' : 'collapsed' }}" 
                             href="#user-management" role="button" data-bs-toggle="collapse" 
@@ -413,26 +423,42 @@
                             </div>
                         </a>
                         <ul class="nav collapse {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'show' : '' }}" id="user-management">
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}"
-                                    href="{{ route('users.index') }}">
-                                    <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><span class="fas fa-users-cog"></span></span>
-                                        <span class="nav-link-text ps-1">Manage Users</span>
-                                    </div>
-                                </a>
-                            </li>
+                                @can('users:view')
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}"
+                                        href="{{ route('users.index') }}">
+                                        <div class="d-flex align-items-center">
+                                            <span class="nav-link-icon"><span class="fas fa-users-cog"></span></span>
+                                            <span class="nav-link-text ps-1">Manage Users</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                @endcan
 
-                            <li class="nav-item">
-                                <a class="nav-link dropdown-indicator {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}"
-                                    href="#roles-permissions" data-bs-toggle="collapse" role="button" aria-expanded="false"
+                                @role('super_admin')
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('roles.matrix') ? 'active' : '' }}"
+                                        href="{{ route('roles.matrix') }}">
+                                        <div class="d-flex align-items-center">
+                                            <span class="nav-link-icon"><span class="fas fa-th"></span></span>
+                                            <span class="nav-link-text ps-1">Role Matrix</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                @endrole
+
+                                @canany(['roles:view', 'permissions:view'])
+                                <li class="nav-item">
+                                <a class="nav-link dropdown-indicator {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? '' : 'collapsed' }}"
+                                    href="#roles-permissions" data-bs-toggle="collapse" role="button" aria-expanded="{{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'true' : 'false' }}"
                                     aria-controls="roles-permissions">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-icon"><span class="fas fa-shield-alt"></span></span>
                                         <span class="nav-link-text ps-1">Roles & Permissions</span>
                                     </div>
                                 </a>
-                                <ul class="nav collapse" id="roles-permissions">
+                                <ul class="nav collapse {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'show' : '' }}" id="roles-permissions">
+                                    @can('roles:view')
                                     <li class="nav-item">
                                         <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}"
                                             href="{{ route('roles.index') }}">
@@ -441,6 +467,8 @@
                                             </div>
                                         </a>
                                     </li>
+                                    @endcan
+                                    @can('permissions:view')
                                     <li class="nav-item">
                                         <a class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}"
                                             href="{{ route('permissions.index') }}">
@@ -449,11 +477,13 @@
                                             </div>
                                         </a>
                                     </li>
+                                    @endcan
                                 </ul>
                             </li>
+                            @endcanany
                         </ul>
                     </li>
-                @endcan
+                @endcanany
 
                 {{-- ==================== REPORTS & ANALYTICS ==================== --}}
                 @can('reports:view')

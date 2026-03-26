@@ -41,6 +41,7 @@ class CitiesTable extends Component
     // ✅ Handle delete confirmation
     public function confirmDelete($id)
     {
+        $this->authorize('cities:delete');
         $this->confirmingCityDeletion = true; // show modal
         $this->deleteId = $id;
     }
@@ -48,6 +49,7 @@ class CitiesTable extends Component
     // ✅ Perform deletion
     public function deleteCity()
     {
+        $this->authorize('cities:delete');
         if (!$this->deleteId) {
             return;
         }
