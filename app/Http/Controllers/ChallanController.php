@@ -3,19 +3,31 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Challan;
+use App\Models\DumpingPoint;
+use App\Models\PickUpPoint;
+use App\Services\BankService;
 
 class ChallanController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        /** @var User $user */
+        $user = Auth::user();
         
         // Super Admin & Admin see ALL challans
         if ($user->hasRole(['super_admin', 'admin'])) {
-            $challans = \App\Models\Challan::latest()->paginate(10);
+            $challans = Challan::latest()->paginate(10);
+        } elseif ($user->hasRole('citizen')) {
+            // Citizens see only their own challans based on CNIC
+            $challans = Challan::where('violator_cnic', $user->cnic)
+                ->latest()
+                ->paginate(10);
         } else {
-            // Officers see only their own
-            $challans = \App\Models\Challan::where('officer_id', $user->id)
+            // Officers see only their own generated challans
+            $challans = Challan::where('officer_id', $user->id)
                 ->latest()
                 ->paginate(10);
         }
@@ -25,7 +37,8 @@ class ChallanController extends Controller
 
     public function create()
     {
-        $officer = auth()->user();
+        /** @var User $officer */
+        $officer = Auth::user();
         $staff = $officer->staff;
         
         $posting = $staff ? $staff->activePosting : null;
@@ -42,7 +55,7 @@ class ChallanController extends Controller
            ])->with('error', 'You are not assigned to a Dumping Point.');
         }
 
-        $pickUpPoints = \App\Models\PickUpPoint::where('dumping_point_id', $dumpingPoint->id)
+        $pickUpPoints = PickUpPoint::where('dumping_point_id', $dumpingPoint->id)
             ->where('is_active', true)
             ->get();
 
@@ -72,34 +85,34 @@ class ChallanController extends Controller
         $vehicleType = $request->vehicle_type;
         $headType = ($vehicleType === 'motorcycle') ? 'TRAFFIC_BIKE' : 'TRAFFIC_CAR';
         
-        // Use central config for uniform pricing across categories for now
-        $amount = config("fees.traffic.{$vehicleType}", config("fees.traffic.bike", 200));
-        if ($vehicleType === 'car') {
-            $amount = config("fees.traffic.car", 2000);
-        } elseif ($vehicleType === 'motorcycle') {
-            $amount = config("fees.traffic.bike", 200);
-        } else {
-             $amount = config("fees.traffic.other", 3000);
-        }
+        // Use central config 
+        $amount = match($vehicleType) {
+            'motorcycle' => config('fees.traffic.bike', 200),
+            'car'        => config('fees.traffic.car', 2000),
+            default      => config('fees.traffic.other', 3000),
+        };
 
         // Get City ID for PSID generation
-        $staff = auth()->user()->staff;
+        /** @var User $user */
+        $user = Auth::user();
+        $staff = $user->staff;
         $cityId = $staff?->activePosting?->city_id;
+        
         if (!$cityId && $request->dumping_point_id) {
-             $dp = \App\Models\DumpingPoint::find($request->dumping_point_id);
+             $dp = DumpingPoint::find($request->dumping_point_id);
              $cityId = $dp?->circle?->city_id;
         }
 
         // Generate PSID via Bank Service
-        $psid = \App\Services\BankService::generatePsid($headType, $amount, $cityId);
+        $psid = BankService::generatePsid($headType, (float) $amount, $cityId);
 
         // Ensure uniqueness
-        while(\App\Models\Challan::where('psid', $psid)->exists()){
-             $psid = \App\Services\BankService::generatePsid($headType, $amount, $cityId);
+        while(Challan::where('psid', $psid)->exists()){
+             $psid = BankService::generatePsid($headType, (float) $amount, $cityId);
         }
 
-        \App\Models\Challan::create([
-            'officer_id' => auth()->id(),
+        Challan::create([
+            'officer_id' => Auth::id(),
             'dumping_point_id' => $request->dumping_point_id,
             'pick_up_point_id' => $request->pick_up_point_id,
             'violator_name' => $request->violator_name,
@@ -117,12 +130,12 @@ class ChallanController extends Controller
         return redirect()->route('challans.index')->with('success', 'Challan issued successfully with PSID: ' . $psid);
     }
     
-    public function show(\App\Models\Challan $challan)
+    public function show(Challan $challan)
     {
         return view('app.challans.show', compact('challan'));
     }
 
-    public function validatePayment(Request $request, \App\Models\Challan $challan)
+    public function validatePayment(Request $request, Challan $challan)
     {
         $request->validate([
             'transaction_id' => 'required|string'
@@ -148,7 +161,7 @@ class ChallanController extends Controller
             'psid' => 'required|string'
         ]);
 
-        $challan = \App\Models\Challan::where('psid', $request->psid)->first();
+        $challan = Challan::where('psid', $request->psid)->first();
 
         if (!$challan) {
             return back()->with('error', 'PSID not found.')->withInput();
@@ -157,20 +170,23 @@ class ChallanController extends Controller
         return view('app.impound.status-result', compact('challan'));
     }
 
-    public function releaseForm(\App\Models\Challan $challan)
+    public function releaseForm(Challan $challan)
     {
         if ($challan->payment_status !== 'paid') {
             return redirect()->route('dashboard')->with('error', 'Cannot release vehicle. Payment not cleared.');
         }
 
         if ($challan->released_at) {
-            return redirect()->route('dashboard')->with('error', 'Vehicle already released on ' . $challan->released_at->format('d M, Y'));
+            $releasedAt = $challan->released_at instanceof \Carbon\Carbon 
+                ? $challan->released_at->format('d M, Y') 
+                : $challan->released_at;
+            return redirect()->route('dashboard')->with('error', 'Vehicle already released on ' . $releasedAt);
         }
 
         return view('app.impound.release', compact('challan'));
     }
 
-    public function release(Request $request, \App\Models\Challan $challan)
+    public function release(Request $request, Challan $challan)
     {
         $request->validate([
             'receiver_name' => 'required|string|max:255',
@@ -182,10 +198,13 @@ class ChallanController extends Controller
             return back()->with('error', 'Payment must be verified before release.');
         }
 
+        /** @var User $user */
+        $user = Auth::user();
+
         $challan->update([
             'status' => 'released',
             'released_at' => now(),
-            'released_by_staff_id' => auth()->user()->staff?->id,
+            'released_by_staff_id' => $user->staff?->id,
             'receiver_name' => $request->receiver_name,
             'receiver_cnic' => $request->receiver_cnic,
             'receiver_father_name' => $request->receiver_father_name,
@@ -194,9 +213,11 @@ class ChallanController extends Controller
         return redirect()->route('dashboard')->with('success', 'Vehicle released successfully to ' . $request->receiver_name);
     }
 
-    public function destroy(\App\Models\Challan $challan)
+    public function destroy(Challan $challan)
     {
-        if (!auth()->user()->hasRole('super_admin')) {
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->hasRole('super_admin')) {
              abort(403);
         }
         

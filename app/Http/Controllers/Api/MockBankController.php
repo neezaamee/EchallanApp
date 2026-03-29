@@ -61,14 +61,14 @@ class MockBankController extends Controller
         // or just random for testing if no state is kept.
         // BUT, since we need a "Manual Sandbox" to "Test it", we should probably have a way to force payment.
         
-        $status = \Cache::get("mock_payment_{$request->psid}", 'UNPAID');
+        $status = Cache::get("mock_payment_{$request->psid}", 'UNPAID');
 
         return response()->json([
             'status' => 'success',
             'data' => [
                 'psid' => $request->psid,
                 'payment_status' => $status,
-                'amount_paid' => $status === 'PAID' ? 500 : 0, // Simplified
+                'amount_paid' => $status === 'PAID' ? config('fees.medical', 200) : 0, // Centralized config
                 'transaction_id' => $status === 'PAID' ? 'TXN-' . Str::random(10) : null,
             ]
         ]);
@@ -86,8 +86,8 @@ class MockBankController extends Controller
         ]);
 
         // Store payment method in cache too if needed, or just status
-        \Cache::put("mock_payment_{$request->psid}", 'PAID', now()->addDays(1));
-        \Cache::put("mock_payment_method_{$request->psid}", $request->payment_method ?? 'sandbox_simulation', now()->addDays(1));
+        Cache::put("mock_payment_{$request->psid}", 'PAID', now()->addDays(1));
+        Cache::put("mock_payment_method_{$request->psid}", $request->payment_method ?? 'sandbox_simulation', now()->addDays(1));
 
         return response()->json([
             'status' => 'success',
@@ -110,8 +110,8 @@ class MockBankController extends Controller
         $psid = $request->psid;
         // In real flow, we'd check BankService::checkStatus($psid)
         // Here we just check our mock cache
-        $status = \Cache::get("mock_payment_{$request->psid}", 'UNPAID');
-        $method = \Cache::get("mock_payment_method_{$request->psid}", $request->payment_method ?? 'unknown');
+        $status = Cache::get("mock_payment_{$request->psid}", 'UNPAID');
+        $method = Cache::get("mock_payment_method_{$request->psid}", $request->payment_method ?? 'unknown');
 
         if ($status === 'PAID') {
             $transactionId = 'TXN-' . Str::upper(Str::random(10)) . '-SYNC';
@@ -137,7 +137,7 @@ class MockBankController extends Controller
                     $medicalRequest->update([
                         'payment_status' => 'paid'
                     ]);
-                    $amount = $medicalRequest->amount ?? 500; // Fallback
+                    $amount = $medicalRequest->amount ?? config('fees.medical', 200); // Fallback to config
                     $model = $medicalRequest;
                 }
             }

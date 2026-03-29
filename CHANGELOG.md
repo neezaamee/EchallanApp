@@ -13,14 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   Bike Each Category: 200rs
     -   Car Each Category: 2000rs
     -   Medical: 200rs
--   **Bank-Grade PSID System**: Comprehensive refactor of the Payment Slip ID generation.
-    -   **20-Digit Structure**: `[Category][CityCode][Date][Random][CheckDigit]`.
-    -   **Luhn Algorithm Integration**: Mathematical validation for PSIDs to prevent user typing errors at bank channels.
-    -   **Regional Tracking**: 3-digit city codes embedded in PSIDs for automated revenue reconciliation.
+-   **1Link & Bank Integration Guide**: Published a comprehensive technical manual for financial partners.
+    -   **API Endpoints**: Documented Inquiry, Callback, and 1Link simulation paths.
+    -   **Luhn Specification**: Standardized 20-digit PSID structure with mathematical validation rules.
+    -   **Postman Collection**: Linked resources for automated API testing by banking teams.
 -   **Citizen Dashboard 2.0**: Unified view for all citizen records.
     -   **CNIC-Based Aggregation**: Automatically pulls both Traffic Challans and Medical Requests linked to the citizen's CNIC.
-    -   **Detailed Challan View**: New interface for viewing vehicle impound details and violator information.
-    -   **1Link Instructions**: Integrated payment guidance for external banking channels (Bank Apps/ATMs).
+    -   **Challan Visibility**: Fixed record filtering to ensure citizens can see their own traffic challans in the list view.
+    -   **1Link Instructions**: Integrated payment guidance for external banking channels.
 
 ### Changed
 
@@ -29,9 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
--   Resolved `RouteNotFoundException` when citizens attempted to search for impounded vehicles.
--   Fixed "blank page" issue when viewing challan details.
--   Restored visibility of historical medical requests for logged-in citizens.
+-   **API Data Integrity**: Resolved 500/200 PKR amount discrepancy by removing hardcoded legacy fees from API inquiry controllers.
+-   **Challan Filtering**: Fixed issue where logged-in citizens could not see their own issued challans in the management list.
+-   **Fee Mapping**: Corrected 'motorcycle' to 'bike' mapping in `ChallanController` to ensure correct fee retrieval from central config.
+-   **IDE Code Quality**: Resolved several static analysis warnings and undefined method errors in `ChallanController`.
+-   **Date Formatting**: Fixed potential crash when formatting `released_at` timestamps in vehicle release views.
 
 ## [1.4.0] - 2026-03-12
 

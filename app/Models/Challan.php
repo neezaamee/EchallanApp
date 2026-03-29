@@ -30,6 +30,11 @@ class Challan extends Model
         'receiver_father_name',
     ];
 
+    protected $casts = [
+        'released_at' => 'datetime',
+        'fine_amount' => 'decimal:2',
+    ];
+
     protected static function boot()
     {
         parent::boot();

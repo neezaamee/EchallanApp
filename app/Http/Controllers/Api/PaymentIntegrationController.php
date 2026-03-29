@@ -57,7 +57,7 @@ class PaymentIntegrationController extends Controller
         if (!$response) {
             $medical = MedicalRequest::where('psid', $psid)->first();
             if ($medical) {
-                $amount = 500; // Fixed amount for medical
+                $amount = $medical->amount ?? config('fees.medical', 200); // Dynamic amount from model/config
                 $response = [
                     'status' => '00',
                     'message' => 'Record Found',
