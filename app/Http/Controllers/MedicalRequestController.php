@@ -139,12 +139,17 @@ class MedicalRequestController extends Controller
             $medicalCenterId = $request->medical_center_id;
         }
 
+        // Get City ID from Medical Center
+        $center = MedicalCenter::find($medicalCenterId);
+        $cityId = $center?->circle?->city_id;
+
         // Generate PSID via BankService
-        $psid = \App\Services\BankService::generatePsid('MEDICAL', 500);
+        $medicalFee = config('fees.medical', 200);
+        $psid = \App\Services\BankService::generatePsid('MEDICAL', $medicalFee, $cityId);
         
         // Ensure uniqueness (though very unlikely to collide with 18 digits + time)
         while(MedicalRequest::where('psid', $psid)->exists()){
-             $psid = \App\Services\BankService::generatePsid('MEDICAL', 500);
+             $psid = \App\Services\BankService::generatePsid('MEDICAL', $medicalFee, $cityId);
         }
 
         MedicalRequest::create([
@@ -153,7 +158,7 @@ class MedicalRequestController extends Controller
             'status' => 'pending',
             'payment_status' => 'unpaid',
             'psid' => $psid,
-            'amount' => 500, // Fixed amount for now
+            'amount' => $medicalFee, // From central fees config
             'created_by' => $user->id,
         ]);
 

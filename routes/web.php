@@ -24,6 +24,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController; 
 use App\Http\Controllers\PermissionController;
+use Livewire\Volt\Volt;
 
 
 /*
@@ -59,6 +60,14 @@ Route::middleware('guest')->group(function () {
     // Registration (for citizen users only)
     Route::get('register', [CustomRegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [CustomRegisteredUserController::class, 'store']);
+
+    // Password Recovery (Breeze Volt)
+    // Password Recovery (Breeze Volt)
+    Volt::route('forgot-password', 'pages.auth.forgot-password')
+        ->name('password.request');
+
+    Volt::route('reset-password/{token}', 'pages.auth.reset-password')
+        ->name('password.reset');
 });
 
 // Logout route (only accessible to authenticated users)
@@ -172,6 +181,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/release/{challan}', [\App\Http\Controllers\ChallanController::class, 'releaseForm'])->name('impound.release.form');
         Route::post('/release/{challan}', [\App\Http\Controllers\ChallanController::class, 'release'])->name('impound.release.submit');
     });
+
+    // Password Confirmation (Breeze Volt)
+    Volt::route('confirm-password', 'pages.auth.confirm-password')
+        ->name('password.confirm');
 });
 
 // Public Changelog (accessible to all authenticated users)

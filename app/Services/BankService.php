@@ -3,29 +3,104 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use App\Models\City;
 
 class BankService
 {
     /**
      * Generate a PSID for a specific payment head (MEDICAL, TRAFFIC_CAR, TRAFFIC_BIKE)
+     * 
+     * NEW Structure (20 Digits):
+     * [Category(1)] [CityCode(3)] [Date(6)] [Random(9)] [Check Digit(1)]
      *
      * @param string $headType
      * @param float $amount
-     * @param array $additionalData
+     * @param int|null $cityId
      * @return string
      */
-    public static function generatePsid(string $headType, float $amount, array $additionalData = [])
+    public static function generatePsid(string $headType, float $amount, $cityId = null)
     {
-        // 1. Check if Sandbox is enabled
-        if (config('bank.sandbox.enabled')) {
-            return self::generateSandboxPsid($headType, $amount);
+        // 1. Get Category Code
+        $categoryMap = [
+            'MEDICAL' => '1',
+            'TRAFFIC_CAR' => '2',
+            'TRAFFIC_BIKE' => '3',
+            'TRAFFIC_OTHER' => '4',
+        ];
+        $category = $categoryMap[$headType] ?? '9';
+
+        // 2. Get City Code (3 digits)
+        $cityCode = '000';
+        if ($cityId) {
+            $city = City::find($cityId);
+            if ($city && $city->code) {
+                $cityCode = str_pad($city->code, 3, '0', STR_PAD_LEFT);
+            } else if ($city) {
+                $cityCode = str_pad($city->id, 3, '0', STR_PAD_LEFT);
+            }
         }
 
-        // 2. Real API Integration (Placeholder)
-        // return self::generateLivePsid($headType, $amount);
-        
-        // Fallback to local generation if API fails or not implemented
-        return self::generateLocalPsid($headType);
+        // 3. Date Component (6 digits: ymd)
+        $date = date('ymd');
+
+        // 4. Generate Random Numeric String (9 digits)
+        $random = '';
+        while (strlen($random) < 9) {
+            $random .= mt_rand(0, 9);
+        }
+
+        // 5. Combine first 19 digits
+        $basePsid = $category . $cityCode . $date . $random;
+
+        // 6. Calculate Check Digit (Luhn Algorithm)
+        $checkDigit = self::calculateLuhn($basePsid);
+
+        return $basePsid . $checkDigit;
+    }
+
+    /**
+     * Calculate Luhn Check Digit for a given numeric string
+     * 
+     * @param string $number
+     * @return int
+     */
+    private static function calculateLuhn($number)
+    {
+        $sum = 0;
+        $numDigits = strlen($number);
+        $parity = ($numDigits + 1) % 2;
+
+        for ($i = 0; $i < $numDigits; $i++) {
+            $digit = (int)$number[$i];
+            if ($i % 2 == $parity) {
+                $digit *= 2;
+                if ($digit > 9) {
+                    $digit -= 9;
+                }
+            }
+            $sum += $digit;
+        }
+
+        return (10 - ($sum % 10)) % 10;
+    }
+
+    /**
+     * Validate a PSID using Luhn Algorithm
+     * 
+     * @param string $psid
+     * @return bool
+     */
+    public static function validatePsid($psid)
+    {
+        if (strlen($psid) !== 20 || !is_numeric($psid)) {
+            return false;
+        }
+
+        $base = substr($psid, 0, 19);
+        $check = (int)substr($psid, 19, 1);
+
+        return self::calculateLuhn($base) === $check;
     }
 
     /**
@@ -44,65 +119,11 @@ class BankService
                     return $response->json()['data']['payment_status'] ?? 'UNPAID';
                 }
              } catch (\Exception $e) {
-                 \Log::error("Bank API Error: " . $e->getMessage());
+                Log::error("Bank API Error: " . $e->getMessage());
              }
-             return 'UNPAID'; // Default
+             return 'UNPAID'; 
         }
 
         return 'UNPAID';
-    }
-
-    private static function generateSandboxPsid($headType, $amount)
-    {
-        $url = config('bank.sandbox.api_url') . '/generate-psid';
-        
-        try {
-            $response = Http::post($url, [
-                'head' => $headType,
-                'amount' => $amount
-            ]);
-
-            if ($response->successful()) {
-                return $response->json()['data']['psid'];
-            }
-        } catch (\Exception $e) {
-            \Log::error("Bank Sandbox API Error: " . $e->getMessage());
-        }
-
-        // Fallback if Mock API is down
-        return self::generateLocalPsid($headType);
-    }
-
-    private static function generateLocalPsid($headType)
-    {
-        // 1. Get Prefix (Using config, check length)
-        $prefix = config("bank.heads.{$headType}.prefix", '99');
-        
-        // Ensure prefix is reasonable (e.g., 2 chars). If shorter or longer, handle it? 
-        // User config: 10, 20, 30. (2 digits)
-        
-        // 2. Date Component (6 digits: ymd)
-        $date = date('ymd');
-        
-        // 3. Calculate remaining length for Random component
-        // Target: 20 digits
-        // Used: Length(Prefix) + 6
-        $usedLength = strlen($prefix) + 6;
-        $randomLength = 20 - $usedLength;
-        
-        if ($randomLength < 1) {
-            // Fallback safety if prefix is huge (unlikely)
-            $randomLength = 4;
-        }
-
-        // 4. Generate Random Numeric String
-        // mt_rand max is limited, so we concat multiple if needed or use a loop
-        $random = '';
-        while (strlen($random) < $randomLength) {
-            $random .= mt_rand(0, 9);
-        }
-        $random = substr($random, 0, $randomLength);
-
-        return $prefix . $date . $random;
     }
 }

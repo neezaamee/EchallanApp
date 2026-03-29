@@ -17,8 +17,8 @@ trait HasJurisdiction
             if (Auth::check()) {
                 $user = Auth::user();
 
-                // Super Admins and Admins see everything (global jurisdictions)
-                if ($user->hasRole(['super_admin', 'admin'])) {
+                // Super Admins, Admins, and Citizens see global jurisdictions (all provinces/cities)
+                if ($user->hasRole(['super_admin', 'admin', 'citizen'])) {
                     return;
                 }
 

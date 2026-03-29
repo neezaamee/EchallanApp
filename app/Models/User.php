@@ -90,4 +90,15 @@ class User extends Authenticatable implements MustVerifyEmail
             ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\CustomResetPassword($token));
+    }
 }

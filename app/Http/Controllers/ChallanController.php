@@ -68,11 +68,35 @@ class ChallanController extends Controller
 
         list($violationName, $amount) = explode('|', $request->violation);
 
-        // Determine Payment Head based on Vehicle Type
-        $headType = ($request->vehicle_type === 'motorcycle') ? 'TRAFFIC_BIKE' : 'TRAFFIC_CAR';
+        // Determine Payment Head and Amount based on Vehicle Type
+        $vehicleType = $request->vehicle_type;
+        $headType = ($vehicleType === 'motorcycle') ? 'TRAFFIC_BIKE' : 'TRAFFIC_CAR';
+        
+        // Use central config for uniform pricing across categories for now
+        $amount = config("fees.traffic.{$vehicleType}", config("fees.traffic.bike", 200));
+        if ($vehicleType === 'car') {
+            $amount = config("fees.traffic.car", 2000);
+        } elseif ($vehicleType === 'motorcycle') {
+            $amount = config("fees.traffic.bike", 200);
+        } else {
+             $amount = config("fees.traffic.other", 3000);
+        }
+
+        // Get City ID for PSID generation
+        $staff = auth()->user()->staff;
+        $cityId = $staff?->activePosting?->city_id;
+        if (!$cityId && $request->dumping_point_id) {
+             $dp = \App\Models\DumpingPoint::find($request->dumping_point_id);
+             $cityId = $dp?->circle?->city_id;
+        }
 
         // Generate PSID via Bank Service
-        $psid = \App\Services\BankService::generatePsid($headType, $amount, $request->all());
+        $psid = \App\Services\BankService::generatePsid($headType, $amount, $cityId);
+
+        // Ensure uniqueness
+        while(\App\Models\Challan::where('psid', $psid)->exists()){
+             $psid = \App\Services\BankService::generatePsid($headType, $amount, $cityId);
+        }
 
         \App\Models\Challan::create([
             'officer_id' => auth()->id(),
@@ -183,11 +207,14 @@ class ChallanController extends Controller
 
     private function getViolations()
     {
+        $bikeFee = config('fees.traffic.bike', 200);
+        $carFee = config('fees.traffic.car', 2000);
+
         return [
-            ['name' => 'Wrong Parking', 'fine_car' => 2000, 'fine_bike' => 500],
-            ['name' => 'No Parking Zone', 'fine_car' => 3000, 'fine_bike' => 1000],
-            ['name' => 'Obstruction of Traffic', 'fine_car' => 1500, 'fine_bike' => 400],
-            ['name' => 'Double Parking', 'fine_car' => 2500, 'fine_bike' => 800],
+            ['name' => 'Wrong Parking', 'fine_car' => $carFee, 'fine_bike' => $bikeFee],
+            ['name' => 'No Parking Zone', 'fine_car' => $carFee, 'fine_bike' => $bikeFee],
+            ['name' => 'Obstruction of Traffic', 'fine_car' => $carFee, 'fine_bike' => $bikeFee],
+            ['name' => 'Double Parking', 'fine_car' => $carFee, 'fine_bike' => $bikeFee],
         ];
     }
 }

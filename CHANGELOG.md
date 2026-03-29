@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-03-29
+
+### Added
+
+-   **Standardized Fee Management**: Centralized all system fees in `config/fees.php` for easy future adjustments.
+    -   Bike Each Category: 200rs
+    -   Car Each Category: 2000rs
+    -   Medical: 200rs
+-   **Bank-Grade PSID System**: Comprehensive refactor of the Payment Slip ID generation.
+    -   **20-Digit Structure**: `[Category][CityCode][Date][Random][CheckDigit]`.
+    -   **Luhn Algorithm Integration**: Mathematical validation for PSIDs to prevent user typing errors at bank channels.
+    -   **Regional Tracking**: 3-digit city codes embedded in PSIDs for automated revenue reconciliation.
+-   **Citizen Dashboard 2.0**: Unified view for all citizen records.
+    -   **CNIC-Based Aggregation**: Automatically pulls both Traffic Challans and Medical Requests linked to the citizen's CNIC.
+    -   **Detailed Challan View**: New interface for viewing vehicle impound details and violator information.
+    -   **1Link Instructions**: Integrated payment guidance for external banking channels (Bank Apps/ATMs).
+
+### Changed
+
+-   Refined **Jurisdictional Security Filters** (`HasJurisdiction` trait) to allow Citizens to view Global Provinces and Cities for registration and requests.
+-   Updated `MedicalRequestController` and `ChallanController` to support the new city-aware PSID generation.
+
+### Fixed
+
+-   Resolved `RouteNotFoundException` when citizens attempted to search for impounded vehicles.
+-   Fixed "blank page" issue when viewing challan details.
+-   Restored visibility of historical medical requests for logged-in citizens.
+
 ## [1.4.0] - 2026-03-12
 
 ### Added

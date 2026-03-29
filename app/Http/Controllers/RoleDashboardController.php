@@ -183,23 +183,44 @@ class RoleDashboardController extends Controller
     private function getCitizenData()
     {
         $user = Auth::user();
-        $citizen = Citizen::where('user_id', $user->id)->first();
+        $cnic = $user->cnic;
 
         $data = [
             'totalRequests' => 0,
             'pendingRequests' => 0,
             'approvedRequests' => 0,
             'unpaidRequests' => 0,
-            'recentRequests' => collect(),
+            'recentRequests' => collect(),  // Medical
+            'recentChallans' => collect(),  // Traffic
         ];
 
-        if ($citizen) {
-            $baseQuery = MedicalRequest::where('citizen_id', $citizen->id);
-            $data['totalRequests'] = (clone $baseQuery)->count();
-            $data['pendingRequests'] = (clone $baseQuery)->where('status', 'pending')->count();
-            $data['approvedRequests'] = (clone $baseQuery)->where('status', 'passed')->count();
-            $data['unpaidRequests'] = (clone $baseQuery)->where('payment_status', 'unpaid')->count();
-            $data['recentRequests'] = (clone $baseQuery)->with('medicalCenter')->latest()->take(10)->get();
+        if ($cnic) {
+            // 1. Medical Requests (via associated Citizen record for strict relationship, or by CNIC)
+            $medicalQuery = MedicalRequest::whereHas('citizen', function($q) use ($cnic) {
+                $q->where('cnic', $cnic);
+            });
+
+            // 2. Traffic Challans (via violator_cnic)
+            $challanQuery = \App\Models\Challan::where('violator_cnic', $cnic);
+
+            // Combined Stats
+            $data['totalRequests'] = $medicalQuery->count() + $challanQuery->count();
+            
+            // Pending/Processing
+            $data['pendingRequests'] = $medicalQuery->clone()->where('status', 'pending')->count() + 
+                                     $challanQuery->clone()->whereNotIn('status', ['paid', 'released'])->count();
+            
+            // Approved/Passed/Released
+            $data['approvedRequests'] = $medicalQuery->clone()->where('status', 'passed')->count() + 
+                                      $challanQuery->clone()->where('status', 'released')->count();
+            
+            // Unpaid
+            $data['unpaidRequests'] = $medicalQuery->clone()->where('payment_status', 'unpaid')->count() + 
+                                    $challanQuery->clone()->where('payment_status', 'unpaid')->count();
+
+            // Recent Lists
+            $data['recentRequests'] = $medicalQuery->with('medicalCenter')->latest()->take(5)->get();
+            $data['recentChallans'] = $challanQuery->latest()->take(5)->get();
         }
 
         return $data;
