@@ -2,7 +2,9 @@ name: Deploy to cPanel via FTP
 on:
   push:
     branches:
-      - main # Change this if your default branch is 'master'
+      - main
+      - home-laptop-red
+  workflow_dispatch:
 
 jobs:
   web-deploy:
