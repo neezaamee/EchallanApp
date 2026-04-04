@@ -7,9 +7,11 @@ use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
+use App\Traits\HasJurisdiction;
+
 class Staff extends Model
 {
-    use HasRoles, LogsActivity;
+    use HasRoles, LogsActivity, HasJurisdiction;
 
     public function getActivitylogOptions(): LogOptions
     {

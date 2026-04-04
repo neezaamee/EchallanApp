@@ -37,16 +37,15 @@ class UsersTable extends Component
 
     public function confirmDelete($id)
     {
-        if (!Auth::user()->can('delete users')) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('users:delete');
         $this->confirmingUserDeletion = true;
         $this->deleteId = $id;
     }
 
     public function deleteUser()
     {
-        if (!Auth::user()->can('delete users') || !$this->deleteId) {
+        $this->authorize('users:delete');
+        if (!$this->deleteId) {
             return;
         }
 

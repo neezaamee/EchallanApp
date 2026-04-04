@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\HasJurisdiction;
+
 class DumpingPoint extends Model
 {
-    use HasFactory;
+    use HasFactory, HasJurisdiction;
 
     // ✅ Fields that can be mass-assigned
     protected $fillable = [

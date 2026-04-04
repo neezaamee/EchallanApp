@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Cities;
 use Illuminate\Support\Facades\Auth;
 
 use Livewire\Component;
@@ -41,6 +41,7 @@ class CitiesTable extends Component
     // ✅ Handle delete confirmation
     public function confirmDelete($id)
     {
+        $this->authorize('cities:delete');
         $this->confirmingCityDeletion = true; // show modal
         $this->deleteId = $id;
     }
@@ -48,6 +49,7 @@ class CitiesTable extends Component
     // ✅ Perform deletion
     public function deleteCity()
     {
+        $this->authorize('cities:delete');
         if (!$this->deleteId) {
             return;
         }
@@ -85,6 +87,6 @@ class CitiesTable extends Component
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
-        return view('livewire.cities-table', compact('cities'));
+        return view('livewire.cities.cities-table', compact('cities'));
     }
 }

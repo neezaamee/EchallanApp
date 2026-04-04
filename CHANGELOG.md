@@ -5,9 +5,96 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.5.0] - 2026-03-29
 
-## [1.2.0] - 2025-11-29
+### Added
+
+-   **Standardized Fee Management**: Centralized all system fees in `config/fees.php` for easy future adjustments.
+    -   Bike Each Category: 200rs
+    -   Car Each Category: 2000rs
+    -   Medical: 200rs
+-   **1Link & Bank Integration Guide**: Published a comprehensive technical manual for financial partners.
+    -   **API Endpoints**: Documented Inquiry, Callback, and 1Link simulation paths.
+    -   **Luhn Specification**: Standardized 20-digit PSID structure with mathematical validation rules.
+    -   **Postman Collection**: Linked resources for automated API testing by banking teams.
+-   **Citizen Dashboard 2.0**: Unified view for all citizen records.
+    -   **CNIC-Based Aggregation**: Automatically pulls both Traffic Challans and Medical Requests linked to the citizen's CNIC.
+    -   **Challan Visibility**: Fixed record filtering to ensure citizens can see their own traffic challans in the list view.
+    -   **1Link Instructions**: Integrated payment guidance for external banking channels.
+
+### Changed
+
+-   Refined **Jurisdictional Security Filters** (`HasJurisdiction` trait) to allow Citizens to view Global Provinces and Cities for registration and requests.
+-   Updated `MedicalRequestController` and `ChallanController` to support the new city-aware PSID generation.
+
+### Fixed
+
+-   **API Data Integrity**: Resolved 500/200 PKR amount discrepancy by removing hardcoded legacy fees from API inquiry controllers.
+-   **Challan Filtering**: Fixed issue where logged-in citizens could not see their own issued challans in the management list.
+-   **Fee Mapping**: Corrected 'motorcycle' to 'bike' mapping in `ChallanController` to ensure correct fee retrieval from central config.
+-   **IDE Code Quality**: Resolved several static analysis warnings and undefined method errors in `ChallanController`.
+-   **Date Formatting**: Fixed potential crash when formatting `released_at` timestamps in vehicle release views.
+
+## [1.4.0] - 2026-03-12
+
+### Added
+
+-   **Falcon v3.26.0 UI Standardization**: Comprehensive refactor of the entire UI system to align with Falcon's design patterns.
+    -   **Card-Wrapper Pattern**: Unified containerization for all index tables and management pages.
+    -   **Global Soft-Badge System**: Standardized color-coded status representation (Paid, Active, Pending, etc.) across all modules.
+    -   **Standardized Actions**: Unified button styles (`btn-falcon-default`, `btn-link`) and placement project-wide.
+
+### Changed
+
+-   Refactored 15+ modules to adopt the card-wrapper pattern, including Infrastructure, Management, and Workflow sections.
+-   Standardized typography (`fs--1`), alignment (`align-middle`), and row hover effects project-wide.
+-   Improved mobile responsiveness using Falcon's `scrollbar` and `table-responsive` utilities.
+-   Consolidated redundant Blade templates into cleaner, Livewire-integrated views.
+
+### Fixed
+
+-   Resolved `Undefined variable $sortField` error in multiple Livewire components.
+-   Cleaned up redundant Livewire component duplicates causing architectural conflicts.
+-   Corrected namespace and view path mismatches in location-related components (Provinces, Cities).
+
+## [1.3.0] - 2026-03-12
+
+### Added
+
+-   **Challan & Impound Workflow**: Comprehensive system for traffic enforcement.
+    -   Vehicle bounding at dumping points upon challan issuance.
+    -   Integration with Bank Service for PSID generation.
+    -   Duty Officer dashboard with real-time bounded vehicle tracking.
+    -   Secure vehicle release process with receiver details (CNIC, Name, Father Name).
+    -   Payment status verification for impounded vehicles.
+-   **Pick Up Point CRUD**: Full management interface for Pick Up Points.
+    -   Role-based access control (Super Admin, Admin, Officer).
+    -   Integration into the Infrastructure navigation menu.
+    -   Active/Inactive status tracking.
+
+### Changed
+
+-   Standardized permissions format across the application (e.g., `module:action`).
+-   Refactored `RolePermissionSeeder` to include `pick-up-points` and `dumping-points` modules.
+-   Enhanced User Show page with direct links to Staff Profile details.
+-   Updated sidebar navigation with dynamic `@can` checks for all infrastructure modules.
+-   Standardized layout section names to `cms-main-content` for all app views.
+
+### Fixed
+
+-   Corrected route name mismatches in `ChallanController`.
+-   Fixed `BadMethodCallException` in `getViolations` method.
+-   Resolved blank page issue in impound views caused by section name mismatch.
+-   Corrected `RouteNotFoundException` for vehicle release status.
+
+## [1.2.1] - 2026-03-11
+
+### Added
+- Initial implementation of Impound workflow placeholders.
+
+### Fixed
+- UI inconsistencies in sidebar dropdowns.
+
 
 ### Added
 

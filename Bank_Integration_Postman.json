@@ -1,0 +1,179 @@
+{
+	"info": {
+		"_postman_id": "85771e88-cfcc-4309-9b41-cfd9b5a0fed7",
+		"name": "EchallanApp Bank Integration",
+		"description": "API Collection for 1Link and direct Bank integration testing (Inquiry & Payment).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1Link Inquiry",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumer_number\": \"{{psid}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/1link/inquiry",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1link",
+						"inquiry"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1Link Payment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumer_number\": \"{{psid}}\",\n    \"amount_paid\": 200,\n    \"transaction_id\": \"TEST-TXN-{{$timestamp}}\",\n    \"transaction_datetime\": \"{{$isoTimestamp}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/1link/payment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1link",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bank Inquiry (Direct)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumer_number\": \"{{psid}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/payment/inquiry",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"payment",
+						"inquiry"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bank Payment Callback",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumer_number\": \"{{psid}}\",\n    \"transaction_id\": \"BANK-TXN-{{$timestamp}}\",\n    \"amount_paid\": 200,\n    \"transaction_date\": \"2026-03-29\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/payment/callback",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"payment",
+						"callback"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://wcms.ctpfsd.gop.pk/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "dummy_token_123",
+			"type": "string"
+		},
+		{
+			"key": "psid",
+			"value": "20260329281631900679",
+			"type": "string"
+		}
+	]
+}

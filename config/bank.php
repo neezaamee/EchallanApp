@@ -21,5 +21,6 @@ return [
     'sandbox' => [
         'enabled' => env('BANK_SANDBOX_ENABLED', true),
         'api_url' => env('BANK_API_URL', 'http://localhost:8000/api/mock-bank'),
+        'callback_token' => env('BANK_CALLBACK_TOKEN', 'dummy_token_123'),
     ],
 ];

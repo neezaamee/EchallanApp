@@ -3,7 +3,7 @@
         <input type="text" class="form-control w-25" placeholder="Search permissions..."
             wire:model.live.debounce.500ms="search">
 
-        @can('role-create')
+        @can('permissions:create')
             <a href="{{ route('permissions.create') }}" class="btn btn-success">Create New Permission</a>
         @endcan
     </div>
@@ -31,11 +31,11 @@
                         <td>{{ $permission->id }}</td>
                         <td>{{ $permission->name }}</td>
                         <td class="text-end">
-                            @can('role-edit')
+                            @can('permissions:edit')
                                 <a href="{{ route('permissions.edit', $permission->id) }}" class="btn btn-primary btn-sm" title="Edit">Edit</a>
                             @endcan
 
-                            @can('role-delete')
+                            @can('permissions:delete')
                                 <button wire:click.prevent="confirmDelete({{ $permission->id }})" class="btn btn-danger btn-sm ms-1" title="Delete">
                                     Delete
                                 </button>

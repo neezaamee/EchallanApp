@@ -23,6 +23,16 @@ class Challan extends Model
         'payment_status',
         'transaction_id',
         'psid',
+        'released_at',
+        'released_by_staff_id',
+        'receiver_name',
+        'receiver_cnic',
+        'receiver_father_name',
+    ];
+
+    protected $casts = [
+        'released_at' => 'datetime',
+        'fine_amount' => 'decimal:2',
     ];
 
     protected static function boot()
@@ -36,6 +46,11 @@ class Challan extends Model
         return $this->belongsTo(User::class, 'officer_id');
     }
 
+    public function releaseOfficer()
+    {
+        return $this->belongsTo(Staff::class, 'released_by_staff_id');
+    }
+
     public function dumpingPoint()
     {
         return $this->belongsTo(DumpingPoint::class);
@@ -44,5 +59,15 @@ class Challan extends Model
     public function pickUpPoint()
     {
         return $this->belongsTo(PickUpPoint::class);
+    }
+
+    public function isPaid()
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    public function scopeBounded($query)
+    {
+        return $query->whereNull('released_at');
     }
 }

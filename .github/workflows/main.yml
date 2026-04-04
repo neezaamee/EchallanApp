@@ -1,0 +1,44 @@
+name: Deploy to cPanel via FTP
+on:
+  push:
+    branches:
+      - main
+      - home-laptop-red
+  workflow_dispatch:
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: 📦 Setup PHP & Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+
+      - name: 🔨 Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: 📂 Sync changed files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ./ # Update this to exactly match your cPanel public_html directory path if using an addon FTP account (e.g. ./public_html/drivingschool/)
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .env
+            .env.example
+            tests/**
+            readme.md
+            StudentImages/**
+            db-backup-files/**
+            falcon-v3.26.0/**

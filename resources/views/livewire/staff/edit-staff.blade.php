@@ -25,7 +25,12 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">CNIC <span class="text-danger">*</span></label>
-                    <input type="text" wire:model="cnic" class="form-control" placeholder="CNIC">
+                    <input type="text" wire:model="cnic" class="form-control" 
+                        placeholder="_____________"
+                        id="cnic_edit"
+                        data-inputmask="'mask': '9999999999999', 'placeholder': '_'"
+                        x-init="Inputmask().mask($el)"
+                    >
                     @error('cnic') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
                 <div class="col-md-6 mb-3">
@@ -38,7 +43,12 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Phone</label>
-                    <input type="text" wire:model="phone" class="form-control" placeholder="Phone">
+                    <input type="text" wire:model="phone" class="form-control" 
+                        placeholder="0__________"
+                        id="phone_edit"
+                        data-inputmask="'mask': '09999999999', 'placeholder': '_'"
+                        x-init="Inputmask().mask($el)"
+                    >
                     @error('phone') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
                 <div class="col-md-6 mb-3">

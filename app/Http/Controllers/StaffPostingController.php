@@ -14,6 +14,7 @@ class StaffPostingController extends Controller
 
     public function create()
     {
+        $this->authorize('staff-postings:create');
         return view('app.staff-postings.create');
     }
 }

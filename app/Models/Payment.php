@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Traits\HasJurisdiction;
+
 class Payment extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasJurisdiction;
 
     protected $fillable = [
         'medical_request_id',
+        'challan_id',
         'psid',
         'amount',
         'transaction_id',
@@ -33,6 +36,14 @@ class Payment extends Model
     public function medicalRequest()
     {
         return $this->belongsTo(MedicalRequest::class);
+    }
+
+    /**
+     * Get the challan associated with this payment
+     */
+    public function challan()
+    {
+        return $this->belongsTo(Challan::class);
     }
 
     /**

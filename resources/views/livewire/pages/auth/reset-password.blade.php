@@ -10,7 +10,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
+new #[Layout('layouts.main')] class extends Component
 {
     #[Locked]
     public string $token = '';
@@ -39,9 +39,6 @@ new #[Layout('layouts.guest')] class extends Component
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
         $status = Password::reset(
             $this->only('email', 'password', 'password_confirmation', 'token'),
             function ($user) {
@@ -54,9 +51,6 @@ new #[Layout('layouts.guest')] class extends Component
             }
         );
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
         if ($status != Password::PASSWORD_RESET) {
             $this->addError('email', __($status));
 
@@ -70,36 +64,55 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <form wire:submit="resetPassword">
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <div class="row min-vh-100 flex-center g-0">
+        <div class="col-lg-8 col-xxl-5 py-3 position-relative">
+            <img class="bg-auth-circle-shape" src="{{ asset('assets/img/icons/spot-illustrations/bg-shape.png') }}" alt="" width="250">
+            <img class="bg-auth-circle-shape-2" src="{{ asset('assets/img/icons/spot-illustrations/shape-1.png') }}" alt="" width="150">
+            
+            <div class="card overflow-hidden z-1">
+                <div class="card-body p-0">
+                    <div class="row g-0 h-100">
+                        <div class="col-md-5 text-center bg-card-gradient">
+                            <div class="position-relative p-4 pt-md-5 pb-md-7" data-bs-theme="light">
+                                <div class="bg-holder bg-auth-card-shape" style="background-image:url({{ asset('assets/img/icons/spot-illustrations/half-circle.png') }});"></div>
+                                @include('auth.components.auth-card-heading-sub-heading')
+                            </div>
+                            <div class="mt-3 mb-4 mt-md-4 mb-md-5" data-bs-theme="light">
+                                <p class="mb-0 mt-4 mt-md-5 fs-10 fw-semi-bold text-white opacity-75">Read our <a class="text-decoration-underline text-white" href="#!">terms</a> and <a class="text-decoration-underline text-white" href="#!">conditions </a></p>
+                            </div>
+                        </div>
+                        <div class="col-md-7 d-flex flex-center">
+                            <div class="p-4 p-md-5 flex-grow-1">
+                                <h3>Reset password</h3>
+                                
+                                <form wire:submit="resetPassword" class="mt-3">
+                                    <!-- Email Address -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Email Address</label>
+                                        <input wire:model="email" class="form-control @error('email') is-invalid @enderror" type="email" placeholder="Email address" required readonly />
+                                        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+
+                                    <!-- Password -->
+                                    <div class="mb-3">
+                                        <label class="form-label" for="password">New Password</label>
+                                        <input wire:model="password" class="form-control @error('password') is-invalid @enderror" type="password" id="password" required />
+                                        @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+
+                                    <!-- Confirm Password -->
+                                    <div class="mb-3">
+                                        <label class="form-label" for="password_confirmation">Confirm Password</label>
+                                        <input wire:model="password_confirmation" class="form-control" type="password" id="password_confirmation" required />
+                                    </div>
+
+                                    <button class="btn btn-primary d-block w-100 mt-3" type="submit">Set Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input wire:model="password" id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input wire:model="password_confirmation" id="password_confirmation" class="block mt-1 w-full"
-                          type="password"
-                          name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
+    </div>
 </div>

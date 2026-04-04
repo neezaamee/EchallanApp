@@ -40,12 +40,14 @@ class CirclesTable extends Component
 
     public function confirmDelete($id)
     {
+        $this->authorize('circles:delete');
         $this->confirmingCircleDeletion = true;
         $this->deleteId = $id;
     }
 
     public function deleteCircle()
     {
+        $this->authorize('circles:delete');
         if (!$this->deleteId) return;
 
         $circle = Circle::find($this->deleteId);

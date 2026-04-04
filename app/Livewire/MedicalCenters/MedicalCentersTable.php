@@ -41,12 +41,14 @@ class MedicalCentersTable extends Component
 
     public function confirmDelete($id)
     {
+        $this->authorize('medical-centers:delete');
         $this->confirmingMedicalCenterDeletion = true;
         $this->deleteId = $id;
     }
 
     public function deleteMedicalCenter()
     {
+        $this->authorize('medical-centers:delete');
         if (!$this->deleteId) return;
 
         $medicalCenter = MedicalCenter::find($this->deleteId);

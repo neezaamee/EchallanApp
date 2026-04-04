@@ -21,3 +21,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Local Theme Source & Backups (Excluded from GitHub)
+/falcon-v3.26.0/
+.github.zip

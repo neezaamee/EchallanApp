@@ -49,7 +49,12 @@ class StaffPostingsTable extends Component
 
     public function render()
     {
-        $query = StaffPosting::with(['staff', 'province', 'city', 'circle', 'dumpingPoint', 'medicalCenter'])
+        $query = StaffPosting::with([
+            'staff' => function($q) {
+                $q->withoutGlobalScopes();
+            },
+            'province', 'city', 'circle', 'dumpingPoint', 'medicalCenter'
+        ])
             ->where('status', 'active')
             ->when(trim($this->search) !== '', function ($q) {
                 $s = '%' . $this->search . '%';

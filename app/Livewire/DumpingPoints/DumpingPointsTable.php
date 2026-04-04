@@ -50,6 +50,7 @@ class DumpingPointsTable extends Component
      */
     public function confirmDelete($id)
     {
+        $this->authorize('dumping-points:delete');
         $this->confirmingDumpingPointDeletion = true;
         $this->deleteId = $id;
     }
@@ -59,6 +60,7 @@ class DumpingPointsTable extends Component
      */
     public function deleteDumpingPoint()
     {
+        $this->authorize('dumping-points:delete');
         if (!$this->deleteId) return;
 
         $dumpingPoint = DumpingPoint::find($this->deleteId);

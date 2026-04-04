@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Provinces;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -37,10 +37,7 @@ class ProvincesTable extends Component
 
     public function confirmDelete($id)
     {
-
-        if (!Auth::user()->can('delete provinces')) {
-            abort(403, 'Not allowed.');
-        }
+        $this->authorize('provinces:delete');
 
         $this->confirmingProvinceDeletion = $id;
         $this->deleteId = $id;
@@ -48,9 +45,7 @@ class ProvincesTable extends Component
 
     public function deleteProvince()
     {
-        if (!Auth::user()->can('delete provinces')) {
-            abort(403, 'Not allowed.');
-        }
+        $this->authorize('provinces:delete');
         if (!$this->deleteId) return;
 
         Province::findOrFail($this->deleteId)->delete();
@@ -70,6 +65,6 @@ class ProvincesTable extends Component
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
-        return view('livewire.provinces-table', compact('provinces'));
+        return view('livewire.provinces.provinces-table', compact('provinces'));
     }
 }
