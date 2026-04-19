@@ -58,7 +58,8 @@ Fetch bill details using the Consumer Number (PSID).
     "amount_after_due_date": "200",
     "created_at": "20260329",
     "due_date": "20260428",
-    "consumer_name": "John Doe"
+    "consumer_name": "John Doe",
+    "category": "Bike"
 }
 ```
 
@@ -117,14 +118,15 @@ Used by banks to verify PSID before processing payment.
 {
     "status": "00",
     "message": "Record Found",
-    "data": {
-        "consumer_number": "99260329123456789012",
-        "consumer_name": "Jane Smith",
-        "amount_due": 200,
-        "billing_month": "202603",
-        "due_date": "20260428",
-        "status": "U"
-    }
+    "consumer_number": "99260329123456789012",
+    "consumer_name": "Jane Smith",
+    "amount_due": "200.00",
+    "amount_within_due_date": "200.00",
+    "amount_after_due_date": "200.00",
+    "created_at": "20260329",
+    "due_date": "20260428",
+    "payment_status": "U",
+    "category": "Medical"
 }
 ```
 

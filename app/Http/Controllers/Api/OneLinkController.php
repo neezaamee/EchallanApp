@@ -52,6 +52,13 @@ class OneLinkController extends Controller
         $isPaid = $target->isPaid();
         $status = $isPaid ? 'P' : 'U';
 
+        $category = 'Others';
+        if ($target instanceof Challan) {
+             $category = (str_contains(strtolower($target->vehicle_type), 'bike') || str_contains(strtolower($target->vehicle_type), 'motorcycle')) ? 'Bike' : (str_contains(strtolower($target->vehicle_type), 'car') ? 'Car' : 'Traffic');
+        } elseif ($target instanceof MedicalRequest) {
+            $category = 'Medical';
+        }
+
         $response = [
             'response_code' => '00',
             'bill_status' => $status,
@@ -60,6 +67,7 @@ class OneLinkController extends Controller
             'created_at' => $target->created_at->format('Ymd'),
             'due_date' => $target->created_at->addDays(30)->format('Ymd'),
             'consumer_name' => $name ?? 'Unknown',
+            'category' => $category
         ];
 
         $this->logAction($psid, 'inquiry_1link', $status, $status, '1Link Inquiry');

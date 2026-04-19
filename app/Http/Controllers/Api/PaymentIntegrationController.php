@@ -34,10 +34,30 @@ class PaymentIntegrationController extends Controller
 
         $psid = $request->consumer_number;
         $response = null;
+        $category = 'Others';
 
         // 3. Find Record
         $challan = Challan::where('psid', $psid)->first();
         if ($challan) {
+            $category = (str_contains(strtolower($challan->vehicle_type), 'bike') || str_contains(strtolower($challan->vehicle_type), 'motorcycle')) ? 'Bike' : (str_contains(strtolower($challan->vehicle_type), 'car') ? 'Car' : 'Traffic');
+            
+            // New Flat Structure
+            $response = [
+                'status' => '00',
+                'message' => 'Record Found',
+                'consumer_number' => $psid,
+                'consumer_name' => $challan->violator_name,
+                'amount_due' => (string) $challan->fine_amount,
+                'amount_within_due_date' => (string) $challan->fine_amount,
+                'amount_after_due_date' => (string) $challan->fine_amount,
+                'created_at' => $challan->created_at->format('Ymd'),
+                'due_date' => $challan->created_at->addDays(30)->format('Ymd'),
+                'payment_status' => $challan->payment_status === 'paid' ? 'P' : 'U',
+                'category' => $category
+            ];
+
+            /* 
+            // Old Nested Structure
             $response = [
                 'status' => '00',
                 'message' => 'Record Found',
@@ -52,12 +72,32 @@ class PaymentIntegrationController extends Controller
                     'status' => $challan->payment_status === 'paid' ? 'P' : 'U'
                 ]
             ];
+            */
         }
 
         if (!$response) {
             $medical = MedicalRequest::where('psid', $psid)->first();
             if ($medical) {
-                $amount = $medical->amount ?? config('fees.medical', 200); // Dynamic amount from model/config
+                $category = 'Medical';
+                $amount = $medical->amount ?? config('fees.medical', 200);
+                
+                // New Flat Structure
+                $response = [
+                    'status' => '00',
+                    'message' => 'Record Found',
+                    'consumer_number' => $psid,
+                    'consumer_name' => $medical->citizen ? $medical->citizen->full_name : 'Citizen',
+                    'amount_due' => (string) $amount,
+                    'amount_within_due_date' => (string) $amount,
+                    'amount_after_due_date' => (string) $amount,
+                    'created_at' => $medical->created_at->format('Ymd'),
+                    'due_date' => $medical->created_at->addDays(30)->format('Ymd'),
+                    'payment_status' => $medical->payment_status === 'paid' ? 'P' : 'U',
+                    'category' => $category
+                ];
+
+                /*
+                // Old Nested Structure
                 $response = [
                     'status' => '00',
                     'message' => 'Record Found',
@@ -72,12 +112,14 @@ class PaymentIntegrationController extends Controller
                         'status' => $medical->payment_status === 'paid' ? 'P' : 'U'
                     ]
                 ];
+                */
             }
         }
 
         if ($response) {
             // Log the inquiry
-            $this->logAction($psid, 'inquiry', $response['data']['status'], $response['data']['status'], 'Inquiry success');
+            $logStatus = $response['payment_status'];
+            $this->logAction($psid, 'inquiry', $logStatus, $logStatus, 'Inquiry success');
             return response()->json($response);
         }
 
