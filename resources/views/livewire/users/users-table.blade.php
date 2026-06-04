@@ -41,7 +41,7 @@
                 <thead class="bg-200 text-900">
                     <tr>
                         <th wire:click="sortBy('id')" style="cursor: pointer; width: 50px;" class="ps-3">
-                            # @if($sortField === 'id') <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i> @endif
+                            No. @if($sortField === 'id') <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i> @endif
                         </th>
                         <th wire:click="sortBy('name')" style="cursor: pointer;">
                             Name @if($sortField === 'name') <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i> @endif
@@ -56,7 +56,7 @@
                 <tbody class="list">
                     @forelse ($users as $user)
                         <tr>
-                            <td class="text-muted ps-3">#{{ $user->id }}</td>
+                            <td class="text-muted ps-3">{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
                             <td class="fw-bold text-dark">{{ $user->name }}</td>
                             <td><a href="mailto:{{ $user->email }}" class="text-700">{{ $user->email }}</a></td>
                             <td>

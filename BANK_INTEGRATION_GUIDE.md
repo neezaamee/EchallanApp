@@ -57,16 +57,15 @@ Used by the bank to fetch consumer details before initializing a payment.
 {
     "status": "00",
     "message": "Record Found",
-    "data": {
-        "consumer_number": "10022603291234567897",
-        "consumer_name": "Nadia G",
-        "amount_due": 200,
-        "amount_within_due_date": 200,
-        "amount_after_due_date": 200,
-        "billing_month": "202603",
-        "due_date": "20260428",
-        "status": "U"
-    }
+    "consumer_number": "10022603291234567897",
+    "consumer_name": "Nadia G",
+    "amount_due": "200.00",
+    "amount_within_due_date": "200.00",
+    "amount_after_due_date": "200.00",
+    "created_at": "20260329",
+    "due_date": "20260428",
+    "payment_status": "U",
+    "category": "Medical"
 }
 ```
 

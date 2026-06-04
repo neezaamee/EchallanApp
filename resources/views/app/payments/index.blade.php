@@ -77,8 +77,13 @@
                             <td><span class="font-monospace fw-semi-bold">{{ $payment->psid }}</span></td>
                             <td><span class="font-monospace small text-muted text-truncate d-inline-block" style="max-width: 120px;">{{ $payment->transaction_id }}</span></td>
                             <td>
-                                <div class="fw-bold text-dark">{{ $payment->medicalRequest?->citizen?->full_name ?? 'N/A' }}</div>
-                                <small class="text-muted">{{ $payment->medicalRequest?->citizen?->cnic ?? '' }}</small>
+                                @if($payment->challan_id)
+                                    <div class="fw-bold text-dark">{{ $payment->challan->violator_name }}</div>
+                                    <small class="text-muted">{{ $payment->challan->vehicle_number }} (Challan)</small>
+                                @else
+                                    <div class="fw-bold text-dark">{{ $payment->medicalRequest?->citizen?->full_name ?? 'N/A' }}</div>
+                                    <small class="text-muted">{{ $payment->medicalRequest?->citizen?->cnic ?? '' }}</small>
+                                @endif
                             </td>
                             <td class="fw-bold text-dark">PKR {{ number_format($payment->amount) }}</td>
                             <td><span class="badge badge-soft-secondary text-dark fs--2">{{ ucwords(str_replace('_', ' ', $payment->payment_method)) }}</span></td>

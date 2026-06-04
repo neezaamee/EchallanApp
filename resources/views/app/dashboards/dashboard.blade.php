@@ -15,8 +15,39 @@
                             {{ auth()->user()->name }}
                             @php
                                 $formattedRole = $role ? ucwords(str_replace(['_', '-'], ' ', $role)) : 'User';
+                                $postingPlace = '';
+                                $user = auth()->user();
+                                if ($user->staff && $user->staff->activePosting) {
+                                    $posting = $user->staff->activePosting;
+                                    if ($posting->medical_center_id && $posting->medicalCenter) {
+                                        $postingPlace = $posting->medicalCenter->name;
+                                    } elseif ($posting->dumping_point_id && $posting->dumpingPoint) {
+                                        $postingPlace = $posting->dumpingPoint->name;
+                                    } elseif ($posting->circle_id && $posting->circle) {
+                                        $postingPlace = $posting->circle->name;
+                                    } elseif ($posting->city_id && $posting->city) {
+                                        $postingPlace = $posting->city->name;
+                                    } elseif ($posting->province_id && $posting->province) {
+                                        $postingPlace = $posting->province->name;
+                                    }
+                                }
+
+                                if (empty($postingPlace)) {
+                                    if ($user->hasRole('super_admin') || $user->hasRole('admin')) {
+                                        $postingPlace = 'Headquarters';
+                                    } elseif ($user->hasRole('citizen')) {
+                                        $postingPlace = 'Citizen Portal';
+                                    }
+                                }
                             @endphp
-                            <span class="text-secondary fw-medium fs-9">| {{ $formattedRole }} Access</span>
+                            <span class="text-secondary fw-medium fs-9">
+                                | {{ $formattedRole }}
+                                @if($postingPlace)
+                                    | {{ $postingPlace }}
+                                @else
+                                    | Access
+                                @endif
+                            </span>
                         </h4>
                         <p class="fs-10 mb-0">
                             Today is {{ now()->format('l, F j, Y') }}.

@@ -16,7 +16,7 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Payment::with('medicalRequest.citizen', 'medicalRequest.medicalCenter');
+        $query = Payment::with('medicalRequest.citizen', 'medicalRequest.medicalCenter', 'challan');
 
         // Search functionality
         if ($request->has('search') && $request->search) {
@@ -46,7 +46,7 @@ class PaymentController extends Controller
 
         // Get results if any filter is applied, otherwise return empty or latest
         if ($request->anyFilled(['keyword', 'cnic', 'date_from', 'date_to', 'status', 'payment_method', 'medical_center_id'])) {
-            $payments = Payment::with('medicalRequest.citizen', 'medicalRequest.medicalCenter')
+            $payments = Payment::with('medicalRequest.citizen', 'medicalRequest.medicalCenter', 'challan')
                 ->filter($filters)
                 ->latest()
                 ->paginate(20)
@@ -65,7 +65,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter');
+        $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter', 'challan');
         
         // Log that the payment was viewed
         \App\Models\PaymentAuditLog::create([

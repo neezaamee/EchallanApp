@@ -147,6 +147,17 @@ class ChallanController extends Controller
             'transaction_id' => $request->transaction_id
         ]);
 
+        // Create Payment Record for the payment table
+        \App\Models\Payment::create([
+            'challan_id' => $challan->id,
+            'psid' => $challan->psid,
+            'amount' => $challan->fine_amount,
+            'transaction_id' => $request->transaction_id,
+            'payment_method' => 'manual',
+            'status' => 'success',
+            'paid_at' => now(),
+        ]);
+
         return back()->with('success', 'Payment verified.');
     }
 

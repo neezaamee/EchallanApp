@@ -12,8 +12,8 @@ class UsersTable extends Component
     use WithPagination;
 
     public $search = '';
-    public $sortField = 'id';
-    public $sortDirection = 'desc';
+    public $sortField = 'name';
+    public $sortDirection = 'asc';
     public $confirmingUserDeletion = null;
     public $deleteId = null;
 
@@ -60,12 +60,19 @@ class UsersTable extends Component
 
     public function render()
     {
-        $users = User::with('roles')
+        $query = User::with('roles')
             ->where(function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                     ->orWhere('email', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
+            });
+            
+        if (!Auth::user()->hasRole('super_admin')) {
+            $query->whereDoesntHave('roles', function ($q) {
+                $q->where('name', 'super_admin');
+            });
+        }
+
+        $users = $query->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
         return view('livewire.users.users-table', compact('users'));

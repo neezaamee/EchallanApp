@@ -40,11 +40,11 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="text-muted small">Payer Name</label>
-                            <p class="fw-bold">{{ $payment->medicalRequest?->citizen?->full_name ?? 'N/A' }}</p>
+                            <p class="fw-bold">{{ $payment->challan_id ? $payment->challan->violator_name : ($payment->medicalRequest?->citizen?->full_name ?? 'N/A') }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Payer CNIC</label>
-                            <p>{{ $payment->medicalRequest?->citizen?->cnic ?? 'N/A' }}</p>
+                            <label class="text-muted small">Payer CNIC / Vehicle</label>
+                            <p>{{ $payment->challan_id ? $payment->challan->vehicle_number : ($payment->medicalRequest?->citizen?->cnic ?? 'N/A') }}</p>
                         </div>
                         <div class="col-md-6">
                             <label class="text-muted small">Payment Method</label>

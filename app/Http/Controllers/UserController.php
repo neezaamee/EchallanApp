@@ -9,6 +9,8 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission; // Added Permission model
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\StaffAccountDetails;
 
 class UserController extends Controller
 {
@@ -25,7 +27,11 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::pluck('name', 'name')->all();
+        $rolesQuery = Role::query();
+        if (!auth()->user()->hasRole('super_admin')) {
+            $rolesQuery->where('name', '!=', 'super_admin');
+        }
+        $roles = $rolesQuery->pluck('name', 'name')->all();
         $permissions = Permission::get(); // Fetch all permissions
         $unlinkedStaff = Staff::unlinked()->get();
         return view('admin.users.create', compact('roles', 'permissions', 'unlinkedStaff'));
@@ -76,6 +82,9 @@ class UserController extends Controller
             }
         }
 
+        // Send email with credentials
+        Mail::to($user->email)->send(new StaffAccountDetails($user, $request->password, 'created'));
+
         return redirect()->route('users.index')
             ->with('success', 'User created successfully.');
     }
@@ -86,6 +95,9 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::find($id);
+        if (!auth()->user()->hasRole('super_admin') && $user->hasRole('super_admin')) {
+            abort(403, 'Unauthorized action.');
+        }
         return view('admin.users.show', compact('user'));
     }
 
@@ -95,7 +107,15 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::find($id);
-        $roles = Role::pluck('name', 'name')->all();
+        if (!auth()->user()->hasRole('super_admin') && $user->hasRole('super_admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $rolesQuery = Role::query();
+        if (!auth()->user()->hasRole('super_admin')) {
+            $rolesQuery->where('name', '!=', 'super_admin');
+        }
+        $roles = $rolesQuery->pluck('name', 'name')->all();
         $permissions = Permission::get(); // Fetch all permissions
         $userRoles = $user->roles->pluck('name', 'name')->all();
         $userPermissions = $user->getDirectPermissions()->pluck('name', 'name')->all(); // Get direct permissions
@@ -109,6 +129,11 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $user = User::find($id);
+        if (!auth()->user()->hasRole('super_admin') && $user->hasRole('super_admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$id],
@@ -117,8 +142,6 @@ class UserController extends Controller
             'permissions' => ['nullable', 'array'], // Validate permissions
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
-
-        $user = User::find($id);
         
         $input = $request->all();
         if(!empty($input['password'])){ 
@@ -137,6 +160,10 @@ class UserController extends Controller
              $user->syncPermissions([]); // Clear permissions if none selected
         }
 
+        // Send email with updated credentials
+        $passwordToSend = !empty($input['plain_password']) ? $input['plain_password'] : '******** (Unchanged)';
+        Mail::to($user->email)->send(new StaffAccountDetails($user, $passwordToSend, 'updated'));
+
         return redirect()->route('users.index')
             ->with('success', 'User updated successfully');
     }
@@ -146,7 +173,11 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        User::find($id)->delete();
+        $user = User::find($id);
+        if (!auth()->user()->hasRole('super_admin') && $user->hasRole('super_admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $user->delete();
         return redirect()->route('users.index')
             ->with('success', 'User deleted successfully');
     }
