@@ -53,51 +53,26 @@
                             <div class="mb-4">
                                 <h6 class="text-muted mb-3">Payment Method</h6>
                                 <div class="row">
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-12 mb-3">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="payment_method"
-                                                id="credit_card" value="credit_card" checked>
-                                            <label class="form-check-label" for="credit_card">
-                                                <i class="bi bi-credit-card"></i> Credit Card
+                                                id="1link" value="1link" disabled>
+                                            <label class="form-check-label text-muted" for="1link">
+                                                <i class="bi bi-bank"></i> 1Link Payment Method <small>(Auto payment method, not available in manual mode)</small>
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    @can('payments:cash')
+                                    <div class="col-md-12 mb-3">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="payment_method"
-                                                id="debit_card" value="debit_card">
-                                            <label class="form-check-label" for="debit_card">
-                                                <i class="bi bi-credit-card-2-front"></i> Debit Card
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="payment_method"
-                                                id="bank_transfer" value="bank_transfer">
-                                            <label class="form-check-label" for="bank_transfer">
-                                                <i class="bi bi-bank"></i> Bank Transfer
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="payment_method"
-                                                id="mobile_wallet" value="mobile_wallet">
-                                            <label class="form-check-label" for="mobile_wallet">
-                                                <i class="bi bi-phone"></i> Mobile Wallet
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="payment_method"
-                                                id="cash" value="cash">
+                                                id="cash" value="cash" checked>
                                             <label class="form-check-label" for="cash">
-                                                <i class="bi bi-cash-stack"></i> Cash
+                                                <i class="bi bi-cash-stack"></i> Cash Payment
                                             </label>
                                         </div>
                                     </div>
+                                    @endcan
                                 </div>
                             </div>
 

@@ -44,7 +44,7 @@
             <table class="table table-sm table-striped table-hover align-middle mb-0 fs--1">
                 <thead class="bg-200 text-900">
                     <tr>
-                        <th class="white-space-nowrap ps-3"># Sr</th>
+                        <th class="white-space-nowrap ps-3">No.</th>
                         <th>Citizen</th>
                         <th>Medical Center</th>
                         <th>PSID</th>
@@ -81,9 +81,11 @@
                             <td class="text-end pe-3">
                                 <div class="btn-group btn-group-sm">
                                     @if ($request->payment_status === 'unpaid')
+                                        @can('payments:process')
                                         <a href="{{ route('payments.create', $request->psid) }}" class="btn btn-link p-0 text-success" title="Pay Now">
                                             <i class="fas fa-credit-card"></i>
                                         </a>
+                                        @endcan
                                     @else
                                         @php $latestPayment = $request->latestPayment; @endphp
                                         @if ($latestPayment)

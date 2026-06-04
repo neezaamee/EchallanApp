@@ -75,8 +75,13 @@ class RolesTable extends Component
 
     public function render()
     {
-        $roles = Role::where('name', '!=', 'super_admin')
-            ->where('name', 'like', '%' . $this->search . '%')
+        $query = Role::query();
+        
+        if (!Auth::user()->hasRole('super_admin')) {
+            $query->where('name', '!=', 'super_admin');
+        }
+
+        $roles = $query->where('name', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
