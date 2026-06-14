@@ -43,7 +43,7 @@ class MedicalRequestController extends Controller
                 $query->where('citizen_id', $citizen->id);
                 $requests = $query->with('medicalCenter')->latest()->paginate(10);
             }
-        } elseif ($user->hasRole('doctor')) {
+        } elseif ($user->hasRole(['doctor', 'medical_assistant'])) {
             $staff = $user->staff;
             if (!$staff) {
                 return redirect()->back()->with('error', 'You are not registered as staff.');
@@ -84,6 +84,7 @@ class MedicalRequestController extends Controller
      */
     public function create()
     {
+        $this->authorize('medical-requests:create');
         $provinces = Province::all();
         return view('app.medical-requests.create', compact('provinces'));
     }
@@ -93,18 +94,23 @@ class MedicalRequestController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('medical-requests:create');
         $user = Auth::user();
         $citizenId = null;
         $medicalCenterId = null;
 
-        if ($user->hasRole('doctor')) {
-            // Doctor Flow
+        $isStaff = $user->is_department_user || !empty($user->staff);
+        $hasActiveMedicalCenterPosting = $isStaff && !empty($user->staff?->activeDoctorPosting?->medical_center_id);
+
+        if ($isStaff) {
+            // Staff / Department Flow (Doctor, Medical Assistant, Admin, etc.)
             $request->validate([
                 'full_name' => 'required|string|max:255',
                 'father_name' => 'required|string|max:255',
-                'cnic' => 'required|numeric|digits:13', // Check uniqueness logic later if needed
-                'phone' => 'required|numeric|digits:11', // 03xxxxxxxxx
+                'cnic' => 'required|numeric|digits:13',
+                'phone' => 'required|numeric|digits:11',
                 'gender' => 'required|in:male,female,other',
+                'medical_center_id' => $hasActiveMedicalCenterPosting ? 'nullable|exists:medical_centers,id' : 'required|exists:medical_centers,id',
             ]);
 
             // Find or Create Citizen (Shadow Citizen)
@@ -121,15 +127,12 @@ class MedicalRequestController extends Controller
             );
             $citizenId = $citizen->id;
 
-            // Get Doctor's Medical Center
-            $staff = $user->staff;
-            if (!$staff || !$staff->activeDoctorPosting) {
-                return redirect()->back()->with('error', 'You must have an active posting to create requests.');
-            }
-            $medicalCenterId = $staff->activeDoctorPosting->medical_center_id;
-
+            // Determine Medical Center
+            $medicalCenterId = $hasActiveMedicalCenterPosting 
+                ? $user->staff->activeDoctorPosting->medical_center_id 
+                : $request->medical_center_id;
         } else {
-            // Citizen Flow
+            // Citizen Flow (Citizen creates for themselves)
             $request->validate([
                 'medical_center_id' => 'required|exists:medical_centers,id',
             ]);

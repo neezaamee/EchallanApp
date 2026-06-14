@@ -20,12 +20,13 @@ class DatabaseSeeder extends Seeder
             ProvincesSeeder::class,
             CitiesPunjabSeeder::class,
             CirclesFaisalabadSeeder::class,
+            SectorsSeeder::class,
             DumpingPointSeeder::class,
             FaisalabadMedicalCentersSeeder::class,
             DesignationsSeeder::class,
-            //StaffSeeder::class,
-            //FaisalabadStaffPostingSeeder::class,
-            //CitizensSeeder::class,
+            StaffSeeder::class,
+            FaisalabadStaffPostingSeeder::class,
+            CitizensSeeder::class,
         ]);
 
         /* User::factory()->create([

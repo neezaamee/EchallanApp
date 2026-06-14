@@ -31,7 +31,7 @@ class StaffManager extends Component
         'department' => 'nullable|string|max:100',
         'designation' => 'nullable|string|max:100',
         'current_posting' => 'nullable|string|max:255',
-        'role' => 'required|string|in:admin,challan_officer,accountant',
+        'role' => 'required|string|in:admin,lifter_challan_officer,warning_officer,medical_assistant,doctor,accountant',
     ];
 
     protected $listeners = [
@@ -41,7 +41,7 @@ class StaffManager extends Component
     public function mount()
     {
         // set default role if needed
-        $this->role = 'challan_officer';
+        $this->role = 'lifter_challan_officer';
     }
 
     public function render()
@@ -89,9 +89,9 @@ class StaffManager extends Component
         $this->resetForm(false); // keep role default maybe
         $staff = Staff::findOrFail($id);
 
-        // authorization: admin can only edit challan_officer
+        // authorization: admin can only edit lifter_challan_officer and warning_officer
         if (auth()->user()->hasRole('admin') && ! auth()->user()->isSuperAdmin()) {
-            if ($staff->roleName() !== 'challan_officer') {
+            if (!in_array($staff->roleName(), ['lifter_challan_officer', 'warning_officer'])) {
                 session()->flash('error','You are not allowed to edit this staff record.');
                 return;
             }
@@ -121,11 +121,11 @@ class StaffManager extends Component
             return;
         }
 
-        if ($this->role === 'challan_officer' && auth()->user()->hasRole('admin') && ! auth()->user()->isSuperAdmin()) {
+        if (in_array($this->role, ['lifter_challan_officer', 'warning_officer']) && auth()->user()->hasRole('admin') && ! auth()->user()->isSuperAdmin()) {
             // check admin's staff record permission
             $creatorStaff = Staff::where('cnic', auth()->user()->cnic)->orWhere('email', auth()->user()->email)->first();
             if ($creatorStaff && ! $creatorStaff->can_create_officer) {
-                $this->addError('role','You are not allowed to create challan officer accounts. Contact Super Admin.');
+                $this->addError('role','You are not allowed to create officer accounts. Contact Super Admin.');
                 return;
             }
         }
@@ -137,9 +137,9 @@ class StaffManager extends Component
                 // Update existing staff
                 $staff = Staff::findOrFail($this->staffId);
 
-                // authorization: admin limited to challan_officer
+                // authorization: admin limited to lifter_challan_officer and warning_officer
                 if (auth()->user()->hasRole('admin') && ! auth()->user()->isSuperAdmin()) {
-                    if ($staff->roleName() !== 'challan_officer') {
+                    if (!in_array($staff->roleName(), ['lifter_challan_officer', 'warning_officer'])) {
                         $this->addError('general', 'You are not allowed to update this staff record.');
                         DB::rollBack();
                         return;
@@ -234,9 +234,9 @@ class StaffManager extends Component
         $id = $this->deleteId;
         $staff = Staff::findOrFail($id);
 
-        // only allow admin to delete challan_officer
+        // only allow admin to delete lifter_challan_officer and warning_officer
         if (auth()->user()->hasRole('admin') && ! auth()->user()->isSuperAdmin()) {
-            if ($staff->roleName() !== 'challan_officer') {
+            if (!in_array($staff->roleName(), ['lifter_challan_officer', 'warning_officer'])) {
                 session()->flash('error','You are not allowed to delete this staff record.');
                 return;
             }

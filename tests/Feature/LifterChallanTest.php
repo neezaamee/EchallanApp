@@ -29,9 +29,9 @@ class LifterChallanTest extends TestCase
         $pickUpPoint = PickUpPoint::create(['dumping_point_id' => $dumpingPoint->id, 'name' => 'Pick Point 1']);
 
         // Create Officer
-        \Spatie\Permission\Models\Role::create(['name' => 'challan_officer']);
+        \Spatie\Permission\Models\Role::create(['name' => 'lifter_challan_officer']);
         $officer = User::factory()->create();
-        $officer->assignRole('challan_officer'); // Assuming role exists or we skip middleware for unit test logic, but let's try with role
+        $officer->assignRole('lifter_challan_officer'); // Assuming role exists or we skip middleware for unit test logic, but let's try with role
         
         $staff = Staff::create([
             'user_id' => $officer->id, 
@@ -46,21 +46,20 @@ class LifterChallanTest extends TestCase
             'start_date' => now(),
         ]);
 
-        // Act
-        $response = $this->actingAs($officer)
-            ->post(route('challans.store'), [
-                'dumping_point_id' => $dumpingPoint->id,
-                'pick_up_point_id' => $pickUpPoint->id,
-                'violator_name' => 'John Doe',
-                'violator_cnic' => '33100-1234567-1',
-                'violator_mobile' => '0300-1234567',
-                'vehicle_type' => 'car',
-                'vehicle_number' => 'LEC-1234',
-                'violation' => 'Wrong Parking|2000',
-            ]);
+        // Act & Assert using Livewire component test
+        \Livewire\Livewire::actingAs($officer)
+            ->test(\App\Livewire\Challans\Create::class)
+            ->set('dumping_point_id', $dumpingPoint->id)
+            ->set('pick_up_point_id', $pickUpPoint->id)
+            ->set('violator_name', 'John Doe')
+            ->set('violator_cnic', '33100-1234567-1')
+            ->set('violator_mobile', '0300-1234567')
+            ->set('vehicle_type', 'car')
+            ->set('vehicle_number', 'LEC-1234')
+            ->set('violation', 'Wrong Parking')
+            ->call('save')
+            ->assertRedirect(route('challans.index'));
 
-        // Assert
-        $response->assertRedirect(route('challans.index'));
         $this->assertDatabaseHas('challans', [
             'vehicle_number' => 'LEC-1234',
             'fine_amount' => 2000,
@@ -93,6 +92,7 @@ class LifterChallanTest extends TestCase
             'fine_amount' => 2000,
             'status' => 'pending',
             'payment_status' => 'unpaid',
+            'psid' => '20002220614123456789',
         ]);
 
         // Act: Verify Payment
@@ -107,7 +107,11 @@ class LifterChallanTest extends TestCase
 
         // Act: Release Vehicle
         $response = $this->actingAs($officer)
-            ->post(route('challans.release', $challan));
+            ->post(route('impound.release.submit', $challan), [
+                'receiver_name' => 'John Receiver',
+                'receiver_cnic' => '3310012345671',
+                'receiver_father_name' => 'Father Receiver',
+            ]);
 
         $response->assertSessionHas('success');
         $this->assertEquals('released', $challan->fresh()->status);

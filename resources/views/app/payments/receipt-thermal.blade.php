@@ -124,7 +124,7 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>E-CHALLAN WCMS</h1>
+        <h1>City Traffic Police, Faisalabad</h1>
         <p>Payment Receipt</p>
     </div>
 
@@ -134,7 +134,7 @@
     <!-- Receipt Info -->
     <div class="row">
         <span class="label">Receipt:</span>
-        <span class="value">RCP-{{ date('dmY') }}-{{ str_pad($payment->id, 5, '0', STR_PAD_LEFT) }}</span>
+        <span class="value">{{ $payment->receipt_number ?? ('RCP-' . $payment->paid_at->format('dmY') . '-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT)) }}</span>
     </div>
     <div class="row">
         <span class="label">Date:</span>

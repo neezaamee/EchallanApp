@@ -17,8 +17,10 @@ class RoleDashboardController extends Controller
             'super_admin' => $this->getSuperAdminData(),
             'admin'       => $this->getAdminData(),
             'doctor'      => $this->getDoctorData(),
+            'medical_assistant' => $this->getDoctorData(),
             'cto'         => $this->getCTOData(),
-            'challan_officer' => $this->getChallanOfficerData(),
+            'lifter_challan_officer' => $this->getLifterChallanOfficerData(),
+            'warning_officer' => $this->getWarningOfficerData(),
             'duty_officer'    => $this->getDutyOfficerData(),
             'accountant'  => $this->getAccountantData(),
             'citizen'     => $this->getCitizenData(),
@@ -128,13 +130,23 @@ class RoleDashboardController extends Controller
         return $data;
     }
 
-    private function getChallanOfficerData()
+    private function getLifterChallanOfficerData()
     {
         $user = Auth::user();
         return [
             'totalChallans' => \App\Models\Challan::where('officer_id', $user->id)->count(),
             'unpaidChallans' => \App\Models\Challan::where('officer_id', $user->id)->where('payment_status', 'unpaid')->count(),
             'todayChallans' => \App\Models\Challan::where('officer_id', $user->id)->whereDate('created_at', now()->today())->count(),
+        ];
+    }
+
+    private function getWarningOfficerData()
+    {
+        $user = Auth::user();
+        return [
+            'totalWarnings' => \App\Models\Warning::where('officer_id', $user->id)->count(),
+            'todayWarnings' => \App\Models\Warning::where('officer_id', $user->id)->whereDate('created_at', now()->today())->count(),
+            'recentWarnings' => \App\Models\Warning::where('officer_id', $user->id)->latest()->take(5)->get(),
         ];
     }
 

@@ -50,6 +50,8 @@
                                             {{ $p->medicalCenter->name }}
                                         @elseif($p->dumping_point_id)
                                             {{ $p->dumpingPoint->name }}
+                                        @elseif($p->sector_id)
+                                            {{ $p->sector->name }}
                                         @elseif($p->circle_id)
                                             {{ $p->circle->name }}
                                         @elseif($p->city_id)
@@ -63,6 +65,8 @@
                                             <span class="badge badge-soft-primary">Medical Center</span>
                                         @elseif($p->dumping_point_id)
                                             <span class="badge badge-soft-warning">Dumping Point</span>
+                                        @elseif($p->sector_id)
+                                            <span class="badge badge-soft-success">Sector</span>
                                         @else
                                             <span class="badge badge-soft-info">Administrative</span>
                                         @endif

@@ -16,7 +16,9 @@ class DesignationsSeeder extends Seeder
             ['name' => 'Incharge', 'code' => 'incharge'],
             ['name' => 'Duty Officer', 'code' => 'duty_officer'],
             ['name' => 'Data Entry Operator', 'code' => 'deo'],
-            ['name' => 'Challan Officer', 'code' => 'challan_officer'],
+            ['name' => 'Lifter Challan Officer', 'code' => 'lifter_challan_officer'],
+            ['name' => 'Warning Officer', 'code' => 'warning_officer'],
+            ['name' => 'Medical Assistant', 'code' => 'medical_assistant'],
             ['name' => 'Circle Officer', 'code' => 'circle_officer'],
             ['name' => 'Reader', 'code' => 'reader'],
             ['name' => 'Accountant', 'code' => 'accountant'],
@@ -30,7 +32,7 @@ class DesignationsSeeder extends Seeder
 
         foreach ($items as $item) {
             // 1️⃣ Create or find the Designation record
-            $designation = Designation::firstOrCreate(
+            $designation = Designation::updateOrCreate(
                 ['code' => $item['code']],
                 ['name' => $item['name']]
             );

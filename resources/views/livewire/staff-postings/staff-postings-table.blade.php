@@ -56,6 +56,7 @@
                                     $place = 'N/A';
                                     if ($posting->medical_center_id) $place = $posting->medicalCenter->name ?? 'N/A';
                                     elseif ($posting->dumping_point_id) $place = $posting->dumpingPoint->name ?? 'N/A';
+                                    elseif ($posting->sector_id) $place = $posting->sector->name ?? 'N/A';
                                     elseif ($posting->circle_id) $place = $posting->circle->name ?? 'N/A';
                                     elseif ($posting->city_id) $place = $posting->city->name ?? 'N/A';
                                     elseif ($posting->province_id) $place = $posting->province->name ?? 'N/A';

@@ -165,7 +165,7 @@
                 <div class="receipt-info-row">
                     <div class="receipt-info-label">Receipt Number:</div>
                     <div class="receipt-info-value">
-                        RCP-{{ date('Ymd') }}-{{ str_pad($payment->id, 5, '0', STR_PAD_LEFT) }}</div>
+                        {{ $payment->receipt_number ?? ('RCP-' . $payment->paid_at->format('Ymd') . '-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT)) }}</div>
                 </div>
                 <div class="receipt-info-row">
                     <div class="receipt-info-label">Receipt Date:</div>

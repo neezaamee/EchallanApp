@@ -9,7 +9,7 @@
             <div class="card-body">
                 <form method="POST" action="{{ route('medical-requests.store') }}">
                     @csrf
-                    @role(['doctor', 'super_admin'])
+                    @if (auth()->user()->is_department_user || auth()->user()->staff)
                         <div class="alert alert-info">
                             <strong>Note:</strong> You are creating a request on behalf of a citizen. Enter CNIC to
                             search for existing records.
@@ -54,8 +54,9 @@
                                 </select>
                             </div>
                         </div>
-                    @endrole
-                    @role('citizen')
+                    @endif
+
+                    @if (!(auth()->user()->is_department_user || auth()->user()->staff) || !auth()->user()->staff?->activeDoctorPosting?->medical_center_id)
                         <!-- Province -->
                         <div class="mb-3">
                             <label class="form-label" for="province_id">{{ __('Province') }}</label>
@@ -85,7 +86,7 @@
                                 <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
-                    @endrole
+                    @endif
 
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary">

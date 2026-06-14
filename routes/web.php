@@ -18,6 +18,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\CircleController;
 use App\Http\Controllers\DumpingPointController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SectorController;
 use App\Http\Controllers\MedicalCenterController;
 use App\Http\Controllers\StaffPostingController;
 use App\Http\Controllers\LocationController;
@@ -136,7 +137,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('dashboard.doctor')->middleware('role:doctor');
 
     Route::get('/dashboard/officer', [RoleDashboardController::class, 'index'])
-        ->name('dashboard.officer')->middleware('role:challan_officer');
+        ->name('dashboard.officer')->middleware('role:lifter_challan_officer');
+
+    Route::get('/dashboard/warning-officer', [RoleDashboardController::class, 'index'])
+        ->name('dashboard.warning-officer')->middleware('role:warning_officer');
 
     Route::get('/dashboard/accountant', [RoleDashboardController::class, 'index'])
         ->name('dashboard.accountant')->middleware('role:accountant');
@@ -171,8 +175,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('feedback', \App\Http\Controllers\FeedbackController::class);
 
     // Lifter Challans
-    Route::resource('challans', \App\Http\Controllers\ChallanController::class);
+    Route::get('/challans/create', App\Livewire\Challans\Create::class)->name('challans.create');
+    Route::resource('challans', \App\Http\Controllers\ChallanController::class)->except(['create', 'store']);
     Route::post('/challans/{challan}/validate-payment', [\App\Http\Controllers\ChallanController::class, 'validatePayment'])->name('challans.validate-payment');
+
+    // Warnings
+    Route::get('/warnings', App\Livewire\Warnings\Index::class)
+        ->name('warnings.index')->middleware('can:warnings:view');
+    Route::get('/warnings/issue', App\Livewire\Warnings\Create::class)
+        ->name('warnings.create')->middleware('can:warnings:create');
     
     // Impound & Release Workflow
     Route::prefix('impound')->group(function () {
@@ -301,6 +312,17 @@ Route::middleware(['auth', 'can:circles:edit'])->group(function () {
 });
 Route::middleware(['auth', 'can:circles:delete'])->group(function () {
     Route::delete('circles/{circle}', [CircleController::class, 'destroy'])->name('circles.destroy');
+});
+
+// Sectors
+Route::middleware(['auth', 'can:sectors:view'])->group(function () {
+    Route::get('sectors', [SectorController::class, 'index'])->name('sectors.index');
+});
+Route::middleware(['auth', 'can:sectors:create'])->group(function () {
+    Route::get('sectors/create', [SectorController::class, 'create'])->name('sectors.create');
+});
+Route::middleware(['auth', 'can:sectors:edit'])->group(function () {
+    Route::get('sectors/{id}/edit', [SectorController::class, 'edit'])->name('sectors.edit');
 });
 
 // Dumping Points

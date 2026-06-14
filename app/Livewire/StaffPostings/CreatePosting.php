@@ -22,6 +22,7 @@ class CreatePosting extends Component
     public $province_id;
     public $city_id;
     public $circle_id;
+    public $sector_id;
     public $dumping_point_id;
     public $medical_center_id;
 
@@ -30,6 +31,7 @@ class CreatePosting extends Component
     public $provinces = [];
     public $cities = [];
     public $circles = [];
+    public $sectors = [];
     public $dumping_points = [];
     public $medical_centers = [];
 
@@ -51,10 +53,12 @@ class CreatePosting extends Component
         $this->province_id = null;
         $this->city_id = null;
         $this->circle_id = null;
+        $this->sector_id = null;
         $this->dumping_point_id = null;
         $this->medical_center_id = null;
         $this->cities = [];
         $this->circles = [];
+        $this->sectors = [];
         $this->dumping_points = [];
         $this->medical_centers = [];
     }
@@ -79,6 +83,8 @@ class CreatePosting extends Component
             $this->dumping_points = DumpingPoint::where('circle_id', $value)->orderBy('name')->get();
         } elseif ($this->location_type === 'medical_center') {
             $this->medical_centers = MedicalCenter::where('circle_id', $value)->orderBy('name')->get();
+        } elseif ($this->location_type === 'sector') {
+            $this->sectors = \App\Models\Sector::where('circle_id', $value)->orderBy('name')->get();
         }
     }
 
@@ -86,7 +92,7 @@ class CreatePosting extends Component
     {
         $this->validate([
             'staff_id' => 'required|exists:staff,id',
-            'location_type' => 'required|in:province,city,circle,dumping_point,medical_center',
+            'location_type' => 'required|in:province,city,circle,sector,dumping_point,medical_center',
             'start_date' => 'required|date',
         ]);
 
@@ -95,6 +101,7 @@ class CreatePosting extends Component
             'province' => ['province_id' => 'required|exists:provinces,id'],
             'city' => ['city_id' => 'required|exists:cities,id'],
             'circle' => ['circle_id' => 'required|exists:circles,id'],
+            'sector' => ['sector_id' => 'required|exists:sectors,id'],
             'dumping_point' => ['dumping_point_id' => 'required|exists:dumping_points,id'],
             'medical_center' => ['medical_center_id' => 'required|exists:medical_centers,id'],
         ];
@@ -116,6 +123,7 @@ class CreatePosting extends Component
                 'province_id' => $this->location_type === 'province' ? $this->province_id : null,
                 'city_id' => $this->location_type === 'city' ? $this->city_id : null,
                 'circle_id' => $this->location_type === 'circle' ? $this->circle_id : null,
+                'sector_id' => $this->location_type === 'sector' ? $this->sector_id : null,
                 'dumping_point_id' => $this->location_type === 'dumping_point' ? $this->dumping_point_id : null,
                 'medical_center_id' => $this->location_type === 'medical_center' ? $this->medical_center_id : null,
                 'start_date' => $this->start_date,
