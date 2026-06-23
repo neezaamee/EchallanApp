@@ -39,6 +39,7 @@
                         <option value="province">Province</option>
                         <option value="city">City</option>
                         <option value="circle">Circle</option>
+                        <option value="sector">Sector</option>
                         <option value="dumping_point">Dumping Point</option>
                         <option value="medical_center">Medical Center</option>
                     </select>
@@ -114,6 +115,48 @@
                             @endforeach
                         </select>
                         @error('circle_id') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+            @endif
+
+            @if($location_type === 'sector')
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Province</label>
+                        <select class="form-select" wire:model.live="province_id">
+                            <option value="">-- Select Province --</option>
+                            @foreach($provinces as $p)
+                                <option value="{{ $p->id }}">{{ $p->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">City</label>
+                        <select class="form-select" wire:model.live="city_id">
+                            <option value="">-- Select City --</option>
+                            @foreach($cities as $c)
+                                <option value="{{ $c->id }}">{{ $c->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Circle</label>
+                        <select class="form-select" wire:model.live="circle_id">
+                            <option value="">-- Select Circle --</option>
+                            @foreach($circles as $circle)
+                                <option value="{{ $circle->id }}">{{ $circle->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Sector <span class="text-danger">*</span></label>
+                        <select class="form-select" wire:model="sector_id">
+                            <option value="">-- Select Sector --</option>
+                            @foreach($sectors as $sec)
+                                <option value="{{ $sec->id }}">{{ $sec->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('sector_id') <span class="text-danger small">{{ $message }}</span> @enderror
                     </div>
                 </div>
             @endif

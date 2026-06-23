@@ -20,10 +20,12 @@ class RolePermissionSeeder extends Seeder
             'medical-centers' => ['view', 'create', 'edit', 'delete'],
             'medical-requests' => ['view', 'create', 'edit', 'delete', 'approve'],
             'challans' => ['view', 'create', 'edit', 'delete', 'pay'],
+            'warnings' => ['view', 'create', 'edit', 'delete'],
             'infrastructure' => ['view', 'create', 'edit', 'delete'],
             'provinces' => ['view', 'create', 'edit', 'delete'],
             'cities' => ['view', 'create', 'edit', 'delete'],
             'circles' => ['view', 'create', 'edit', 'delete'],
+            'sectors' => ['view', 'create', 'edit', 'delete'],
             'dumping-points' => ['view', 'create', 'edit', 'delete'],
             'pick-up-points' => ['view', 'create', 'edit', 'delete'],
             'staff' => ['view', 'create', 'edit', 'delete'],
@@ -55,7 +57,7 @@ class RolePermissionSeeder extends Seeder
             'admin' => [
                 'medical-centers:view', 'medical-centers:create', 'medical-centers:edit',
                 'staff:view', 'staff:create', 'staff:edit',
-                'infrastructure:view', 'provinces:view', 'cities:view', 'circles:view', 'dumping-points:view', 'pick-up-points:view',
+                'infrastructure:view', 'provinces:view', 'cities:view', 'circles:view', 'sectors:view', 'sectors:create', 'sectors:edit', 'sectors:delete', 'dumping-points:view', 'pick-up-points:view',
                 'reports:view', 'logs:view',
                 'profile:view', 'profile:edit', 'profile:password'
             ],
@@ -66,16 +68,28 @@ class RolePermissionSeeder extends Seeder
                 'profile:view', 'profile:edit', 'profile:password'
             ],
 
-            'cto' => [
-                'medical-requests:view', 'challans:view',
-                'reports:view', 'reports:medical', 'reports:lifter-squad',
-                'infrastructure:view',
+            'medical_assistant' => [
+                'medical-requests:view', 'medical-requests:create', 'medical-requests:edit',
+                'medical-centers:view',
                 'profile:view', 'profile:edit', 'profile:password'
             ],
 
-            'challan_officer' => [
+            'cto' => [
+                'medical-requests:view', 'challans:view', 'warnings:view',
+                'reports:view', 'reports:medical', 'reports:lifter-squad',
+                'infrastructure:view', 'sectors:view',
+                'profile:view', 'profile:edit', 'profile:password'
+            ],
+
+            'lifter_challan_officer' => [
                 'challans:view', 'challans:create', 'challans:edit',
-                'infrastructure:view', 'cities:view', 'circles:view', 'pick-up-points:view',
+                'infrastructure:view', 'cities:view', 'circles:view', 'sectors:view', 'pick-up-points:view',
+                'profile:view', 'profile:edit', 'profile:password'
+            ],
+
+            'warning_officer' => [
+                'warnings:view', 'warnings:create',
+                'infrastructure:view', 'cities:view', 'circles:view', 'sectors:view',
                 'profile:view', 'profile:edit', 'profile:password'
             ],
 

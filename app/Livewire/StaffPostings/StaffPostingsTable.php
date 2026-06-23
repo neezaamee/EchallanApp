@@ -37,6 +37,8 @@ class StaffPostingsTable extends Component
             return $posting->medicalCenter->name ?? '—';
         } elseif ($posting->dumping_point_id) {
             return $posting->dumpingPoint->name ?? '—';
+        } elseif ($posting->sector_id) {
+            return $posting->sector->name ?? '—';
         } elseif ($posting->circle_id) {
             return $posting->circle->name ?? '—';
         } elseif ($posting->city_id) {
@@ -53,7 +55,7 @@ class StaffPostingsTable extends Component
             'staff' => function($q) {
                 $q->withoutGlobalScopes();
             },
-            'province', 'city', 'circle', 'dumpingPoint', 'medicalCenter'
+            'province', 'city', 'circle', 'sector', 'dumpingPoint', 'medicalCenter'
         ])
             ->where('status', 'active')
             ->when(trim($this->search) !== '', function ($q) {

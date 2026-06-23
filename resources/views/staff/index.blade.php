@@ -21,6 +21,7 @@
                 <th>Rank</th>
                 <th>City</th>
                 <th>Circle</th>
+                <th>Sector</th>
                 <th>Dumping Point</th>
                 <th>Medical Center</th>
                 <th>Status</th>
@@ -38,6 +39,7 @@
                     <td>{{ $s->rank?->name ?? '-' }}</td>{{-- operator ran?-> null values ko handle krta hai --}}
                     <td>{{ optional($s->activePosting->city)->name ?? '-' }}</td>
                     <td>{{ optional($s->activePosting->circle)->name ?? '-' }}</td>
+                    <td>{{ optional($s->activePosting->sector)->name ?? '-' }}</td>
                     <td>{{ optional($s->activePosting->dumpingPoint)->name ?? '-' }}</td>
                     <td>{{ optional($s->activePosting->medicalCenter)->name ?? '-' }}</td>
                     <td>{{ ucfirst($s->status) }}</td>

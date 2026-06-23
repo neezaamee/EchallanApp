@@ -59,7 +59,7 @@ class StaffTable extends Component
 
     public function render()
     {
-        $query = Staff::with(['rank', 'user.roles', 'activePosting.province', 'activePosting.city', 'activePosting.circle.city.province', 'activePosting.dumpingPoint.circle.city.province', 'activePosting.medicalCenter.circle.city.province'])
+        $query = Staff::with(['rank', 'user.roles', 'activePosting.province', 'activePosting.city', 'activePosting.circle.city.province', 'activePosting.sector.circle.city.province', 'activePosting.dumpingPoint.circle.city.province', 'activePosting.medicalCenter.circle.city.province'])
             ->when(trim($this->search) !== '', function ($q) {
                 $s = '%' . $this->search . '%';
                 $q->where('first_name', 'like', $s)

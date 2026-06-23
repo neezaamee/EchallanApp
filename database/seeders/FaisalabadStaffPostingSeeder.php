@@ -24,11 +24,15 @@ class FaisalabadStaffPostingSeeder extends Seeder
         $circles = Circle::all();
         $dumpingPoints = DumpingPoint::all();
         $medicalCenters = MedicalCenter::all();
+        $sectors = \App\Models\Sector::all();
 
         // Fetch all staff — Spatie roles
         $staffMembers = Staff::with('user')->get();
 
         foreach ($staffMembers as $staff) {
+            if (!$staff->user) {
+                continue;
+            }
 
             $roleName = $staff->user->getRoleNames()->first(); // Spatie
 
@@ -51,9 +55,15 @@ class FaisalabadStaffPostingSeeder extends Seeder
                 case 'incharge':
                 case 'duty_officer':
                 case 'deo':
-                case 'challan_officer':
+                case 'lifter_challan_officer':
                     $posting['city_id'] = $cityId;
                     $posting['dumping_point_id'] = $dumpingPoints->random()->id;
+                    break;
+
+                // Sector based roles
+                case 'warning_officer':
+                    $posting['city_id'] = $cityId;
+                    $posting['sector_id'] = $sectors->random()->id;
                     break;
 
                 // Circle level
@@ -69,8 +79,9 @@ class FaisalabadStaffPostingSeeder extends Seeder
                     $posting['city_id'] = $cityId;
                     break;
 
-                // Doctor → city + medical center
+                // Doctor & Medical Assistant → city + medical center
                 case 'doctor':
+                case 'medical_assistant':
                     $posting['city_id'] = $cityId;
                     $selectedMedicalCenter = $medicalCenters->random();
                     $posting['circle_id'] = $selectedMedicalCenter->circle_id;

@@ -242,19 +242,57 @@
                     </li>
                 @endcanany
 
-                {{-- ==================== INFRASTRUCTURE ==================== --}}
-                @canany(['provinces:view', 'cities:view', 'circles:view', 'dumping-points:view', 'pick-up-points:view', 'medical-centers:view'])
+                {{-- ==================== WARNING Services ==================== --}}
+                @canany(['warnings:create', 'warnings:view'])
                     <li class="nav-item">
-                        <a class="nav-link dropdown-indicator {{ request()->routeIs('provinces.*') || request()->routeIs('cities.*') || request()->routeIs('circles.*') || request()->routeIs('dumping-points.*') || request()->routeIs('pick-up-points.*') || request()->routeIs('medical-centers.*') ? '' : 'collapsed' }}" 
+                        <a class="nav-link dropdown-indicator {{ request()->routeIs('warnings.*') ? '' : 'collapsed' }}" 
+                            href="#warning-services" role="button" data-bs-toggle="collapse" 
+                            aria-expanded="{{ request()->routeIs('warnings.*') ? 'true' : 'false' }}" 
+                            aria-controls="warning-services">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon"><span class="fas fa-exclamation-triangle"></span></span>
+                                <span class="nav-link-text ps-1">Warning Services</span>
+                            </div>
+                        </a>
+                        <ul class="nav collapse {{ request()->routeIs('warnings.*') ? 'show' : '' }}" id="warning-services">
+                            @can('warnings:create')
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('warnings.create') ? 'active' : '' }}" href="{{ route('warnings.create') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-plus-circle"></span></span>
+                                        <span class="nav-link-text ps-1">Issue Warning</span>
+                                    </div>
+                                </a>
+                            </li>
+                            @endcan
+
+                            @can('warnings:view')
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('warnings.index') ? 'active' : '' }}" href="{{ route('warnings.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-list"></span></span>
+                                        <span class="nav-link-text ps-1">Warning History</span>
+                                    </div>
+                                </a>
+                            </li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endcanany
+
+                {{-- ==================== INFRASTRUCTURE ==================== --}}
+                @canany(['provinces:view', 'cities:view', 'circles:view', 'sectors:view', 'dumping-points:view', 'pick-up-points:view', 'medical-centers:view'])
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-indicator {{ request()->routeIs('provinces.*') || request()->routeIs('cities.*') || request()->routeIs('circles.*') || request()->routeIs('sectors.*') || request()->routeIs('dumping-points.*') || request()->routeIs('pick-up-points.*') || request()->routeIs('medical-centers.*') ? '' : 'collapsed' }}" 
                             href="#infrastructure" role="button" data-bs-toggle="collapse" 
-                            aria-expanded="{{ request()->routeIs('provinces.*') || request()->routeIs('cities.*') || request()->routeIs('circles.*') || request()->routeIs('dumping-points.*') || request()->routeIs('pick-up-points.*') || request()->routeIs('medical-centers.*') ? 'true' : 'false' }}" 
+                            aria-expanded="{{ request()->routeIs('provinces.*') || request()->routeIs('cities.*') || request()->routeIs('circles.*') || request()->routeIs('sectors.*') || request()->routeIs('dumping-points.*') || request()->routeIs('pick-up-points.*') || request()->routeIs('medical-centers.*') ? 'true' : 'false' }}" 
                             aria-controls="infrastructure">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-icon"><span class="fas fa-building"></span></span>
                                 <span class="nav-link-text ps-1">Infrastructure</span>
                             </div>
                         </a>
-                        <ul class="nav collapse {{ request()->routeIs('provinces.*') || request()->routeIs('cities.*') || request()->routeIs('circles.*') || request()->routeIs('dumping-points.*') || request()->routeIs('pick-up-points.*') || request()->routeIs('medical-centers.*') ? 'show' : '' }}" id="infrastructure">
+                        <ul class="nav collapse {{ request()->routeIs('provinces.*') || request()->routeIs('cities.*') || request()->routeIs('circles.*') || request()->routeIs('sectors.*') || request()->routeIs('dumping-points.*') || request()->routeIs('pick-up-points.*') || request()->routeIs('medical-centers.*') ? 'show' : '' }}" id="infrastructure">
                             @can('provinces:view')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('provinces.*') ? 'active' : '' }}"
@@ -281,6 +319,16 @@
                                     href="{{ route('circles.index') }}">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-text ps-1">Circles</span>
+                                    </div>
+                                </a>
+                            </li>
+                            @endcan
+                            @can('sectors:view')
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('sectors.*') ? 'active' : '' }}"
+                                    href="{{ route('sectors.index') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-text ps-1">Sectors</span>
                                     </div>
                                 </a>
                             </li>

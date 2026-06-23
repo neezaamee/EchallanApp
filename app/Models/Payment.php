@@ -22,6 +22,7 @@ class Payment extends Model
         'status',
         'payment_gateway_response',
         'paid_at',
+        'receipt_number',
     ];
 
     protected $casts = [
@@ -29,6 +30,25 @@ class Payment extends Model
         'payment_gateway_response' => 'array',
         'paid_at' => 'datetime',
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($payment) {
+            if ($payment->status === 'success' && empty($payment->receipt_number)) {
+                $datePart = $payment->paid_at ? $payment->paid_at->format('Ymd') : now()->format('Ymd');
+                $payment->receipt_number = 'RCP-' . $datePart . '-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT);
+                $payment->saveQuietly();
+            }
+        });
+        
+        static::updated(function ($payment) {
+            if ($payment->status === 'success' && empty($payment->receipt_number)) {
+                $datePart = $payment->paid_at ? $payment->paid_at->format('Ymd') : now()->format('Ymd');
+                $payment->receipt_number = 'RCP-' . $datePart . '-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT);
+                $payment->saveQuietly();
+            }
+        });
+    }
 
     /**
      * Get the medical request associated with this payment

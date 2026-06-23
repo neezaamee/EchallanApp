@@ -22,12 +22,14 @@ class DepartmentsAndStaffTypesSeeder extends Seeder
 
         $types = [
             ['name' => 'doctor', 'display_name' => 'Doctor'],
-            ['name' => 'challan_officer', 'display_name' => 'Challan Officer'],
+            ['name' => 'medical_assistant', 'display_name' => 'Medical Assistant'],
+            ['name' => 'lifter_challan_officer', 'display_name' => 'Lifter Challan Officer'],
+            ['name' => 'warning_officer', 'display_name' => 'Warning Officer'],
             ['name' => 'clerk', 'display_name' => 'Clerk/Staff'],
         ];
 
         foreach ($types as $t) {
-            StaffType::firstOrCreate(['name' => $t['name']], $t);
+            StaffType::updateOrCreate(['name' => $t['name']], $t);
         }
     }
 }

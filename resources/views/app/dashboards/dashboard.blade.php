@@ -23,6 +23,8 @@
                                         $postingPlace = $posting->medicalCenter->name;
                                     } elseif ($posting->dumping_point_id && $posting->dumpingPoint) {
                                         $postingPlace = $posting->dumpingPoint->name;
+                                    } elseif ($posting->sector_id && $posting->sector) {
+                                        $postingPlace = $posting->sector->name;
                                     } elseif ($posting->circle_id && $posting->circle) {
                                         $postingPlace = $posting->circle->name;
                                     } elseif ($posting->city_id && $posting->city) {

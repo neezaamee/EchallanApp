@@ -20,6 +20,7 @@ class StaffqController extends Controller
         $staff = Staff::with([
             'activePosting.city',
             'activePosting.circle',
+            'activePosting.sector',
             'activePosting.dumpingPoint',
             'activePosting.medicalCenter',
             'user',
@@ -35,26 +36,16 @@ class StaffqController extends Controller
         $provinces = Province::all();
         $cities = City::all();
         $circles = Circle::all();
+        $sectors = \App\Models\Sector::all();
         $dumpingPoints = DumpingPoint::all();
         $medicalCenters = MedicalCenter::all();
 
-        // Role mapping for dropdown
-        $roles = [
-            3  => 'incharge',
-            4  => 'duty_officer',
-            5  => 'deo',
-            6  => 'challan_officer',
-            7  => 'circle_officer',
-            8  => 'reader',
-            9  => 'accountant',
-            10 => 'doctor',
-            11 => 'cto',
-            12 => 'dig',
-            13 => 'addl_ig',
-            14 => 'ig',
-        ];
+        // Role mapping for dropdown (dynamic Spatie roles excluding non-staff)
+        $roles = \Spatie\Permission\Models\Role::whereNotIn('name', ['super_admin', 'citizen', 'admin'])
+            ->pluck('name', 'id')
+            ->toArray();
 
-        return view('staff.create', compact('provinces','cities','circles','dumpingPoints','medicalCenters','roles'));
+        return view('staff.create', compact('provinces','cities','circles','sectors','dumpingPoints','medicalCenters','roles'));
     }
 
     public function store(Request $request)
@@ -77,6 +68,7 @@ class StaffqController extends Controller
             'province_id' => $request->province_id,
             'city_id' => $request->city_id,
             'circle_id' => $request->circle_id,
+            'sector_id' => $request->sector_id,
             'dumping_point_id' => $request->dumping_point_id,
             'medical_center_id' => $request->medical_center_id,
             'status' => 'active',
@@ -91,26 +83,16 @@ class StaffqController extends Controller
         $provinces = Province::all();
         $cities = City::all();
         $circles = Circle::all();
+        $sectors = \App\Models\Sector::all();
         $dumpingPoints = DumpingPoint::all();
         $medicalCenters = MedicalCenter::all();
-        $roles = [
-            3  => 'incharge',
-            4  => 'duty_officer',
-            5  => 'deo',
-            6  => 'challan_officer',
-            7  => 'circle_officer',
-            8  => 'reader',
-            9  => 'accountant',
-            10 => 'doctor',
-            11 => 'cto',
-            12 => 'dig',
-            13 => 'addl_ig',
-            14 => 'ig',
-        ];
+        $roles = \Spatie\Permission\Models\Role::whereNotIn('name', ['super_admin', 'citizen', 'admin'])
+            ->pluck('name', 'id')
+            ->toArray();
 
         $currentPosting = $staff->currentPosting; // may be null
 
-        return view('staff.edit', compact('staff','currentPosting','provinces','cities','circles','dumpingPoints','medicalCenters','roles'));
+        return view('staff.edit', compact('staff','currentPosting','provinces','cities','circles','sectors','dumpingPoints','medicalCenters','roles'));
     }
 
     public function update(Request $request, Staff $staff)
@@ -129,7 +111,7 @@ class StaffqController extends Controller
         // Update current posting safely
         $currentPosting = $staff->currentPosting;
         if($currentPosting) {
-            $currentPosting->update($request->only(['province_id','city_id','circle_id','dumping_point_id','medical_center_id']));
+            $currentPosting->update($request->only(['province_id','city_id','circle_id','sector_id','dumping_point_id','medical_center_id']));
         }
 
         return redirect()->route('staff.index')->with('success','Staff updated successfully');

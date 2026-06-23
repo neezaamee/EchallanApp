@@ -38,10 +38,10 @@ class StaffController extends Controller
 
     public function show(Staff $staff)
     {
-        $staff->load(['rank', 'city', 'province', 'user', 'activePosting.province', 'activePosting.city', 'activePosting.circle', 'activePosting.dumpingPoint', 'activePosting.medicalCenter']);
+        $staff->load(['rank', 'city', 'province', 'user', 'activePosting.province', 'activePosting.city', 'activePosting.circle', 'activePosting.sector', 'activePosting.dumpingPoint', 'activePosting.medicalCenter']);
         
         $postings = \App\Models\StaffPosting::where('staff_id', $staff->id)
-            ->with(['province', 'city', 'circle', 'dumpingPoint', 'medicalCenter'])
+            ->with(['province', 'city', 'circle', 'sector', 'dumpingPoint', 'medicalCenter'])
             ->orderBy('id', 'desc')
             ->get();
 
