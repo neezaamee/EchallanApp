@@ -11,7 +11,7 @@ return [
     |
     */
     'traffic' => [
-        'bike' => 200,
+        'bike' => 300,
         'car'  => 2000,
         'other' => 3000, // Default for 'other' vehicle types
     ],
