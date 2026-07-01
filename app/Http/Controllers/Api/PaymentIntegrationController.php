@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Models\PaymentAuditLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Rules\ValidPsid;
 
 class PaymentIntegrationController extends Controller
 {
@@ -28,8 +29,10 @@ class PaymentIntegrationController extends Controller
         }
 
         // 2. Validate Consumer Number (PSID)
+        // ValidPsid rule accepts both 12-digit (V2) and 20-digit (V1) PSIDs
+        // and verifies Luhn checksum — version-agnostic, no hardcoded length.
         $request->validate([
-            'consumer_number' => 'required|string|size:20'
+            'consumer_number' => ['required', 'string', new ValidPsid()],
         ]);
 
         $psid = $request->consumer_number;
@@ -141,11 +144,13 @@ class PaymentIntegrationController extends Controller
         }
 
         // 2. Validate payload
+        // ValidPsid rule accepts both 12-digit (V2) and 20-digit (V1) PSIDs
+        // and verifies Luhn checksum — version-agnostic, no hardcoded length.
         $request->validate([
-            'consumer_number' => 'required|string|size:20',
-            'transaction_id' => 'required|string',
-            'amount_paid' => 'required|numeric',
-            'transaction_date' => 'sometimes|string'
+            'consumer_number'  => ['required', 'string', new ValidPsid()],
+            'transaction_id'   => 'required|string',
+            'amount_paid'      => 'required|numeric',
+            'transaction_date' => 'sometimes|string',
         ]);
 
         $psid = $request->consumer_number;
@@ -221,7 +226,7 @@ class PaymentIntegrationController extends Controller
         return $token === 'Bearer ' . $expectedToken || $token === $expectedToken;
     }
 
-    private function logAction($psid, $action, $oldStatus, $newStatus, $reason, $paymentId = null)
+    private function logAction(string $psid, string $action, string $oldStatus, string $newStatus, string $reason, ?int $paymentId = null): void
     {
         try {
             PaymentAuditLog::create([

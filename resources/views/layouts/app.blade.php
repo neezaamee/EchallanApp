@@ -96,5 +96,6 @@
 @endsection
 
 @section('after-main-content')
-    @include('partials.setting-panel')
+    {{-- TODO: is ko munasab jga pay set krna hai is ko abhi comment kr rha hoon --}}
+    {{-- @include('partials.setting-panel') --}}
 @endsection

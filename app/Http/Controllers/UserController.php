@@ -174,11 +174,37 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::find($id);
+        if (!$user) {
+            return redirect()->route('users.index')
+                ->with('error', 'User not found.');
+        }
+
         if (!auth()->user()->hasRole('super_admin') && $user->hasRole('super_admin')) {
             abort(403, 'Unauthorized action.');
         }
-        $user->delete();
-        return redirect()->route('users.index')
-            ->with('success', 'User deleted successfully');
+
+        if ($user->id === auth()->id()) {
+            return redirect()->route('users.index')
+                ->with('error', 'You cannot delete your own account.');
+        }
+
+        if (\App\Models\Challan::where('officer_id', $user->id)->exists()) {
+            return redirect()->route('users.index')
+                ->with('error', 'Cannot delete user because they are associated with existing challans.');
+        }
+
+        if (\App\Models\Warning::where('officer_id', $user->id)->exists()) {
+            return redirect()->route('users.index')
+                ->with('error', 'Cannot delete user because they are associated with existing warnings.');
+        }
+
+        try {
+            $user->delete();
+            return redirect()->route('users.index')
+                ->with('success', 'User deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')
+                ->with('error', 'Failed to delete user. There might be related records preventing deletion.');
+        }
     }
 }

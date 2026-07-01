@@ -12,36 +12,28 @@ class MockBankController extends Controller
     /**
      * Simulate PSID Generation
      * POST /api/mock-bank/generate-psid
+     *
+     * Delegates to BankService::generatePsid() — the single source of truth —
+     * so the mock sandbox always produces PSIDs in the same format (V1 or V2)
+     * as the live system, controlled by the PSID_VERSION env variable.
      */
     public function generatePsid(Request $request)
     {
         $request->validate([
-            'head' => 'required|in:MEDICAL,TRAFFIC_CAR,TRAFFIC_BIKE',
+            'head'   => 'required|in:MEDICAL,TRAFFIC_CAR,TRAFFIC_BIKE',
             'amount' => 'required|numeric',
         ]);
 
-        $prefix = config("bank.heads.{$request->head}.prefix", '99');
-        
-        // Format: Prefix + Ymd + Random = 20 digits
-        $date = date('ymd');
-        // Calculate needed random length
-        $usedLength = strlen($prefix) + 6;
-        $randomLength = 20 - $usedLength;
-        if($randomLength < 1) $randomLength = 4;
-        
-        $random = '';
-        while (strlen($random) < $randomLength) {
-            $random .= mt_rand(0, 9);
-        }
-        $random = substr($random, 0, $randomLength);
-        
-        $psid = $prefix . $date . $random;
+        $psid    = \App\Services\BankService::generatePsid($request->head, (float) $request->amount);
+        $version = \App\Services\BankService::getPsidVersion();
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'psid' => $psid,
-                'expiry' => now()->addDays(30)->toIso8601String(),
+            'data'   => [
+                'psid'         => $psid,
+                'psid_version' => $version,
+                'psid_length'  => strlen($psid),
+                'expiry'       => now()->addDays(30)->toIso8601String(),
             ]
         ]);
     }

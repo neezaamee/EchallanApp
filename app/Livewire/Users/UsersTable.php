@@ -49,10 +49,32 @@ class UsersTable extends Component
             return;
         }
 
+        if ($this->deleteId === Auth::id()) {
+            session()->flash('error', 'You cannot delete your own account.');
+            $this->reset(['confirmingUserDeletion', 'deleteId']);
+            return;
+        }
+
         $user = User::find($this->deleteId);
         if ($user) {
-            $user->delete();
-            session()->flash('message', 'User deleted successfully.');
+            if (\App\Models\Challan::where('officer_id', $user->id)->exists()) {
+                session()->flash('error', 'Cannot delete user because they are associated with existing challans.');
+                $this->reset(['confirmingUserDeletion', 'deleteId']);
+                return;
+            }
+
+            if (\App\Models\Warning::where('officer_id', $user->id)->exists()) {
+                session()->flash('error', 'Cannot delete user because they are associated with existing warnings.');
+                $this->reset(['confirmingUserDeletion', 'deleteId']);
+                return;
+            }
+
+            try {
+                $user->delete();
+                session()->flash('message', 'User deleted successfully.');
+            } catch (\Exception $e) {
+                session()->flash('error', 'Failed to delete user. There might be related records preventing deletion.');
+            }
         }
 
         $this->reset(['confirmingUserDeletion', 'deleteId']);

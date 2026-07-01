@@ -36,6 +36,14 @@
             </div>
         @endif
 
+        @if (session()->has('error'))
+            <div class="alert alert-danger border-2 d-flex align-items-center p-2 mb-0" role="alert">
+                <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-3"></span></div>
+                <p class="mb-0 flex-1 text-800">{{ session('error') }}</p>
+                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="table-responsive scrollbar">
             <table class="table table-sm table-striped table-hover align-middle mb-0 fs--1">
                 <thead class="bg-200 text-900">
