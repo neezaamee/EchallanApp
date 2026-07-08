@@ -1,49 +1,47 @@
 @extends('layouts.app')
-@section('page-title', 'Edit Role - ')
-@section('cms-main-content')
-    @if (count($errors) > 0)
-        <div class="alert alert-danger border-2 d-flex align-items-center" role="alert">
-            <div class="bg-danger me-3 icon-item"><span class="fas fa-times-circle text-white fs-9"></span></div>
-            <p class="mb-0 flex-1">
-                @foreach ($errors->all() as $error)
-                    {{ $error }}<br>
-                @endforeach
-            </p>
-        </div>
-    @endif
 
-    <form action="{{ route('roles.update', $role->id) }}" method="POST">
-        @csrf
-        @method('PATCH')
-        <div class="card mb-3">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Edit Role: {{ $role->name }}</h5>
-                <a class="btn btn-secondary btn-sm" href="{{ route('roles.index') }}">
-                    <span class="fas fa-arrow-left me-1"></span> Back to List
-                </a>
-            </div>
-            <div class="card-body">
+@section('page-title', 'Edit Role - ')
+
+@section('cms-main-content')
+    <div class="container-fluid mt-2">
+        @if (count($errors) > 0)
+            <x-falcon.alert variant="danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </x-falcon.alert>
+        @endif
+
+        <form action="{{ route('roles.update', $role->id) }}" method="POST">
+            @csrf
+            @method('PATCH')
+            
+            <x-falcon.card title="Edit Role: {{ $role->name }}" bodyClass="p-4">
+                <x-slot name="headerActions">
+                    <x-falcon.button href="{{ route('roles.index') }}" variant="secondary" icon="fas fa-arrow-left">
+                        Back to List
+                    </x-falcon.button>
+                </x-slot>
+
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold" for="roleName">Role Name <span
-                                class="text-danger">*</span></label>
-                        <input type="text" name="name" id="roleName" class="form-control" value="{{ $role->name }}"
-                            placeholder="e.g. Manager" required>
-                        <div class="form-text">Unique identifier for the role.</div>
+                    <div class="col-md-6">
+                        <x-falcon.form-group label="Role Name" name="name" required="true" helpText="Unique identifier for the role.">
+                            <input type="text" name="name" id="roleName" class="form-control shadow-none" value="{{ $role->name }}" placeholder="e.g. Manager" required>
+                        </x-falcon.form-group>
                     </div>
                 </div>
-            </div>
-        </div>
+            </x-falcon.card>
 
-        <div class="card mb-3">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Assign Permissions</h5>
-                <div class="form-check mb-0">
-                    <input class="form-check-input" id="checkAll" type="checkbox" />
-                    <label class="form-check-label mb-0" for="checkAll">Select All Permissions</label>
-                </div>
-            </div>
-            <div class="card-body">
+            <x-falcon.card title="Assign Permissions" bodyClass="p-4" headerClass="bg-light">
+                <x-slot name="headerActions">
+                    <div class="form-check mb-0">
+                        <input class="form-check-input cursor-pointer" id="checkAll" type="checkbox" />
+                        <label class="form-check-label mb-0 fw-bold fs--1 text-dark" for="checkAll">Select All Permissions</label>
+                    </div>
+                </x-slot>
+
                 <div class="row g-3">
                     @foreach ($groupedPermissions as $group => $perms)
                         <div class="col-md-4 col-xxl-3">
@@ -57,9 +55,9 @@
                                             name="permission[]" value="{{ $permission->name }}"
                                             id="perm-{{ $permission->id }}"
                                             {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }}>
-                                        <label class="form-check-label fs-10" for="perm-{{ $permission->id }}">
+                                        <label class="form-check-label fs-10 text-800" for="perm-{{ $permission->id }}">
                                             {{ ucwords(str_replace(['read', 'crud', 'delete', 'verify'], '', $permission->name)) }}
-                                            <span class="text-400 d-block fs-11">Full name: {{ $permission->name }}</span>
+                                            <span class="text-400 d-block fs-11">Full: {{ $permission->name }}</span>
                                         </label>
                                     </div>
                                 @endforeach
@@ -67,19 +65,27 @@
                         </div>
                     @endforeach
                 </div>
-            </div>
-            <div class="card-footer bg-light text-end">
-                <button type="submit" class="btn btn-primary px-5">
-                    <span class="fas fa-save me-1"></span> Update Role
-                </button>
-            </div>
-        </div>
-    </form>
+
+                <x-slot name="footer">
+                    <div class="text-end">
+                        <x-falcon.button type="submit" variant="primary" icon="fas fa-save">
+                            Update Role
+                        </x-falcon.button>
+                    </div>
+                </x-slot>
+            </x-falcon.card>
+        </form>
+    </div>
 
     <script>
-        document.getElementById('checkAll').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.permission-checkbox');
-            checkboxes.forEach(cb => cb.checked = this.checked);
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkAll = document.getElementById('checkAll');
+            if (checkAll) {
+                checkAll.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('.permission-checkbox');
+                    checkboxes.forEach(cb => cb.checked = this.checked);
+                });
+            }
         });
     </script>
 @endsection

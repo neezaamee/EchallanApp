@@ -54,6 +54,9 @@ trait HasJurisdiction
                 if (!$curatorCityId) {
                     if ($activePosting->circle_id) {
                         $curatorCityId = \Illuminate\Support\Facades\DB::table('circles')->where('id', $activePosting->circle_id)->value('city_id');
+                    } elseif ($activePosting->sector_id) {
+                        $circleId = \Illuminate\Support\Facades\DB::table('sectors')->where('id', $activePosting->sector_id)->value('circle_id');
+                        $curatorCityId = \Illuminate\Support\Facades\DB::table('circles')->where('id', $circleId)->value('city_id');
                     } elseif ($activePosting->medical_center_id) {
                         $circleId = \Illuminate\Support\Facades\DB::table('medical_centers')->where('id', $activePosting->medical_center_id)->value('circle_id');
                         $curatorCityId = \Illuminate\Support\Facades\DB::table('circles')->where('id', $circleId)->value('city_id');

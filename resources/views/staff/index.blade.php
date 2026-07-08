@@ -1,59 +1,79 @@
-@extends('layouts.department')
-@section('content')
-<div class="container">
-<div class="container">
-    <h2 class="mb-4">Staff List</h2>
+@extends('layouts.app')
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+@section('page-title', 'Staff List (q) - ')
 
-    <a href="{{ route('staff.create') }}" class="btn btn-primary mb-3">Add Staff</a>
+@section('cms-main-content')
+<div class="container-fluid mt-2">
+    {{-- Page Header --}}
+    <x-falcon.page-header title="Staff List (Queue Management)" :breadcrumbs="['Home' => route('dashboard'), 'Staff (q)' => '']">
+        <x-slot name="actions">
+            @can('staff:create')
+                <x-falcon.button href="{{ route('staff.create') }}" variant="primary" icon="fas fa-plus">
+                    New Staff
+                </x-falcon.button>
+            @endcan
+        </x-slot>
+    </x-falcon.page-header>
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Role</th>
-                <th>Rank</th>
-                <th>City</th>
-                <th>Circle</th>
-                <th>Sector</th>
-                <th>Dumping Point</th>
-                <th>Medical Center</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($staff as $s)
+    {{-- Main Content Card --}}
+    <x-falcon.card title="Staff Records" description="Manage all departmental staff postings and active status indicators.">
+        
+        <x-falcon.table>
+            <thead class="bg-200 text-900">
                 <tr>
-                    <td>{{ $s->id }}</td>
-                    <td>{{ $s->first_name }} {{ $s->last_name }}</td>
-                    <td>{{ $s->email }}</td>
-                    <td>{{ $s->phone }}</td>
-                    <td>{{ optional($s->user->getRoleNames()->first())->toString() ?? '-' }}</td>
-                    <td>{{ $s->rank?->name ?? '-' }}</td>{{-- operator ran?-> null values ko handle krta hai --}}
-                    <td>{{ optional($s->activePosting->city)->name ?? '-' }}</td>
-                    <td>{{ optional($s->activePosting->circle)->name ?? '-' }}</td>
-                    <td>{{ optional($s->activePosting->sector)->name ?? '-' }}</td>
-                    <td>{{ optional($s->activePosting->dumpingPoint)->name ?? '-' }}</td>
-                    <td>{{ optional($s->activePosting->medicalCenter)->name ?? '-' }}</td>
-                    <td>{{ ucfirst($s->status) }}</td>
-                    <td>
-                        <a href="{{ route('staff.edit', $s->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('staff.destroy', $s->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </td>
+                    <th class="ps-3" style="width: 50px;">S.No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Rank</th>
+                    <th>City</th>
+                    <th>Circle</th>
+                    <th>Sector</th>
+                    <th>Dumping Point</th>
+                    <th>Medical Center</th>
+                    <th>Status</th>
+                    <th class="text-end pe-3">Actions</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse($staff as $s)
+                    <tr>
+                        <td class="text-muted ps-3">{{ $loop->iteration }}</td>
+                        <td class="fw-semi-bold text-dark">{{ $s->first_name }} {{ $s->last_name }}</td>
+                        <td>{{ $s->email }}</td>
+                        <td>{{ $s->phone }}</td>
+                        <td>
+                            <x-falcon.badge variant="primary">
+                                {{ optional($s->user?->getRoleNames()->first())->toString() ?? '—' }}
+                            </x-falcon.badge>
+                        </td>
+                        <td>{{ $s->rank?->name ?? '—' }}</td>
+                        <td>{{ optional($s->activePosting?->city)->name ?? '—' }}</td>
+                        <td>{{ optional($s->activePosting?->circle)->name ?? '—' }}</td>
+                        <td>{{ optional($s->activePosting?->sector)->name ?? '—' }}</td>
+                        <td>{{ optional($s->activePosting?->dumpingPoint)->name ?? '—' }}</td>
+                        <td>{{ optional($s->activePosting?->medicalCenter)->name ?? '—' }}</td>
+                        <td>
+                            <x-falcon.badge :variant="$s->status === 'active' ? 'success' : 'secondary'">
+                                {{ ucfirst($s->status) }}
+                            </x-falcon.badge>
+                        </td>
+                        <td class="text-end pe-3">
+                            <x-falcon.action-dropdown 
+                                :editRoute="route('staff.edit', $s->id)"
+                                :deleteRoute="route('staff.destroy', $s->id)"
+                            />
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="13" class="text-center p-4 text-muted">No staff records found.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </x-falcon.table>
+
+    </x-falcon.card>
 </div>
 @endsection

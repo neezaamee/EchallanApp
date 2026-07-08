@@ -13,14 +13,20 @@ class ProvincesTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
+    public $perPage = 50;
 
     public $confirmingProvinceDeletion = null;
     public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'perPage'];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -63,7 +69,7 @@ class ProvincesTable extends Component
             ->where('name', 'like', '%' . $this->search . '%')
             ->orWhere('slug', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.provinces.provinces-table', compact('provinces'));
     }

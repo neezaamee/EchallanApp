@@ -121,7 +121,7 @@
                                         @endif
                                     @endif
                                     
-                                    @if(auth()->user()->hasRole('super_admin'))
+                                    @if(auth()->user()->hasRole('super_admin') && $request->isUnpaid())
                                         <form action="{{ route('medical-requests.destroy', $request->id) }}" method="POST" class="d-inline ms-2" onsubmit="return confirm('Are you sure you want to delete this medical request?');">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-link p-0 text-danger" title="Delete"><i class="fas fa-trash-alt"></i></button>
@@ -144,9 +144,9 @@
     </div>
     @if ($requests->hasPages())
         <div class="card-footer bg-light py-2">
-            <div class="d-flex justify-content-end">
+            <x-falcon.pagination>
                 {{ $requests->appends(request()->query())->links() }}
-            </div>
+            </x-falcon.pagination>
         </div>
     @endif
 </div>

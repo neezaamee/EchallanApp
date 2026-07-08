@@ -1,151 +1,131 @@
 <div class="row g-3 mb-3">
     <div class="col-md-6 col-xxl-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $totalRequests ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">Total Records</h6>
-                    </div>
-                    <div class="fs-4 text-primary"><span class="fas fa-file-medical"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $totalRequests ?? 0 }}"
+            label="Total Records"
+            icon="fas fa-file-medical"
+            color="primary"
+        />
     </div>
     <div class="col-md-6 col-xxl-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $pendingRequests ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">In Progress</h6>
-                    </div>
-                    <div class="fs-4 text-warning"><span class="fas fa-clock"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $pendingRequests ?? 0 }}"
+            label="In Progress"
+            icon="fas fa-clock"
+            color="warning"
+        />
     </div>
     <div class="col-md-6 col-xxl-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $approvedRequests ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">Approved / Released</h6>
-                    </div>
-                    <div class="fs-4 text-success"><span class="fas fa-check-circle"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $approvedRequests ?? 0 }}"
+            label="Approved / Released"
+            icon="fas fa-check-circle"
+            color="success"
+        />
     </div>
     <div class="col-md-6 col-xxl-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $unpaidRequests ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">Unpaid Fees</h6>
-                    </div>
-                    <div class="fs-4 text-danger"><span class="fas fa-exclamation-circle"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $unpaidRequests ?? 0 }}"
+            label="Unpaid Fees"
+            icon="fas fa-exclamation-circle"
+            color="danger"
+        />
     </div>
 </div>
 
 <div class="row g-3">
     {{-- Medical Requests Table --}}
     <div class="col-lg-6">
-        <div class="card h-100">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Recent Medical Requests</h5>
-                <div>
-                   <a href="{{ route('medical-requests.create') }}" class="btn btn-sm btn-soft-success me-2">
-                        <span class="fas fa-plus me-1"></span> New
+        <x-falcon.card title="Recent Medical Requests" bodyClass="p-0">
+            <x-slot name="headerActions">
+                <div class="d-flex align-items-center">
+                    <x-falcon.button href="{{ route('medical-requests.create') }}" variant="falcon-success" size="xs" class="me-2" icon="fas fa-plus">
+                        New
+                    </x-falcon.button>
+                    <a href="{{ route('medical-requests.index') }}" class="btn btn-link btn-sm px-0 fw-bold">
+                        View All <span class="fas fa-chevron-right ms-1 fs--2"></span>
                     </a>
-                    <a href="{{ route('medical-requests.index') }}" class="btn btn-sm btn-link px-0 text-secondary">View All</a>
                 </div>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive scrollbar">
-                    <table class="table table-sm table-striped fs-10 mb-0">
-                        <thead>
-                            <tr>
-                                <th>PSID</th>
-                                <th>Status</th>
-                                <th class="text-end">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($recentRequests ?? [] as $request)
-                                <tr>
-                                    <td class="align-middle white-space-nowrap"><strong>{{ $request->psid }}</strong></td>
-                                    <td class="align-middle white-space-nowrap">
-                                        <span class="badge badge-soft-{{ ($request->payment_status ?? '') === 'paid' ? 'success' : 'danger' }} rounded-pill">
-                                            {{ ucfirst($request->payment_status ?? 'N/A') }}
-                                        </span>
-                                    </td>
-                                    <td class="align-middle white-space-nowrap text-end text-600">{{ $request->created_at?->format('M d') ?? 'N/A' }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="text-center py-4 text-muted small">No medical requests.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+            </x-slot>
+
+            <x-falcon.table>
+                <thead class="bg-200 text-900">
+                    <tr>
+                        <th class="ps-3">PSID</th>
+                        <th>Status</th>
+                        <th class="text-end pe-3">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recentRequests ?? [] as $request)
+                        @php /** @var \App\Models\MedicalRequest $request */ @endphp
+                        <tr>
+                            <td class="ps-3 align-middle fw-bold text-dark fs--1">{{ $request->psid }}</td>
+                            <td class="align-middle">
+                                <x-falcon.badge :variant="($request->payment_status ?? '') === 'paid' ? 'success' : 'danger'">
+                                    {{ ucfirst($request->payment_status ?? 'N/A') }}
+                                </x-falcon.badge>
+                            </td>
+                            <td class="align-middle text-end pe-3 text-muted fs--2">{{ $request->created_at?->format('M d') ?? 'N/A' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="text-center py-4 text-muted fs--1">No medical requests.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </x-falcon.table>
+        </x-falcon.card>
     </div>
 
     {{-- Traffic Challans Table --}}
     <div class="col-lg-6">
-        <div class="card h-100">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Recent Traffic Challans</h5>
-                <div>
-                    <a href="{{ route('impound.check-status.form') }}" class="btn btn-sm btn-soft-primary me-2">
-                        <span class="fas fa-search me-1"></span> Find
+        <x-falcon.card title="Recent Traffic Challans" bodyClass="p-0">
+            <x-slot name="headerActions">
+                <div class="d-flex align-items-center">
+                    <x-falcon.button href="{{ route('impound.check-status.form') }}" variant="falcon-primary" size="xs" class="me-2" icon="fas fa-search">
+                        Find
+                    </x-falcon.button>
+                    <a href="{{ route('challans.index') }}" class="btn btn-link btn-sm px-0 fw-bold">
+                        View All <span class="fas fa-chevron-right ms-1 fs--2"></span>
                     </a>
-                    <a href="{{ route('challans.index') }}" class="btn btn-sm btn-link px-0 text-secondary">View All</a>
                 </div>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive scrollbar">
-                    <table class="table table-sm table-striped fs-10 mb-0">
-                        <thead>
-                            <tr>
-                                <th>PSID</th>
-                                <th>Vehicle</th>
-                                <th>Payment</th>
-                                <th class="text-end">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($recentChallans ?? [] as $challan)
-                                <tr>
-                                    <td class="align-middle white-space-nowrap"><strong>{{ $challan->psid }}</strong></td>
-                                    <td class="align-middle white-space-nowrap text-600">{{ strtoupper($challan->vehicle_number) }}</td>
-                                    <td class="align-middle white-space-nowrap">
-                                        <div class="fw-semi-bold text-900 fs-10">Rs. {{ number_format($challan->fine_amount) }}</div>
-                                        <span class="badge badge-soft-{{ ($challan->payment_status ?? '') === 'paid' ? 'success' : 'danger' }} rounded-pill fs-11">
-                                            {{ ucfirst($challan->payment_status ?? 'Unpaid') }}
-                                        </span>
-                                    </td>
-                                    <td class="align-middle white-space-nowrap text-end">
-                                        <a href="{{ route('challans.show', $challan->id) }}" class="btn btn-xs btn-outline-info">View</a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted small">No traffic challans found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+            </x-slot>
+
+            <x-falcon.table>
+                <thead class="bg-200 text-900">
+                    <tr>
+                        <th class="ps-3">PSID</th>
+                        <th>Vehicle</th>
+                        <th>Payment</th>
+                        <th class="text-end pe-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recentChallans ?? [] as $challan)
+                        @php /** @var \App\Models\Challan $challan */ @endphp
+                        <tr>
+                            <td class="ps-3 align-middle fw-bold text-dark fs--1">{{ $challan->psid }}</td>
+                            <td class="align-middle text-800 fw-semi-bold">{{ strtoupper($challan->vehicle_number) }}</td>
+                            <td class="align-middle">
+                                <div class="fw-bold text-dark fs--1">Rs. {{ number_format($challan->fine_amount) }}</div>
+                                <x-falcon.badge :variant="($challan->payment_status ?? '') === 'paid' ? 'success' : 'danger'">
+                                    {{ ucfirst($challan->payment_status ?? 'Unpaid') }}
+                                </x-falcon.badge>
+                            </td>
+                            <td class="align-middle text-end pe-3">
+                                <x-falcon.button href="{{ route('challans.show', $challan->id) }}" variant="outline-info" size="xs">
+                                    View
+                                </x-falcon.button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted fs--1">No traffic challans found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </x-falcon.table>
+        </x-falcon.card>
     </div>
 </div>

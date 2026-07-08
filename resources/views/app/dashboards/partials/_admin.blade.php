@@ -1,111 +1,86 @@
 <div class="row g-3 mb-3">
     <div class="col-md-6 col-xxl-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $totalCenters ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">Medical Centers</h6>
-                    </div>
-                    <div class="fs-4 text-primary"><span class="fas fa-hospital"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $totalCenters ?? 0 }}"
+            label="Medical Centers"
+            icon="fas fa-hospital"
+            color="primary"
+        />
     </div>
     <div class="col-md-6 col-xxl-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $totalStaff ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">Total Staff</h6>
-                    </div>
-                    <div class="fs-4 text-info"><span class="fas fa-user-tie"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $totalStaff ?? 0 }}"
+            label="Total Staff"
+            icon="fas fa-user-tie"
+            color="info"
+        />
     </div>
     <div class="col-md-6 col-xxl-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $totalRequests ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">Medical Requests</h6>
-                    </div>
-                    <div class="fs-4 text-warning"><span class="fas fa-file-medical"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $totalRequests ?? 0 }}"
+            label="Medical Requests"
+            icon="fas fa-file-medical"
+            color="warning"
+        />
     </div>
     <div class="col-md-6 col-xxl-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">Active</h5>
-                        <h6 class="text-700 mb-0">System Status</h6>
-                    </div>
-                    <div class="fs-4 text-success"><span class="fas fa-check-circle"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="Active"
+            label="System Status"
+            icon="fas fa-check-circle"
+            color="success"
+        />
     </div>
 </div>
 
 <div class="row g-3">
     <div class="col-lg-8">
-        <div class="card h-100">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Recent Activity Logs</h5>
-                <a class="btn btn-link btn-sm px-0" href="{{ url('/admin/activity-logs') }}">View All <span class="fas fa-chevron-right ms-1 fs-11"></span></a>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive scrollbar">
-                    <table class="table table-sm table-striped fs-10 mb-0">
-                        <thead>
-                            <tr>
-                                <th class="white-space-nowrap">Description</th>
-                                <th class="white-space-nowrap">User</th>
-                                <th class="white-space-nowrap text-end">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($recentLogs ?? [] as $log)
-                                <tr>
-                                    <td class="align-middle white-space-nowrap">{{ $log->description }}</td>
-                                    <td class="align-middle white-space-nowrap">{{ $log->causer?->name ?? 'System' }}</td>
-                                    <td class="align-middle white-space-nowrap text-end">{{ $log->created_at->diffForHumans() }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="text-center py-3">No recent logs found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <x-falcon.card title="Recent Activity Logs" bodyClass="p-0">
+            <x-slot name="headerActions">
+                <a class="btn btn-link btn-sm px-0 fw-bold" href="{{ url('/activity-logs') }}">
+                    View All <span class="fas fa-chevron-right ms-1 fs--2"></span>
+                </a>
+            </x-slot>
+
+            <x-falcon.table>
+                <thead class="bg-200 text-900">
+                    <tr>
+                        <th class="ps-3">Description</th>
+                        <th>User</th>
+                        <th class="text-end pe-3">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recentLogs ?? [] as $log)
+                        @php /** @var \Spatie\Activitylog\Models\Activity $log */ @endphp
+                        <tr>
+                            <td class="ps-3 align-middle text-dark fw-semi-bold">{{ $log->description }}</td>
+                            <td class="align-middle text-700">{{ $log->causer?->name ?? 'System' }}</td>
+                            <td class="align-middle text-end pe-3 text-muted fs--2">{{ $log->created_at->diffForHumans() }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="text-center py-4 text-muted">No recent logs found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </x-falcon.table>
+        </x-falcon.card>
     </div>
+
     <div class="col-lg-4">
-        <div class="card h-100">
-            <div class="card-header bg-light">
-                <h5 class="mb-0">Quick Actions</h5>
+        <x-falcon.card title="Quick Actions" bodyClass="p-3" headerClass="bg-light">
+            <div class="d-grid gap-2">
+                <x-falcon.button href="{{ route('medical-centers.create') }}" variant="falcon-primary" class="text-start" icon="fas fa-plus">
+                    Add Medical Center
+                </x-falcon.button>
+                <x-falcon.button href="{{ route('staff.create') }}" variant="falcon-info" class="text-start" icon="fas fa-user-plus">
+                    Register New Staff
+                </x-falcon.button>
+                <x-falcon.button href="{{ route('cities.index') }}" variant="falcon-warning" class="text-start" icon="fas fa-map-marker-alt">
+                    Manage Regions
+                </x-falcon.button>
             </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="{{ route('medical-centers.create') }}" class="btn btn-soft-primary btn-sm text-start">
-                        <span class="fas fa-plus me-2"></span> Add Medical Center
-                    </a>
-                    <a href="{{ route('staff.create') }}" class="btn btn-soft-info btn-sm text-start">
-                        <span class="fas fa-user-plus me-2"></span> Register New Staff
-                    </a>
-                    <a href="{{ route('cities.index') }}" class="btn btn-soft-warning btn-sm text-start">
-                        <span class="fas fa-map-marker-alt me-2"></span> Manage Regions
-                    </a>
-                </div>
-            </div>
-        </div>
+        </x-falcon.card>
     </div>
 </div>

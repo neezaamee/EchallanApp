@@ -1,99 +1,74 @@
 <div class="row g-3 mb-3">
     <div class="col-md-4 col-xxl-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $todayWarnings ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">Today's Warnings</h6>
-                    </div>
-                    <div class="fs-4 text-warning"><span class="fas fa-exclamation-triangle"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $todayWarnings ?? 0 }}"
+            label="Today's Warnings"
+            icon="fas fa-exclamation-triangle"
+            color="warning"
+        />
     </div>
     <div class="col-md-4 col-xxl-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">{{ $totalWarnings ?? 0 }}</h5>
-                        <h6 class="text-700 mb-0">Lifetime Issued</h6>
-                    </div>
-                    <div class="fs-4 text-info"><span class="fas fa-history"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="{{ $totalWarnings ?? 0 }}"
+            label="Lifetime Issued"
+            icon="fas fa-history"
+            color="info"
+        />
     </div>
     <div class="col-md-4 col-xxl-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1">Active</h5>
-                        <h6 class="text-700 mb-0">Patrol Status</h6>
-                    </div>
-                    <div class="fs-4 text-success"><span class="fas fa-shield-alt"></span></div>
-                </div>
-            </div>
-        </div>
+        <x-falcon.statistic-card 
+            value="Active"
+            label="Patrol Status"
+            icon="fas fa-shield-alt"
+            color="success"
+        />
     </div>
 </div>
 
 <div class="row g-3 mb-3">
     <div class="col-12">
-        <div class="card bg-soft-warning border-warning">
-            <div class="card-body">
-                <h5 class="card-title text-warning-dark">Warning Officer Operations</h5>
-                <p class="card-text">Manage your warning traffic enforcement operations here. You can issue warning slips to first-time violators to encourage road safety, or view the history of your issued warnings.</p>
-                <div class="mt-3">
-                    <a href="{{ route('warnings.create') }}" class="btn btn-warning text-white btn-sm">
-                        <span class="fas fa-plus me-2"></span> Issue Warning
-                    </a>
-                    <a href="{{ route('warnings.index') }}" class="btn btn-outline-warning btn-sm ms-2">
-                        <span class="fas fa-list me-2"></span> View Warning History
-                    </a>
-                </div>
+        <x-falcon.card title="Warning Officer Operations" bodyClass="p-4" headerClass="bg-light">
+            <p class="card-text text-800 fs--1">Manage your warning traffic enforcement operations here. You can issue warning slips to first-time violators to encourage road safety, or view the history of your issued warnings.</p>
+            <div class="mt-3">
+                <x-falcon.button href="{{ route('warnings.create') }}" variant="warning" icon="fas fa-plus">
+                    Issue Warning
+                </x-falcon.button>
+                <x-falcon.button href="{{ route('warnings.index') }}" variant="outline-warning" class="ms-2" icon="fas fa-list">
+                    View Warning History
+                </x-falcon.button>
             </div>
-        </div>
+        </x-falcon.card>
     </div>
 </div>
 
 @if(isset($recentWarnings) && $recentWarnings->count() > 0)
-<div class="card">
-    <div class="card-header bg-light">
-        <h5 class="mb-0">Recent Warnings Issued by You</h5>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Date & Time</th>
-                        <th>Violator Name</th>
-                        <th>CNIC</th>
-                        <th>Vehicle</th>
-                        <th>Violation Type</th>
-                        <th>Location</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($recentWarnings as $warning)
-                        <tr>
-                            <td>{{ $warning->created_at->format('d-M-Y h:i A') }}</td>
-                            <td>{{ $warning->violator_name }}</td>
-                            <td>{{ $warning->violator_cnic }}</td>
-                            <td>
-                                <span class="badge bg-secondary me-1">{{ strtoupper($warning->vehicle_type) }}</span>
-                                <strong>{{ $warning->vehicle_number }}</strong>
-                            </td>
-                            <td><span class="text-danger">{{ $warning->violation_name }}</span></td>
-                            <td>{{ $warning->location }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+<x-falcon.card title="Recent Warnings Issued by You" bodyClass="p-0">
+    <x-falcon.table>
+        <thead class="bg-200 text-900">
+            <tr>
+                <th class="ps-3">Date & Time</th>
+                <th>Violator Name</th>
+                <th>CNIC</th>
+                <th>Vehicle</th>
+                <th>Violation Type</th>
+                <th class="pe-3">Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($recentWarnings as $warning)
+                <tr>
+                    <td class="ps-3 align-middle text-muted fs--2">{{ $warning->created_at->format('d-M-Y h:i A') }}</td>
+                    <td class="align-middle fw-bold text-dark">{{ $warning->violator_name }}</td>
+                    <td class="align-middle text-700 fs--1">{{ $warning->violator_cnic }}</td>
+                    <td class="align-middle text-800">
+                        <x-falcon.badge variant="secondary" class="me-1">{{ strtoupper($warning->vehicle_type) }}</x-falcon.badge>
+                        <strong>{{ strtoupper($warning->vehicle_number) }}</strong>
+                    </td>
+                    <td class="align-middle text-danger fw-semi-bold">{{ $warning->violation_name }}</td>
+                    <td class="align-middle pe-3 text-muted fs--1">{{ $warning->location }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </x-falcon.table>
+</x-falcon.card>
 @endif

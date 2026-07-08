@@ -1,6 +1,33 @@
 @extends('layouts.app')
 @section('page-title', 'Feedback - ')
 
+@php
+    $currentSort = $sortField ?? 'created_at';
+    $currentDir = $sortDirection ?? 'desc';
+
+    if (!function_exists('sortFeedbackUrl')) {
+        function sortFeedbackUrl($column, $currentSort, $currentDir) {
+            $direction = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
+            return request()->fullUrlWithQuery([
+                'sort' => $column,
+                'direction' => $direction,
+                'page' => 1
+            ]);
+        }
+    }
+
+    if (!function_exists('sortFeedbackIcon')) {
+        function sortFeedbackIcon($column, $currentSort, $currentDir) {
+            if ($currentSort !== $column) {
+                return '<span class="fas fa-sort ms-1 text-400 fs--2"></span>';
+            }
+            return $currentDir === 'asc' 
+                ? '<span class="fas fa-sort-up ms-1 text-primary fs--2"></span>' 
+                : '<span class="fas fa-sort-down ms-1 text-primary fs--2"></span>';
+        }
+    }
+@endphp
+
 @section('cms-main-content')
 <div class="card mb-3">
     <div class="card-header bg-light">
@@ -9,10 +36,25 @@
                 <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Feedback & Support</h5>
             </div>
             <div class="col-8 col-sm-auto ms-auto text-end ps-0">
-                <a href="{{ route('feedback.create') }}" class="btn btn-falcon-default btn-sm">
-                    <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                    <span class="d-none d-sm-inline-block ms-1">Submit Feedback</span>
-                </a>
+                <div class="d-flex align-items-center gap-2 justify-content-end">
+                    <form action="{{ route('feedback.index') }}" method="GET" class="d-flex align-items-center gap-2">
+                        @if(request('sort'))
+                            <input type="hidden" name="sort" value="{{ request('sort') }}">
+                        @endif
+                        @if(request('direction'))
+                            <input type="hidden" name="direction" value="{{ request('direction') }}">
+                        @endif
+                        <select name="per_page" class="form-select form-select-sm shadow-none w-auto" onchange="this.form.submit()">
+                            <option value="20" {{ request('per_page', 50) == 20 ? 'selected' : '' }}>20 per page</option>
+                            <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50 per page</option>
+                            <option value="100" {{ request('per_page', 50) == 100 ? 'selected' : '' }}>100 per page</option>
+                        </select>
+                    </form>
+                    <a href="{{ route('feedback.create') }}" class="btn btn-falcon-default btn-sm">
+                        <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
+                        <span class="d-none d-sm-inline-block ms-1">Submit Feedback</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -21,21 +63,21 @@
             <table class="table table-sm table-striped table-hover align-middle mb-0 fs--1">
                 <thead class="bg-200 text-900">
                     <tr>
-                        <th class="ps-3">ID</th>
+                        <th class="ps-3"><a href="{{ sortFeedbackUrl('id', $currentSort, $currentDir) }}" class="text-900">S.No {!! sortFeedbackIcon('id', $currentSort, $currentDir) !!}</a></th>
                         @role(['super_admin', 'admin'])
                             <th>Sender</th>
                         @endrole
-                        <th>Type</th>
-                        <th>Subject</th>
-                        <th>Status</th>
-                        <th>Date</th>
+                        <th><a href="{{ sortFeedbackUrl('type', $currentSort, $currentDir) }}" class="text-900">Type {!! sortFeedbackIcon('type', $currentSort, $currentDir) !!}</a></th>
+                        <th><a href="{{ sortFeedbackUrl('subject', $currentSort, $currentDir) }}" class="text-900">Subject {!! sortFeedbackIcon('subject', $currentSort, $currentDir) !!}</a></th>
+                        <th><a href="{{ sortFeedbackUrl('status', $currentSort, $currentDir) }}" class="text-900">Status {!! sortFeedbackIcon('status', $currentSort, $currentDir) !!}</a></th>
+                        <th><a href="{{ sortFeedbackUrl('created_at', $currentSort, $currentDir) }}" class="text-900">Date {!! sortFeedbackIcon('created_at', $currentSort, $currentDir) !!}</a></th>
                         <th class="text-end pe-3">Action</th>
                     </tr>
                 </thead>
                 <tbody class="list">
                     @forelse($feedbacks as $feedback)
                         <tr>
-                            <td class="ps-3 text-muted fw-bold">#{{ $feedback->id }}</td>
+                            <td class="ps-3 text-muted fw-bold">{{ ($feedbacks->currentPage() - 1) * $feedbacks->perPage() + $loop->iteration }}</td>
                             @role(['super_admin', 'admin'])
                                 <td>
                                     <div class="fw-bold text-dark">{{ $feedback->user->name ?? 'N/A' }}</div>
@@ -88,9 +130,9 @@
     </div>
     @if ($feedbacks->hasPages())
         <div class="card-footer bg-light py-2">
-            <div class="d-flex justify-content-end">
-                {{ $feedbacks->links() }}
-            </div>
+            <x-falcon.pagination>
+                {{ $feedbacks->appends(request()->query())->links() }}
+            </x-falcon.pagination>
         </div>
     @endif
 </div>

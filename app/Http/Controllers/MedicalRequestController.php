@@ -231,6 +231,10 @@ class MedicalRequestController extends Controller
         if (!auth()->user()->hasRole('super_admin')) {
              abort(403);
         }
+
+        if (!$medicalRequest->isUnpaid()) {
+            return back()->with('error', 'Cannot delete a paid or actioned medical request.');
+        }
         
         $medicalRequest->delete(); 
         

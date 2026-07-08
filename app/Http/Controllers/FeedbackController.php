@@ -11,19 +11,35 @@ class FeedbackController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
-        if ($user->hasRole(['super_admin', 'admin'])) {
-            // Admins see all feedback
-            $feedbacks = Feedback::with('user')->latest()->paginate(15);
-        } else {
-            // Users see only their own feedback
-            $feedbacks = Feedback::where('user_id', $user->id)->latest()->paginate(15);
+        $perPage = $request->input('per_page', 50);
+        if (!in_array($perPage, [20, 50, 100])) {
+            $perPage = 50;
         }
 
-        return view('app.feedback.index', compact('feedbacks'));
+        $sortField = $request->input('sort', 'created_at');
+        $sortDirection = $request->input('direction', 'desc');
+
+        $allowedSorts = ['id', 'type', 'subject', 'status', 'created_at'];
+        if (!in_array($sortField, $allowedSorts)) {
+            $sortField = 'created_at';
+        }
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $query = Feedback::with('user');
+
+        if (!$user->hasRole(['super_admin', 'admin'])) {
+            $query->where('user_id', $user->id);
+        }
+
+        $feedbacks = $query->orderBy($sortField, $sortDirection)->paginate($perPage);
+
+        return view('app.feedback.index', compact('feedbacks', 'perPage', 'sortField', 'sortDirection'));
     }
 
     /**

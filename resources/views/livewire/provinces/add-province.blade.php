@@ -1,37 +1,29 @@
-<div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Add New Province</h5>
-        <a href="{{ route('provinces.index') }}" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left me-1"></i> Back
-        </a>
-    </div>
+<x-falcon.card title="Add New Province" bodyClass="p-4">
+    <x-slot name="headerActions">
+        <x-falcon.button href="{{ route('provinces.index') }}" variant="secondary" icon="fas fa-arrow-left">
+            Back
+        </x-falcon.button>
+    </x-slot>
 
-    <div class="card-body">
-        @if (session()->has('message'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
+    @if (session()->has('message'))
+        <x-falcon.alert variant="success">
+            {{ session('message') }}
+        </x-falcon.alert>
+    @endif
 
-        <form wire:submit.prevent="save">
-            <div class="mb-3">
-                <label class="form-label">Province Name</label>
-                <input type="text" wire:model.defer="name" class="form-control" placeholder="Enter province name">
-                @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
-            </div>
+    <form wire:submit.prevent="save">
+        <x-falcon.form-group label="Province Name" name="name" required="true">
+            <input type="text" wire:model="name" class="form-control shadow-none" placeholder="Enter province name">
+        </x-falcon.form-group>
 
-            <div class="mb-3">
-                <label class="form-label">Province Code</label>
-                <input type="text" wire:model.defer="code" class="form-control" placeholder="Optional code">
-                @error('code') <span class="text-danger small">{{ $message }}</span> @enderror
-            </div>
+        <x-falcon.form-group label="Province Code" name="code" helpText="Used for identification (e.g., PB, SD).">
+            <input type="text" wire:model="code" class="form-control shadow-none" placeholder="Optional code">
+        </x-falcon.form-group>
 
-            <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save me-1"></i> Add Province
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="d-flex justify-content-end mt-4">
+            <x-falcon.button type="submit" variant="success" icon="fas fa-save" loadingTarget="save">
+                Add Province
+            </x-falcon.button>
+        </div>
+    </form>
+</x-falcon.card>

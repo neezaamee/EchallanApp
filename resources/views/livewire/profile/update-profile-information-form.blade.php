@@ -63,53 +63,62 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
-
-    <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
-
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-
-            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
+    <form wire:submit="updateProfileInformation">
+        <div class="row g-3 mb-3">
+            <div class="col-12">
+                <x-falcon.form-group label="Name" name="name" required="true">
+                    @if (Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin'))
+                        <input type="text" wire:model="name" class="form-control shadow-none" placeholder="Enter your name">
+                    @else
+                        <input type="text" wire:model="name" class="form-control shadow-none" readonly title="Name cannot be changed by citizen/officer roles.">
                     @endif
-                </div>
-            @endif
+                </x-falcon.form-group>
+            </div>
+            
+            <div class="col-12">
+                <x-falcon.form-group label="Email" name="email" required="true" helpText="Note: Email is used as your login username.">
+                    @if (Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin'))
+                        <input type="email" wire:model="email" class="form-control shadow-none" placeholder="Enter email address">
+                    @else
+                        <input type="email" wire:model="email" class="form-control shadow-none" readonly title="Email cannot be changed by citizen/officer roles.">
+                    @endif
+                </x-falcon.form-group>
+                
+                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
+                    <div class="mt-2 p-2 border border-warning rounded bg-warning-subtle">
+                        <span class="text-warning-emphasis fs--1">
+                            <i class="fas fa-exclamation-triangle me-1"></i> Your email address is unverified.
+                        </span>
+                        <button wire:click.prevent="sendVerification" class="btn btn-link btn-sm p-0 ms-1 fw-semi-bold">
+                            Click here to re-send verification email.
+                        </button>
+                        
+                        @if (session('status') === 'verification-link-sent')
+                            <div class="text-success fs--2 mt-1">
+                                <i class="fas fa-check-circle me-1"></i> A new verification link has been sent to your email address.
+                            </div>
+                        @endif
+                    </div>
+                @endif
+            </div>
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        <div class="d-flex align-items-center gap-3">
+            <x-falcon.button type="submit" variant="primary" icon="fas fa-save" loadingTarget="updateProfileInformation">
+                Save Changes
+            </x-falcon.button>
 
-            <x-action-message class="me-3" on="profile-updated">
-                {{ __('Saved.') }}
-            </x-action-message>
+            @if (session('status') === 'profile-updated')
+                <span class="text-success fs--1" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2000)">
+                    <i class="fas fa-check me-1"></i> Saved.
+                </span>
+            @endif
+            
+            <div x-data="{ show: false }" x-on:profile-updated.window="show = true; setTimeout(() => show = false, 2000)">
+                <span class="text-success fs--1" x-show="show" style="display: none;">
+                    <i class="fas fa-check me-1"></i> Saved successfully.
+                </span>
+            </div>
         </div>
     </form>
 </section>

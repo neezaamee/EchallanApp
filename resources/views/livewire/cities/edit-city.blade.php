@@ -1,40 +1,38 @@
-<div>
-    <h2 class="mb-3">Edit City</h2>
+<x-falcon.card title="Edit City" bodyClass="p-4">
+    <x-slot name="headerActions">
+        <x-falcon.button href="{{ route('cities.index') }}" variant="secondary" icon="fas fa-arrow-left">
+            Back
+        </x-falcon.button>
+    </x-slot>
 
     @if (session()->has('message'))
-        <div class="alert alert-success">
+        <x-falcon.alert variant="success">
             {{ session('message') }}
-        </div>
+        </x-falcon.alert>
     @endif
 
-  <form wire:submit.prevent="updateCity" class="card p-4 ">
+    <form wire:submit.prevent="updateCity">
+        <x-falcon.form-group label="City Name" name="name" required="true">
+            <input type="text" wire:model.live="name" class="form-control shadow-none" placeholder="Enter city name">
+        </x-falcon.form-group>
 
-        <div class="mb-3">
-            <label class="form-label">City Name</label>
-            <input type="text" class="form-control" wire:model.live="name" placeholder="Enter city name">
-            @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
-        </div>
+        <x-falcon.form-group label="Slug" name="slug" helpText="Used for URL representation of the city.">
+            <input type="text" wire:model.live="slug" class="form-control shadow-none" placeholder="Optional slug">
+        </x-falcon.form-group>
 
-        <div class="mb-3">
-            <label class="form-label">Slug</label>
-            <input type="text" class="form-control" wire:model.live="slug" placeholder="Optional slug">
-            @error('slug') <span class="text-danger small">{{ $message }}</span> @enderror
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Province</label>
-            <select class="form-select" wire:model.live="province_id">
+        <x-falcon.form-group label="Province" name="province_id" required="true">
+            <select class="form-select shadow-none" wire:model.live="province_id">
                 <option value="">Select Province</option>
                 @foreach ($provinces as $province)
                     <option value="{{ $province->id }}">{{ $province->name }}</option>
                 @endforeach
             </select>
-            @error('province_id') <span class="text-danger small">{{ $message }}</span> @enderror
-        </div>
+        </x-falcon.form-group>
 
-        <div class="d-flex justify-content-between mt-4">
-            <a href="{{ route('cities.index') }}" class="btn btn-secondary">Back</a>
-            <button type="submit" class="btn btn-primary">Update City</button>
+        <div class="d-flex justify-content-end mt-4">
+            <x-falcon.button type="submit" variant="primary" icon="fas fa-save" loadingTarget="updateCity">
+                Update City
+            </x-falcon.button>
         </div>
     </form>
-</div>
+</x-falcon.card>

@@ -12,25 +12,54 @@ use App\Services\BankService;
 
 class ChallanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         /** @var User $user */
         $user = Auth::user();
         
-        // Super Admin & Admin see ALL challans
+        $perPage = (int) $request->input('per_page', 50);
+        if (!in_array($perPage, [20, 50, 100])) {
+            $perPage = 50;
+        }
+
+        $sortBy = $request->input('sort', 'created_at');
+        $sortDir = $request->input('direction', 'desc');
+        
+        $allowedSorts = ['id', 'psid', 'vehicle_number', 'violator_name', 'violation_name', 'fine_amount', 'status', 'created_at'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc';
+        }
+
+        $search = $request->input('search');
+        
+        $query = Challan::query();
+
+        // Roles check
         if ($user->hasRole(['super_admin', 'admin'])) {
-            $challans = Challan::latest()->paginate(10);
+            // Super Admin & Admin see ALL challans
         } elseif ($user->hasRole('citizen')) {
             // Citizens see only their own challans based on CNIC
-            $challans = Challan::where('violator_cnic', $user->cnic)
-                ->latest()
-                ->paginate(10);
+            $query->where('violator_cnic', $user->cnic);
         } else {
             // Officers see only their own generated challans
-            $challans = Challan::where('officer_id', $user->id)
-                ->latest()
-                ->paginate(10);
+            $query->where('officer_id', $user->id);
         }
+
+        // Search filter
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('psid', 'LIKE', "%{$search}%")
+                  ->orWhere('vehicle_number', 'LIKE', "%{$search}%")
+                  ->orWhere('violator_name', 'LIKE', "%{$search}%")
+                  ->orWhere('violator_cnic', 'LIKE', "%{$search}%")
+                  ->orWhere('violation_name', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $challans = $query->orderBy($sortBy, $sortDir)->paginate($perPage);
             
         return view('app.challans.index', compact('challans'));
     }
@@ -137,6 +166,10 @@ class ChallanController extends Controller
         $user = Auth::user();
         if (!$user->hasRole('super_admin')) {
              abort(403);
+        }
+
+        if (!$challan->isUnpaid()) {
+            return back()->with('error', 'Cannot delete a paid or actioned challan.');
         }
         
         $challan->delete(); 

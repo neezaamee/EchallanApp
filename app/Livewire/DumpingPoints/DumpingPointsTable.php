@@ -16,18 +16,24 @@ class DumpingPointsTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
+    public $perPage = 50;
 
     public $confirmingDumpingPointDeletion = null;
     public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'perPage'];
     protected $listeners = ['dumping-point-added' => 'render'];
 
     /**
      * Reset pagination when search input changes
      */
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -100,7 +106,7 @@ class DumpingPointsTable extends Component
                   });
             });
 
-        $dumpingPoints = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+        $dumpingPoints = $query->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage);
 
         // Useful lists for filters or dropdowns if needed
         $circles = Circle::orderBy('name')->get();

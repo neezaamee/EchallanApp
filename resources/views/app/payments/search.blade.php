@@ -154,8 +154,10 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer">
-                    {{ $payments->links() }}
+                <div class="card-footer bg-light py-2">
+                    <x-falcon.pagination>
+                        {{ $payments->links() }}
+                    </x-falcon.pagination>
                 </div>
             </div>
         @elseif(request()->has('keyword') || request()->has('status'))

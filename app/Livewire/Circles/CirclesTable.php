@@ -15,15 +15,21 @@ class CirclesTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
+    public $perPage = 50;
 
     public $confirmingCircleDeletion = null;
     public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'perPage'];
     protected $listeners = ['circle-added' => 'render'];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -80,7 +86,7 @@ class CirclesTable extends Component
                   });
             });
 
-        $circles = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+        $circles = $query->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage);
 
         // also useful to pass list of cities for filters etc.
         $cities = City::orderBy('name')->get();

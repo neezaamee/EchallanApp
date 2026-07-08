@@ -15,15 +15,21 @@ class SectorsTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
+    public $perPage = 50;
 
     public $confirmingSectorDeletion = null;
     public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'perPage'];
     protected $listeners = ['sector-added' => 'render'];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -85,7 +91,7 @@ class SectorsTable extends Component
                   });
             });
 
-        $sectors = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+        $sectors = $query->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage);
         $circles = Circle::orderBy('name')->get();
 
         return view('livewire.sectors.sectors-table', compact('sectors', 'circles'));

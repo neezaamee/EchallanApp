@@ -6,6 +6,7 @@ use Livewire\Volt\Component;
 
 new class extends Component
 {
+    public bool $confirmingUserDeletion = false;
     public string $password = '';
 
     /**
@@ -23,57 +24,42 @@ new class extends Component
     }
 }; ?>
 
-<section class="space-y-6">
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Delete Account') }}
-        </h2>
+<section>
+    <p class="fs--2 text-muted mb-3">
+        Once your account is deleted, all of its data will be permanently deleted. This action cannot be undone.
+    </p>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
-        </p>
-    </header>
+    <x-falcon.button wire:click="$set('confirmingUserDeletion', true)" variant="danger" icon="fas fa-trash-alt" class="w-100">
+        Delete Account
+    </x-falcon.button>
 
-    <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
-
-    <x-modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable>
-        <form wire:submit="deleteUser" class="p-6">
-
-            <h2 class="text-lg font-medium text-gray-900">
-                {{ __('Are you sure you want to delete your account?') }}
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-600">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
-            </p>
-
-            <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
-
-                <x-text-input
-                    wire:model="password"
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
-
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+    @if($confirmingUserDeletion)
+        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.42); z-index: 1050;" role="dialog" aria-modal="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <form wire:submit="deleteUser" class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-danger py-2 px-3">
+                        <h5 class="modal-title text-white">
+                            <span class="fas fa-exclamation-triangle me-2"></span>Delete Account
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" wire:click="$set('confirmingUserDeletion', false)"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <p class="mb-3 text-800 fs--1">
+                            Are you sure you want to delete your account? Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.
+                        </p>
+                        
+                        <x-falcon.form-group label="Password" name="password" required="true">
+                            <input type="password" wire:model="password" class="form-control shadow-none" placeholder="Enter password to confirm">
+                        </x-falcon.form-group>
+                    </div>
+                    <div class="modal-footer bg-light py-2">
+                        <button type="button" class="btn btn-falcon-default btn-sm" wire:click="$set('confirmingUserDeletion', false)">Cancel</button>
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash me-1"></i> Delete Account
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
-
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
-            </div>
-        </form>
-    </x-modal>
+        </div>
+    @endif
 </section>

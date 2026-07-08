@@ -16,15 +16,21 @@ class MedicalCentersTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
+    public $perPage = 50;
 
     public $confirmingMedicalCenterDeletion = null;
     public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'perPage'];
     protected $listeners = ['medical-center-added' => 'render'];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -85,7 +91,7 @@ class MedicalCentersTable extends Component
                   });
             });
 
-        $medicalCenters = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+        $medicalCenters = $query->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage);
 
         return view('livewire.medical-centers.medical-centers-table', compact('medicalCenters'));
     }

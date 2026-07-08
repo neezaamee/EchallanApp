@@ -199,7 +199,7 @@
 
     @if ($payment->medicalRequest->doctorActionBy)
         <div class="row">
-            <span class="label">Doctor:</span>
+            <span class="label">Examined By:</span>
             <span class="value">{{ $payment->medicalRequest->doctorActionBy->name }}</span>
         </div>
         @if ($payment->medicalRequest->doctor_action_at)

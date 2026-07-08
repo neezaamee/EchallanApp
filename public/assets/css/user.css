@@ -1,5 +1,58 @@
 /* -------------------------------------------------------------------------- */
-/*                                Falcon Button                               */
+/*                                Falcon Custom CSS                           */
 /* -------------------------------------------------------------------------- */
-/* prettier-ignore */
-/*# sourceMappingURL=user.css.map */
+
+@keyframes skeleton-glow {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton-loader {
+    background: linear-gradient(
+        90deg,
+        rgba(128, 128, 128, 0.08) 25%,
+        rgba(128, 128, 128, 0.18) 37%,
+        rgba(128, 128, 128, 0.08) 63%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-glow 1.5s ease-in-out infinite;
+    display: inline-block;
+    height: 1.25em;
+    border-radius: 0.25rem;
+    width: 100%;
+    vertical-align: middle;
+}
+
+/* Custom Table Sticky Header Styles if not standard */
+.table-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--falcon-card-bg, #fff);
+}
+
+/* Row Action Dropdown Alignments */
+.dropdown-menu-end {
+    right: 0 !important;
+    left: auto !important;
+}
+
+/* Transitions for Buttons and Cards */
+.btn-falcon-default, .btn-falcon-primary, .btn-falcon-success, .btn-falcon-danger, .btn-falcon-warning, .btn-falcon-info {
+    transition: all 0.2s ease-in-out;
+}
+
+.card {
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Required Indicator Asterisk Style */
+.required-indicator {
+    color: #e63757;
+    margin-left: 0.125rem;
+    font-weight: bold;
+}

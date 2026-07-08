@@ -1,6 +1,37 @@
 @extends('layouts.app')
 @section('page-title', 'My Issued Challans')
 @section('cms-main-content')
+@php
+    $currentSort = request('sort', 'created_at');
+    $currentDir = request('direction', 'desc');
+    $allowedSorts = ['id', 'psid', 'vehicle_number', 'violator_name', 'violation_name', 'fine_amount', 'status', 'created_at'];
+    
+    if (!in_array($currentSort, $allowedSorts)) {
+        $currentSort = 'created_at';
+    }
+    
+    if (!function_exists('sortUrl')) {
+        function sortUrl($column, $currentSort, $currentDir) {
+            $direction = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
+            return request()->fullUrlWithQuery([
+                'sort' => $column,
+                'direction' => $direction,
+                'page' => 1
+            ]);
+        }
+    }
+
+    if (!function_exists('sortIcon')) {
+        function sortIcon($column, $currentSort, $currentDir) {
+            if ($currentSort !== $column) {
+                return '<span class="fas fa-sort ms-1 text-400 fs--2"></span>';
+            }
+            return $currentDir === 'asc' 
+                ? '<span class="fas fa-sort-up ms-1 text-primary fs--2"></span>' 
+                : '<span class="fas fa-sort-down ms-1 text-primary fs--2"></span>';
+        }
+    }
+@endphp
 <div class="card mb-3">
     <div class="card-header bg-light">
         <div class="row flex-between-center">
@@ -9,9 +40,22 @@
             </div>
             <div class="col-8 col-sm-auto ms-auto text-end ps-0">
                 <div class="d-flex align-items-center gap-2">
-                    <form action="{{ route('challans.index') }}" method="GET" class="position-relative">
-                        <input class="form-control form-control-sm shadow-none search" type="search" name="search" placeholder="Search Challans..." value="{{ request('search') }}" />
-                        <span class="fas fa-search position-absolute top-50 end-0 translate-middle-y me-2 text-400"></span>
+                    <form action="{{ route('challans.index') }}" method="GET" class="d-flex align-items-center gap-2">
+                        @if(request('sort'))
+                            <input type="hidden" name="sort" value="{{ request('sort') }}">
+                        @endif
+                        @if(request('direction'))
+                            <input type="hidden" name="direction" value="{{ request('direction') }}">
+                        @endif
+                        <div class="position-relative">
+                            <input class="form-control form-control-sm shadow-none search" type="search" name="search" placeholder="Search Challans..." value="{{ request('search') }}" style="padding-right: 2rem;" />
+                            <span class="fas fa-search position-absolute top-50 end-0 translate-middle-y me-2 text-400"></span>
+                        </div>
+                        <select name="per_page" class="form-select form-select-sm shadow-none w-auto" onchange="this.form.submit()">
+                            <option value="20" {{ request('per_page', 50) == 20 ? 'selected' : '' }}>20 per page</option>
+                            <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50 per page</option>
+                            <option value="100" {{ request('per_page', 50) == 100 ? 'selected' : '' }}>100 per page</option>
+                        </select>
                     </form>
                     <a href="{{ route('challans.create') }}" class="btn btn-falcon-default btn-sm">
                         <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
@@ -26,32 +70,56 @@
             <table class="table table-sm table-striped table-hover align-middle mb-0 fs--1">
                 <thead class="bg-200 text-900">
                     <tr>
-                        <th class="white-space-nowrap ps-3"># ID</th>
-                        <th>PSID</th>
-                        <th>Vehicle</th>
-                        <th>Violator</th>
-                        <th>Violation</th>
-                        <th>Fine</th>
-                        <th>Status</th>
-                        <th class="text-end pe-3">Actions</th>
+                        <th class="white-space-nowrap ps-3" style="width: 1%;">S.No</th>
+                        <th class="white-space-nowrap" style="width: 1%;">
+                            <a href="{!! sortUrl('psid', $currentSort, $currentDir) !!}" class="text-900 d-inline-flex align-items-center">
+                                PSID {!! sortIcon('psid', $currentSort, $currentDir) !!}
+                            </a>
+                        </th>
+                        <th class="white-space-nowrap" style="width: 1%;">
+                            <a href="{!! sortUrl('vehicle_number', $currentSort, $currentDir) !!}" class="text-900 d-inline-flex align-items-center">
+                                Vehicle {!! sortIcon('vehicle_number', $currentSort, $currentDir) !!}
+                            </a>
+                        </th>
+                        <th class="white-space-nowrap">
+                            <a href="{!! sortUrl('violator_name', $currentSort, $currentDir) !!}" class="text-900 d-inline-flex align-items-center">
+                                Violator {!! sortIcon('violator_name', $currentSort, $currentDir) !!}
+                            </a>
+                        </th>
+                        <th class="white-space-nowrap">
+                            <a href="{!! sortUrl('violation_name', $currentSort, $currentDir) !!}" class="text-900 d-inline-flex align-items-center">
+                                Violation {!! sortIcon('violation_name', $currentSort, $currentDir) !!}
+                            </a>
+                        </th>
+                        <th class="white-space-nowrap" style="width: 1%;">
+                            <a href="{!! sortUrl('fine_amount', $currentSort, $currentDir) !!}" class="text-900 d-inline-flex align-items-center">
+                                Fine {!! sortIcon('fine_amount', $currentSort, $currentDir) !!}
+                            </a>
+                        </th>
+                        <th class="white-space-nowrap" style="width: 1%;">
+                            <a href="{!! sortUrl('status', $currentSort, $currentDir) !!}" class="text-900 d-inline-flex align-items-center">
+                                Status {!! sortIcon('status', $currentSort, $currentDir) !!}
+                            </a>
+                        </th>
+                        <th class="text-end pe-3 white-space-nowrap" style="width: 1%;">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="list">
                     @forelse($challans as $challan)
                     <tr>
-                        <td class="text-muted fw-bold ps-3">#{{ $challan->id }}</td>
-                        <td><span class="badge badge-soft-secondary text-dark fs--2">{{ $challan->psid }}</span></td>
-                        <td>
+                        <td class="text-muted fw-bold ps-3 white-space-nowrap" style="width: 1%;">{{ $loop->iteration + ($challans->currentPage() - 1) * $challans->perPage() }}</td>
+                        <td class="white-space-nowrap" style="width: 1%;"><span class="badge badge-soft-secondary text-dark fs--2">{{ $challan->psid }}</span></td>
+                        <td class="white-space-nowrap" style="width: 1%;">
                             <span class="badge badge-soft-primary text-dark fs--2 me-1">{{ $challan->vehicle_type }}</span><br>
-                            <span class="text-dark fw-semi-bold">{{ $challan->vehicle_number }}</span>
+                            <span class="text-dark fw-semi-bold text-uppercase">{{ strtoupper($challan->vehicle_number) }}</span>
                         </td>
                         <td>
                             <div class="fw-bold text-dark">{{ $challan->violator_name }}</div>
                             <small class="text-muted">{{ $challan->violator_cnic }}</small>
                         </td>
-                        <td><small class="text-truncate d-block" style="max-width: 150px;">{{ $challan->violation_name }}</small></td>
-                        <td class="text-dark fw-bold">{{ number_format($challan->fine_amount) }} PKR</td>
-                        <td>
+                        <td><small class="text-truncate d-block" style="max-width: 250px;">{{ $challan->violation_name }}</small></td>
+                        <td class="text-dark fw-bold white-space-nowrap" style="width: 1%;">{{ number_format($challan->fine_amount) }} PKR</td>
+                        <td class="white-space-nowrap" style="width: 1%;">
                             @php
                                 $statusColor = 'secondary';
                                 if($challan->status == 'pending') $statusColor = 'warning';
@@ -72,7 +140,7 @@
                                     </a>
                                 @endif
 
-                                @if(auth()->user()->hasRole('super_admin'))
+                                @if(auth()->user()->hasRole('super_admin') && $challan->isUnpaid())
                                     <form action="{{ route('challans.destroy', $challan) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this challan?');">
                                         @csrf
                                         @method('DELETE')
@@ -123,9 +191,9 @@
         </div>
     </div>
     <div class="card-footer bg-light py-2">
-        <div class="d-flex justify-content-end">
+        <x-falcon.pagination>
             {{ $challans->withQueryString()->links() }}
-        </div>
+        </x-falcon.pagination>
     </div>
 </div>
 @endsection

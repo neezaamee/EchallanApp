@@ -74,8 +74,10 @@
                 </div>
             </div>
             @if ($changelogs->hasPages())
-                <div class="card-footer">
-                    {{ $changelogs->links() }}
+                <div class="card-footer bg-light py-2">
+                    <x-falcon.pagination>
+                        {{ $changelogs->links() }}
+                    </x-falcon.pagination>
                 </div>
             @endif
         </div>

@@ -229,7 +229,7 @@ class PaymentController extends Controller
                 ->with('error', 'Receipt is only available for successful payments.');
         }
 
-        $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter');
+        $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter', 'medicalRequest.doctorActionBy');
         return view('app.payments.receipt', compact('payment'));
     }
 
@@ -243,7 +243,7 @@ class PaymentController extends Controller
                 ->with('error', 'Receipt is only available for successful payments.');
         }
 
-        $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter');
+        $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter', 'medicalRequest.doctorActionBy');
         
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('app.payments.receipt', compact('payment'));
         
@@ -262,7 +262,7 @@ class PaymentController extends Controller
                 ->with('error', 'Receipt is only available for successful payments.');
         }
 
-        $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter');
+        $payment->load('medicalRequest.citizen', 'medicalRequest.medicalCenter', 'medicalRequest.doctorActionBy');
         
         // Set custom paper size for 80mm thermal printer
         // 80mm = 226.77 points, height auto

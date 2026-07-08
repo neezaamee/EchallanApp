@@ -13,10 +13,17 @@ class StaffPostingsTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'desc';
+    public $perPage = 50;
 
     protected $paginationTheme = 'bootstrap';
+    protected $queryString = ['search', 'perPage'];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -67,7 +74,7 @@ class StaffPostingsTable extends Component
                 });
             });
 
-        $postings = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+        $postings = $query->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage);
 
         return view('livewire.staff-postings.staff-postings-table', compact('postings'));
     }

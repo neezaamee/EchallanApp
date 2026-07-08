@@ -39,41 +39,43 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Update Password') }}
-        </h2>
+    <form wire:submit="updatePassword">
+        <div class="row g-3 mb-3">
+            <div class="col-12">
+                <x-falcon.form-group label="Current Password" name="current_password" required="true">
+                    <input type="password" wire:model="current_password" id="update_password_current_password" class="form-control shadow-none" placeholder="Enter current password">
+                </x-falcon.form-group>
+            </div>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
-        </p>
-    </header>
+            <div class="col-12">
+                <x-falcon.form-group label="New Password" name="password" required="true" helpText="Password must be at least 8 characters long.">
+                    <input type="password" wire:model="password" id="update_password_password" class="form-control shadow-none" placeholder="Enter new password">
+                </x-falcon.form-group>
+            </div>
 
-    <form wire:submit="updatePassword" class="mt-6 space-y-6">
-        <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input wire:model="current_password" id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->get('current_password')" class="mt-2" />
+            <div class="col-12">
+                <x-falcon.form-group label="Confirm New Password" name="password_confirmation" required="true">
+                    <input type="password" wire:model="password_confirmation" id="update_password_password_confirmation" class="form-control shadow-none" placeholder="Re-type new password">
+                </x-falcon.form-group>
+            </div>
         </div>
 
-        <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input wire:model="password" id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <div class="d-flex align-items-center gap-3">
+            <x-falcon.button type="submit" variant="primary" icon="fas fa-key" loadingTarget="updatePassword">
+                Change Password
+            </x-falcon.button>
 
-        <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input wire:model="password_confirmation" id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            <x-action-message class="me-3" on="password-updated">
-                {{ __('Saved.') }}
-            </x-action-message>
+            @if (session('status') === 'password-updated')
+                <span class="text-success fs--1" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2000)">
+                    <i class="fas fa-check me-1"></i> Password updated.
+                </span>
+            @endif
+            
+            <div x-data="{ show: false }" x-on:password-updated.window="show = true; setTimeout(() => show = false, 2000)">
+                <span class="text-success fs--1" x-show="show" style="display: none;">
+                    <i class="fas fa-check me-1"></i> Password updated successfully.
+                </span>
+            </div>
         </div>
     </form>
 </section>

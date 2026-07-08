@@ -1,85 +1,78 @@
 @extends('layouts.app')
+
 @section('page-title', 'Refund Management - ')
 
 @section('cms-main-content')
-<div class="card mb-3">
-    <div class="card-header bg-light">
-        <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Refund Management</h5>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive scrollbar">
-            <table class="table table-sm table-striped table-hover align-middle mb-0 fs--1">
-                <thead class="bg-200 text-900">
-                    <tr>
-                        <th class="ps-3">Refund ID</th>
-                        <th>Payment TXN</th>
-                        <th>Citizen</th>
-                        <th>Amount</th>
-                        <th>Requested By</th>
-                        <th>Status</th>
-                        <th class="text-end pe-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="list">
-                    @forelse($refunds as $refund)
-                        <tr>
-                            <td class="ps-3"><span class="badge badge-soft-secondary text-dark fs--2 font-monospace">{{ $refund->refund_transaction_id }}</span></td>
-                            <td><small class="text-muted font-monospace">{{ $refund->payment->transaction_id }}</small></td>
-                            <td>
-                                <div class="fw-bold text-dark">{{ $refund->payment->medicalRequest->citizen->full_name ?? 'N/A' }}</div>
-                            </td>
-                            <td class="fw-bold text-dark">{{ number_format($refund->amount) }} PKR</td>
-                            <td><small class="text-muted">{{ $refund->requestedBy->name }}</small></td>
-                            <td>
-                                @php
-                                    $statusColor = 'secondary';
-                                    if($refund->status === 'pending') $statusColor = 'warning';
-                                    elseif($refund->status === 'approved') $statusColor = 'info';
-                                    elseif($refund->status === 'completed') $statusColor = 'success';
-                                    elseif($refund->status === 'rejected') $statusColor = 'danger';
-                                @endphp
-                                <span class="badge badge-soft-{{ $statusColor }} text-{{ $statusColor }} fs--2">{{ ucfirst($refund->status) }}</span>
-                            </td>
-                            <td class="text-end pe-3">
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('refunds.show', $refund) }}" class="btn btn-link p-0 text-info" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    @if ($refund->status === 'pending' && auth()->user()->hasRole('super_admin|admin|accountant'))
-                                        <form action="{{ route('refunds.approve', $refund) }}" method="POST" class="d-inline ms-2">
-                                            @csrf
-                                            <button type="submit" class="btn btn-link p-0 text-success" title="Approve Request" onclick="return confirm('Are you sure you want to approve this refund?')">
-                                                <i class="fas fa-check-circle"></i>
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('refunds.reject', $refund) }}" method="POST" class="d-inline ms-2">
-                                            @csrf
-                                            <button type="submit" class="btn btn-link p-0 text-danger" title="Reject Request" onclick="return confirm('Are you sure you want to reject this refund?')">
-                                                <i class="fas fa-times-circle"></i>
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center p-5 text-muted">
-                                <i class="fas fa-undo fa-2x mb-3 d-block opacity-25"></i>
-                                No refund requests found.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
+<x-falcon.card title="Refund Management" bodyClass="p-0">
+    <x-falcon.table>
+        <thead class="bg-200 text-900">
+            <tr>
+                <th class="ps-3">Refund ID</th>
+                <th>Payment TXN</th>
+                <th>Citizen</th>
+                <th>Amount</th>
+                <th>Requested By</th>
+                <th>Status</th>
+                <th class="text-end pe-3">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($refunds as $refund)
+                <tr>
+                    <td class="ps-3"><x-falcon.badge variant="secondary" class="font-monospace fs--2">{{ $refund->refund_transaction_id }}</x-falcon.badge></td>
+                    <td><small class="text-muted font-monospace fs--2">{{ $refund->payment->transaction_id }}</small></td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ $refund->payment->medicalRequest->citizen->full_name ?? 'N/A' }}</div>
+                    </td>
+                    <td class="fw-bold text-dark">{{ number_format($refund->amount) }} PKR</td>
+                    <td><small class="text-700">{{ $refund->requestedBy->name }}</small></td>
+                    <td>
+                        @php
+                            $statusColor = 'secondary';
+                            if($refund->status === 'pending') $statusColor = 'warning';
+                            elseif($refund->status === 'approved') $statusColor = 'info';
+                            elseif($refund->status === 'completed') $statusColor = 'success';
+                            elseif($refund->status === 'rejected') $statusColor = 'danger';
+                        @endphp
+                        <x-falcon.badge :variant="$statusColor">{{ ucfirst($refund->status) }}</x-falcon.badge>
+                    </td>
+                    <td class="text-end pe-3">
+                        <x-falcon.action-dropdown :viewRoute="route('refunds.show', $refund)">
+                            @if ($refund->status === 'pending' && auth()->user()->hasRole('super_admin|admin|accountant'))
+                                <a class="dropdown-item text-success" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to approve this refund?')) document.getElementById('approve-form-{{ $refund->id }}').submit();">
+                                    <span class="fas fa-check-circle text-success me-2 fs--2"></span>Approve
+                                </a>
+                                <form id="approve-form-{{ $refund->id }}" action="{{ route('refunds.approve', $refund) }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+
+                                <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to reject this refund?')) document.getElementById('reject-form-{{ $refund->id }}').submit();">
+                                    <span class="fas fa-times-circle text-danger me-2 fs--2"></span>Reject
+                                </a>
+                                <form id="reject-form-{{ $refund->id }}" action="{{ route('refunds.reject', $refund) }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            @endif
+                        </x-falcon.action-dropdown>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center p-5 text-muted fs--1">
+                        <i class="fas fa-undo fa-2x mb-3 d-block opacity-25"></i>
+                        No refund requests found.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </x-falcon.table>
+
     @if ($refunds->hasPages())
-        <div class="card-footer bg-light py-2">
-            <div class="d-flex justify-content-end">
+        <x-slot name="footer">
+            <x-falcon.pagination>
                 {{ $refunds->links() }}
-            </div>
-        </div>
+            </x-falcon.pagination>
+        </x-slot>
     @endif
-</div>
+</x-falcon.card>
 @endsection

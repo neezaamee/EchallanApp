@@ -14,15 +14,21 @@ class StaffTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'desc';
+    public $perPage = 50;
 
     public $confirmingStaffDeletion = null;
     public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'perPage'];
     protected $listeners = ['staff-added' => 'render'];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -69,7 +75,7 @@ class StaffTable extends Component
                   ->orWhere('belt_no', 'like', $s);
             });
 
-        $staff = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+        $staff = $query->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage);
 
         return view('livewire.staff.staff-table', compact('staff'));
     }

@@ -1,28 +1,43 @@
-<div>
-    <div class="mb-3">
-        <label for="city_id" class="form-label">City</label>
-        <select wire:model="city_id" id="city_id" class="form-control select2 city-select">
-            <option value="">Select City</option>
-            @foreach ($cities as $city)
-                <option value="{{ $city->id }}" {{ $city->id == $city_id ? 'selected' : '' }}>
-                    {{ $city->name }} — {{ strtoupper($city->province->slug ?? '') }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+<x-falcon.card title="Edit Circle" bodyClass="p-4">
+    <x-slot name="headerActions">
+        <x-falcon.button href="{{ route('circles.index') }}" variant="secondary" icon="fas fa-arrow-left">
+            Back
+        </x-falcon.button>
+    </x-slot>
 
-    <div class="mb-3">
-        <label for="name" class="form-label">Circle Name</label>
-        <input wire:model="name" type="text" id="name" class="form-control">
-    </div>
+    @if (session()->has('message'))
+        <x-falcon.alert variant="success">
+            {{ session('message') }}
+        </x-falcon.alert>
+    @endif
 
-    <div class="mb-3">
-        <label for="slug" class="form-label">Slug</label>
-        <input wire:model="slug" type="text" id="slug" class="form-control">
-    </div>
+    <div>
+        <x-falcon.form-group label="City" name="city_id" required="true">
+            <select wire:model="city_id" id="city_id" class="form-control select2 city-select shadow-none">
+                <option value="">Select City</option>
+                @foreach ($cities as $city)
+                    <option value="{{ $city->id }}" {{ $city->id == $city_id ? 'selected' : '' }}>
+                        {{ $city->name }} — {{ strtoupper($city->province->slug ?? '') }}
+                    </option>
+                @endforeach
+            </select>
+        </x-falcon.form-group>
 
-    <button wire:click="update" class="btn btn-primary">Update Circle</button>
-</div>
+        <x-falcon.form-group label="Circle Name" name="name" required="true">
+            <input wire:model="name" type="text" id="name" class="form-control shadow-none">
+        </x-falcon.form-group>
+
+        <x-falcon.form-group label="Slug" name="slug">
+            <input wire:model="slug" type="text" id="slug" class="form-control shadow-none">
+        </x-falcon.form-group>
+
+        <div class="d-flex justify-content-end mt-4">
+            <x-falcon.button wire:click="update" variant="primary" icon="fas fa-save" loadingTarget="update">
+                Update Circle
+            </x-falcon.button>
+        </div>
+    </div>
+</x-falcon.card>
 
 @push('scripts')
 <script>

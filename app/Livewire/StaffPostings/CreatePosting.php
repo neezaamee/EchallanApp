@@ -114,7 +114,7 @@ class CreatePosting extends Component
                 ->where('status', 'active')
                 ->update([
                     'status' => 'inactive',
-                    'end_date' => now()->subDay()->format('Y-m-d')
+                    'end_date' => \Carbon\Carbon::parse($this->start_date)->subDay()->format('Y-m-d')
                 ]);
 
             // Create new posting

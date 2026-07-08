@@ -1,139 +1,60 @@
-<div class="card mb-4">
+<x-falcon.card title="Add New Dumping Point" bodyClass="p-4">
+    <x-slot name="headerActions">
+        <x-falcon.button href="{{ route('dumping-points.index') }}" variant="secondary" icon="fas fa-arrow-left">
+            Back
+        </x-falcon.button>
+    </x-slot>
 
-    <div class="card-header d-flex justify-content-between align-items-center">
+    @if (session()->has('message'))
+        <x-falcon.alert variant="success">
+            {{ session('message') }}
+        </x-falcon.alert>
+    @endif
 
-        <h5 class="mb-0">Add New Dumping Point</h5>
-        <a href="{{ route('dumping-points.index') }}" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left me-1"></i> Back
-        </a>
+    <form wire:submit.prevent="save">
+        <x-falcon.form-group label="Province" name="province_id" required="true">
+            <select class="form-select shadow-none" wire:model="province_id">
+                <option value="">-- Select Province --</option>
+                @foreach($provinces as $p)
+                    <option value="{{ $p->id }}">{{ $p->name }}</option>
+                @endforeach
+            </select>
+        </x-falcon.form-group>
 
-    </div>
-
-
-    <div class="card-body">
-
-        @if (session()->has('message'))
-
-            <div class="alert alert-success">{{ session('message') }}</div>
-
+        @if(!empty($cities))
+        <x-falcon.form-group label="City" name="city_id" required="true">
+            <select class="form-select shadow-none" wire:model="city_id">
+                <option value="">-- Select City --</option>
+                @foreach($cities as $c)
+                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                @endforeach
+            </select>
+        </x-falcon.form-group>
         @endif
 
+        @if(!empty($circles))
+        <x-falcon.form-group label="Circle" name="circle_id" required="true">
+            <select class="form-select shadow-none" wire:model="circle_id">
+                <option value="">-- Select Circle --</option>
+                @foreach($circles as $circle)
+                    <option value="{{ $circle->id }}">{{ $circle->name }}</option>
+                @endforeach
+            </select>
+        </x-falcon.form-group>
+        @endif
 
-        <form wire:submit.prevent="save">
+        <x-falcon.form-group label="Dumping Point Name" name="name" required="true">
+            <input type="text" wire:model="name" class="form-control shadow-none" placeholder="Enter dumping point name">
+        </x-falcon.form-group>
 
-            {{-- Province Dropdown --}}
+        <x-falcon.form-group label="Location (optional)" name="location" helpText="Specify coordinates or address description.">
+            <input type="text" wire:model="location" class="form-control shadow-none" placeholder="Enter location">
+        </x-falcon.form-group>
 
-            <div class="mb-3">
-
-                <label class="form-label">Province</label>
-
-                <select class="form-select" wire:model="province_id">
-
-                    <option value="">-- Select Province --</option>
-
-                    @foreach($provinces as $p)
-
-                        <option value="{{ $p->id }}">{{ $p->name }}</option>
-
-                    @endforeach
-
-                </select>
-
-                @error('province_id') <span class="text-danger small">{{ $message }}</span> @enderror
-
-            </div>
-
-
-            {{-- City Dropdown --}}
-
-            @if(!empty($cities))
-
-            <div class="mb-3">
-
-                <label class="form-label">City</label>
-
-                <select class="form-select" wire:model="city_id">
-
-                    <option value="">-- Select City --</option>
-
-                    @foreach($cities as $c)
-
-                        <option value="{{ $c->id }}">{{ $c->name }}</option>
-
-                    @endforeach
-
-                </select>
-
-                @error('city_id') <span class="text-danger small">{{ $message }}</span> @enderror
-
-            </div>
-
-            @endif
-
-
-            {{-- Circle Dropdown --}}
-
-            @if(!empty($circles))
-
-            <div class="mb-3">
-
-                <label class="form-label">Circle</label>
-
-                <select class="form-select" wire:model="circle_id">
-
-                    <option value="">-- Select Circle --</option>
-
-                    @foreach($circles as $circle)
-
-                        <option value="{{ $circle->id }}">{{ $circle->name }}</option>
-
-                    @endforeach
-
-                </select>
-
-                @error('circle_id') <span class="text-danger small">{{ $message }}</span> @enderror
-
-            </div>
-
-            @endif
-
-
-            {{-- Dumping Point Name --}}
-
-            <div class="mb-3">
-
-                <label class="form-label">Dumping Point Name</label>
-
-                <input type="text" wire:model.defer="name" class="form-control" placeholder="Enter dumping point name">
-
-                @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
-
-            </div>
-
-
-            {{-- Location (optional) --}}
-
-            <div class="mb-3">
-
-                <label class="form-label">Location (optional)</label>
-
-                <input type="text" wire:model.defer="location" class="form-control" placeholder="Enter location">
-
-                @error('location') <span class="text-danger small">{{ $message }}</span> @enderror
-
-            </div>
-
-
-            {{-- Buttons --}}
-
-            <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save me-1"></i> Add Dumping Point
-                </button>
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
+        <div class="d-flex justify-content-end mt-4">
+            <x-falcon.button type="submit" variant="success" icon="fas fa-save" loadingTarget="save">
+                Add Dumping Point
+            </x-falcon.button>
+        </div>
+    </form>
+</x-falcon.card>

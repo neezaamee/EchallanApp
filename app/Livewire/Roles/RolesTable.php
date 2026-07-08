@@ -14,13 +14,19 @@ class RolesTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'desc';
+    public $perPage = 50;
     public $confirmingRoleDeletion = null;
     public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'perPage'];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -83,7 +89,7 @@ class RolesTable extends Component
 
         $roles = $query->where('name', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.roles.roles-table', compact('roles'));
     }

@@ -241,7 +241,7 @@
                 </div>
                 @if ($payment->medicalRequest->doctorActionBy)
                     <div class="receipt-info-row">
-                        <div class="receipt-info-label">Doctor:</div>
+                        <div class="receipt-info-label">Examined By (Doctor):</div>
                         <div class="receipt-info-value">{{ $payment->medicalRequest->doctorActionBy->name }}</div>
                     </div>
                     @if ($payment->medicalRequest->doctor_action_at)

@@ -66,6 +66,11 @@ class Challan extends Model
         return $this->payment_status === 'paid';
     }
 
+    public function isUnpaid()
+    {
+        return $this->payment_status === 'unpaid';
+    }
+
     public function scopeBounded($query)
     {
         return $query->whereNull('released_at');

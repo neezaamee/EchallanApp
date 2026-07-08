@@ -32,7 +32,7 @@
     <table class="table table-bordered table-hover">
       <thead>
         <tr>
-          <th>#</th>
+          <th>S.No</th>
           <th>Name</th>
           <th>CNIC</th>
           <th>Email</th>

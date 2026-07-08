@@ -14,13 +14,19 @@ class PermissionsTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'desc';
+    public $perPage = 50;
     public $confirmingPermissionDeletion = null;
     public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'perPage'];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -60,7 +66,7 @@ class PermissionsTable extends Component
     {
         $permissions = Permission::where('name', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.permissions.permissions-table', compact('permissions'));
     }

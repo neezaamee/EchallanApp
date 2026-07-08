@@ -77,9 +77,9 @@
     </div>
     @if ($activities->hasPages())
         <div class="card-footer bg-light py-2">
-            <div class="d-flex justify-content-end">
+            <x-falcon.pagination>
                 {{ $activities->links() }}
-            </div>
+            </x-falcon.pagination>
         </div>
     @endif
 </div>

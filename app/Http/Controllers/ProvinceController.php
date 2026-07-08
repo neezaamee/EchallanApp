@@ -15,6 +15,11 @@ class ProvinceController extends Controller
     {
         return view('app.infrastructure.provinces.create');
     }
+
+    public function edit($id)
+    {
+        return view('app.infrastructure.provinces.edit', compact('id'));
+    }
     public function update(Request $request, $id)
     {
         $request->validate([

@@ -6,10 +6,29 @@ use Illuminate\Http\Request;
 
 class PickUpPointController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pickUpPoints = \App\Models\PickUpPoint::with('dumpingPoint')->latest()->paginate(10);
-        return view('app.infrastructure.pick-up-points.index', compact('pickUpPoints'));
+        $perPage = $request->input('per_page', 50);
+        if (!in_array($perPage, [20, 50, 100])) {
+            $perPage = 50;
+        }
+
+        $sortField = $request->input('sort', 'created_at');
+        $sortDirection = $request->input('direction', 'desc');
+
+        $allowedSorts = ['id', 'name', 'dumping_point_id', 'is_active', 'created_at'];
+        if (!in_array($sortField, $allowedSorts)) {
+            $sortField = 'created_at';
+        }
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $pickUpPoints = \App\Models\PickUpPoint::with('dumpingPoint')
+            ->orderBy($sortField, $sortDirection)
+            ->paginate($perPage);
+
+        return view('app.infrastructure.pick-up-points.index', compact('pickUpPoints', 'perPage', 'sortField', 'sortDirection'));
     }
 
     public function create()

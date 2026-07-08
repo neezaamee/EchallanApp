@@ -1,43 +1,38 @@
-<div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Add New Sector</h5>
-        <a href="{{ route('sectors.index') }}" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left me-1"></i> Back
-        </a>
-    </div>
+<x-falcon.card title="Add New Sector" bodyClass="p-4">
+    <x-slot name="headerActions">
+        <x-falcon.button href="{{ route('sectors.index') }}" variant="secondary" icon="fas fa-arrow-left">
+            Back
+        </x-falcon.button>
+    </x-slot>
 
-    <div class="card-body">
-        @if (session()->has('message'))
-            <div class="alert alert-success">{{ session('message') }}</div>
-        @endif
+    @if (session()->has('message'))
+        <x-falcon.alert variant="success">
+            {{ session('message') }}
+        </x-falcon.alert>
+    @endif
 
-        <form wire:submit.prevent="save">
-            <div class="mb-3">
-                <label class="form-label">Sector Name</label>
-                <input type="text" wire:model.blur="name" class="form-control" placeholder="Enter sector name">
-                @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
-            </div>
+    <form wire:submit.prevent="save">
+        <x-falcon.form-group label="Sector Name" name="name" required="true">
+            <input type="text" wire:model.blur="name" class="form-control shadow-none" placeholder="Enter sector name">
+        </x-falcon.form-group>
 
-            <div class="mb-3">
-                <label class="form-label">Slug</label>
-                <input type="text" wire:model="slug" class="form-control" placeholder="Optional slug">
-                @error('slug') <span class="text-danger small">{{ $message }}</span> @enderror
-            </div>
+        <x-falcon.form-group label="Slug" name="slug" helpText="Leave empty to auto-generate from name.">
+            <input type="text" wire:model="slug" class="form-control shadow-none" placeholder="Optional slug">
+        </x-falcon.form-group>
 
-            <div class="mb-3">
-                <label class="form-label">Circle</label>
-                <select class="form-select" wire:model="circle_id">
-                    <option value="">-- Select Circle --</option>
-                    @foreach($circles as $circle)
-                        <option value="{{ $circle->id }}">{{ $circle->name }} ({{ $circle->city->name ?? '—' }})</option>
-                    @endforeach
-                </select>
-                @error('circle_id') <span class="text-danger small">{{ $message }}</span> @enderror
-            </div>
+        <x-falcon.form-group label="Circle" name="circle_id" required="true">
+            <select class="form-select shadow-none" wire:model="circle_id">
+                <option value="">-- Select Circle --</option>
+                @foreach($circles as $circle)
+                    <option value="{{ $circle->id }}">{{ $circle->name }} ({{ $circle->city->name ?? '—' }})</option>
+                @endforeach
+            </select>
+        </x-falcon.form-group>
 
-            <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-success"><i class="fas fa-save me-1"></i> Add Sector</button>
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="d-flex justify-content-end mt-4">
+            <x-falcon.button type="submit" variant="success" icon="fas fa-save" loadingTarget="save">
+                Add Sector
+            </x-falcon.button>
+        </div>
+    </form>
+</x-falcon.card>
