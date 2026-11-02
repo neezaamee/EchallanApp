@@ -10,6 +10,8 @@ use App\Models\Citizen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Services\BarcodeService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MedicalRequestController extends Controller
 {
@@ -23,15 +25,25 @@ class MedicalRequestController extends Controller
 
         // Apply Search Filter
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim($request->search);
             $query->where(function ($q) use ($search) {
                 $q->where('psid', 'like', "%{$search}%")
                   ->orWhereHas('citizen', function ($cQuery) use ($search) {
                       $cQuery->where('full_name', 'like', "%{$search}%")
-                             ->orWhere('cnic', 'like', "%{$search}%");
+                             ->orWhere('cnic', 'like', "%{$search}%")
+                             ->orWhere('phone', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('medicalCenter', function ($mQuery) use ($search) {
+                      $mQuery->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('creator', function ($uQuery) use ($search) {
+                      $uQuery->where('name', 'like', "%{$search}%")
+                             ->orWhere('email', 'like', "%{$search}%");
                   });
             });
         }
+
+        $eagerLoads = ['citizen.user', 'medicalCenter.circle', 'creator.roles', 'latestPayment'];
 
         // Apply Role-Based Constraints
         if ($user->hasRole('citizen')) {
@@ -41,7 +53,7 @@ class MedicalRequestController extends Controller
                 $requests = MedicalRequest::where('id', 0)->paginate(10);
             } else {
                 $query->where('citizen_id', $citizen->id);
-                $requests = $query->with('medicalCenter')->latest()->paginate(10);
+                $requests = $query->with($eagerLoads)->latest()->paginate(10);
             }
         } elseif ($user->hasRole(['doctor', 'medical_assistant'])) {
             $staff = $user->staff;
@@ -56,7 +68,7 @@ class MedicalRequestController extends Controller
                  session()->flash('error', 'No active medical center posting found.');
             } else {
                 $query->where('medical_center_id', $posting->medical_center_id);
-                $requests = $query->with('citizen.user')->latest()->paginate(10);
+                $requests = $query->with($eagerLoads)->latest()->paginate(10);
             }
         } elseif ($user->hasRole('cto')) {
             $staff = $user->staff;
@@ -69,11 +81,11 @@ class MedicalRequestController extends Controller
                 $query->whereHas('medicalCenter.circle', function ($q) use ($cityId) {
                     $q->where('city_id', $cityId);
                 });
-                $requests = $query->with(['citizen.user', 'medicalCenter'])->latest()->paginate(10);
+                $requests = $query->with($eagerLoads)->latest()->paginate(10);
             }
         } else {
             // Admin or others (Super Admin, etc.)
-             $requests = $query->with(['citizen.user', 'medicalCenter'])->latest()->paginate(10);
+             $requests = $query->with($eagerLoads)->latest()->paginate(10);
         }
 
         return view('app.medical-requests.index', compact('requests'));
@@ -155,7 +167,7 @@ class MedicalRequestController extends Controller
              $psid = \App\Services\BankService::generatePsid('MEDICAL', $medicalFee, $cityId);
         }
 
-        MedicalRequest::create([
+        $medicalRequest = MedicalRequest::create([
             'citizen_id' => $citizenId,
             'medical_center_id' => $medicalCenterId,
             'status' => 'pending',
@@ -165,7 +177,7 @@ class MedicalRequestController extends Controller
             'created_by' => $user->id,
         ]);
 
-        return redirect()->route('medical-requests.index')->with('success', 'Medical request submitted successfully. PSID: ' . $psid);
+        return redirect()->route('medical-requests.show', $medicalRequest->id)->with('success', 'Medical request created successfully. 1Bill PSID: ' . $psid);
     }
 
     /**
@@ -217,7 +229,12 @@ class MedicalRequestController extends Controller
         if ($citizen) {
             return response()->json([
                 'found' => true,
-                'citizen' => $citizen
+                'citizen' => [
+                    'full_name'   => $citizen->full_name,
+                    'father_name' => $citizen->father_name,
+                    'phone'       => $citizen->phone,
+                    'gender'      => $citizen->gender,
+                ]
             ]);
         }
 
@@ -226,6 +243,162 @@ class MedicalRequestController extends Controller
         ]);
     }
 
+
+    /**
+     * Display the specified medical request.
+     */
+    public function show(MedicalRequest $medicalRequest)
+    {
+        $this->authorizeAccess($medicalRequest);
+
+        $medicalRequest->load([
+            'citizen.user',
+            'medicalCenter.circle.city',
+            'creator.roles',
+            'doctorActionBy.staff.rank',
+            'latestPayment',
+            'payments'
+        ]);
+
+        $barcodeSvg = BarcodeService::getCode39Svg($medicalRequest->psid, 45, 1.1, 2.6);
+
+        return view('app.medical-requests.show', compact('medicalRequest', 'barcodeSvg'));
+    }
+
+    /**
+     * Display the printable 1Bill voucher slip.
+     */
+    public function voucher(MedicalRequest $medicalRequest, Request $request)
+    {
+        $this->authorizeAccess($medicalRequest);
+
+        $medicalRequest->load([
+            'citizen',
+            'medicalCenter.circle.city',
+            'latestPayment',
+        ]);
+
+        $barcodeSvg = BarcodeService::getCode39Svg($medicalRequest->psid, 40, 1.05, 2.5);
+
+        $logoPath = public_path('assets/img/team/ctpf-logo.png');
+        $logoBase64 = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : null;
+
+        return view('app.medical-requests.voucher', compact('medicalRequest', 'barcodeSvg', 'logoBase64'));
+    }
+
+    /**
+     * Download the printable 1Bill voucher slip as a PDF.
+     */
+    /**
+     * Display the thermal printer optimized receipt (80mm).
+     */
+    public function thermalReceipt(MedicalRequest $medicalRequest, Request $request)
+    {
+        $this->authorizeAccess($medicalRequest);
+
+        $medicalRequest->load([
+            'citizen',
+            'medicalCenter.circle.city',
+            'doctorActionBy.staff.rank',
+            'latestPayment',
+        ]);
+
+        $barcodeSvg = BarcodeService::getCode39Svg($medicalRequest->psid, 26, 0.78, 1.85);
+        $isPdf = false;
+
+        return view('app.medical-requests.receipt-thermal', compact('medicalRequest', 'barcodeSvg', 'isPdf'));
+    }
+
+    /**
+     * Download thermal printer receipt as PDF (80mm).
+     */
+    public function downloadThermalReceipt(MedicalRequest $medicalRequest)
+    {
+        $this->authorizeAccess($medicalRequest);
+
+        $medicalRequest->load([
+            'citizen',
+            'medicalCenter.circle.city',
+            'doctorActionBy.staff.rank',
+            'latestPayment',
+        ]);
+
+        $barcodeSvg = BarcodeService::getCode39Svg($medicalRequest->psid, 26, 0.78, 1.85);
+        $isPdf = true;
+
+        $paperHeight = $medicalRequest->isPaid() ? 560 : 510;
+
+        $pdf = Pdf::loadView('app.medical-requests.receipt-thermal', compact('medicalRequest', 'barcodeSvg', 'isPdf'))
+            ->setPaper([0, 0, 226.77, $paperHeight], 'portrait');
+
+        return $pdf->download('thermal-' . $medicalRequest->psid . '.pdf');
+    }
+
+    public function downloadVoucher(MedicalRequest $medicalRequest)
+    {
+        $this->authorizeAccess($medicalRequest);
+
+        $medicalRequest->load([
+            'citizen',
+            'medicalCenter.circle.city',
+            'latestPayment',
+        ]);
+
+        $barcodeSvg = BarcodeService::getCode39Svg($medicalRequest->psid, 32, 0.95, 2.2);
+
+        $logoPath = public_path('assets/img/team/ctpf-logo.png');
+        $logoBase64 = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : null;
+
+        $pdf = Pdf::loadView('app.medical-requests.voucher-pdf', compact('medicalRequest', 'barcodeSvg', 'logoBase64'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('1bill-voucher-' . $medicalRequest->psid . '.pdf');
+    }
+
+    /**
+     * Authorize access to the medical request based on user role.
+     */
+    protected function authorizeAccess(MedicalRequest $medicalRequest): void
+    {
+        $user = Auth::user();
+        if (!$user) {
+            abort(401);
+        }
+
+        if ($user->hasRole(['super_admin', 'admin'])) {
+            return;
+        }
+
+        if ($user->hasRole('citizen')) {
+            $citizen = Citizen::where('user_id', $user->id)->first();
+            if (!$citizen || $medicalRequest->citizen_id !== $citizen->id) {
+                abort(403, 'Unauthorized access to this medical request.');
+            }
+            return;
+        }
+
+        if ($user->hasRole(['doctor', 'medical_assistant'])) {
+            $staff = $user->staff;
+            $posting = $staff?->activeDoctorPosting;
+            if (!$posting || $medicalRequest->medical_center_id !== $posting->medical_center_id) {
+                abort(403, 'Unauthorized access to medical request from another center.');
+            }
+            return;
+        }
+
+        if ($user->hasRole('cto')) {
+            $staff = $user->staff;
+            $cityId = $staff?->activePosting?->city_id;
+            if (!$cityId || $medicalRequest->medicalCenter?->circle?->city_id !== $cityId) {
+                abort(403, 'Unauthorized access to medical request from another city.');
+            }
+            return;
+        }
+
+        if (!$user->can('medical-requests:view')) {
+            abort(403, 'Unauthorized access.');
+        }
+    }
     public function destroy(\App\Models\MedicalRequest $medicalRequest)
     {
         if (!auth()->user()->hasRole('super_admin')) {

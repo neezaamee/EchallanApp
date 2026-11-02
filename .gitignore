@@ -22,6 +22,8 @@ yarn-error.log
 /.vscode
 /.zed
 
-# Local Theme Source & Backups (Excluded from GitHub)
+# Local Theme Source, Dumps & Backups
 /falcon-v3.26.0/
 .github.zip
+*.sql
+.ftpquota

@@ -23,24 +23,26 @@ class PaymentIntegrationController extends Controller
      */
     public function inquiry(Request $request)
     {
-        // 1. Basic Security Check
-        if (!$this->isValidToken($request)) {
-            return response()->json(['status' => '99', 'message' => 'Unauthorized'], 401);
-        }
-
-        // 2. Validate Consumer Number (PSID)
+        // Validate Consumer Number (PSID)
         // ValidPsid rule accepts both 12-digit (V2) and 20-digit (V1) PSIDs
         // and verifies Luhn checksum — version-agnostic, no hardcoded length.
         $request->validate([
             'consumer_number' => ['required', 'string', new ValidPsid()],
         ]);
 
-        $psid = $request->consumer_number;
+        $rawPsid = $request->consumer_number;
+        $psid = \App\Services\BankService::normalizePsid($rawPsid);
+        $prefix = \App\Services\BankService::getBankPrefix();
+        $candidates = array_values(array_unique(array_filter([
+            $rawPsid,
+            $psid,
+            $prefix ? ($prefix . $psid) : null
+        ])));
         $response = null;
         $category = 'Others';
 
-        // 3. Find Record
-        $challan = Challan::where('psid', $psid)->first();
+        // 3. Find Record (seamlessly matches 12-digit or 24-digit in database)
+        $challan = Challan::whereIn('psid', $candidates)->first();
         if ($challan) {
             $category = (str_contains(strtolower($challan->vehicle_type), 'bike') || str_contains(strtolower($challan->vehicle_type), 'motorcycle')) ? 'Bike' : (str_contains(strtolower($challan->vehicle_type), 'car') ? 'Car' : 'Traffic');
             
@@ -48,7 +50,7 @@ class PaymentIntegrationController extends Controller
             $response = [
                 'status' => '00',
                 'message' => 'Record Found',
-                'consumer_number' => $psid,
+                'consumer_number' => $rawPsid,
                 'consumer_name' => $challan->violator_name,
                 'amount_due' => (string) $challan->fine_amount,
                 'amount_within_due_date' => (string) $challan->fine_amount,
@@ -79,7 +81,7 @@ class PaymentIntegrationController extends Controller
         }
 
         if (!$response) {
-            $medical = MedicalRequest::where('psid', $psid)->first();
+            $medical = MedicalRequest::whereIn('psid', $candidates)->first();
             if ($medical) {
                 $category = 'Medical';
                 $amount = $medical->amount ?? config('fees.medical', 200);
@@ -88,7 +90,7 @@ class PaymentIntegrationController extends Controller
                 $response = [
                     'status' => '00',
                     'message' => 'Record Found',
-                    'consumer_number' => $psid,
+                    'consumer_number' => $rawPsid,
                     'consumer_name' => $medical->citizen ? $medical->citizen->full_name : 'Citizen',
                     'amount_due' => (string) $amount,
                     'amount_within_due_date' => (string) $amount,
@@ -138,12 +140,7 @@ class PaymentIntegrationController extends Controller
      */
     public function paymentCallback(Request $request)
     {
-        // 1. Basic Security Check
-        if (!$this->isValidToken($request)) {
-            return response()->json(['status' => '99', 'message' => 'Unauthorized'], 401);
-        }
-
-        // 2. Validate payload
+        // Validate payload
         // ValidPsid rule accepts both 12-digit (V2) and 20-digit (V1) PSIDs
         // and verifies Luhn checksum — version-agnostic, no hardcoded length.
         $request->validate([
@@ -153,16 +150,23 @@ class PaymentIntegrationController extends Controller
             'transaction_date' => 'sometimes|string',
         ]);
 
-        $psid = $request->consumer_number;
+        $rawPsid = $request->consumer_number;
+        $psid = \App\Services\BankService::normalizePsid($rawPsid);
+        $prefix = \App\Services\BankService::getBankPrefix();
+        $candidates = array_values(array_unique(array_filter([
+            $rawPsid,
+            $psid,
+            $prefix ? ($prefix . $psid) : null
+        ])));
 
         try {
-            return DB::transaction(function () use ($psid, $request) {
-                $challan = Challan::where('psid', $psid)->lockForUpdate()->first();
+            return DB::transaction(function () use ($psid, $rawPsid, $candidates, $request) {
+                $challan = Challan::whereIn('psid', $candidates)->lockForUpdate()->first();
                 $medical = null;
                 $target = $challan;
 
                 if (!$challan) {
-                    $medical = MedicalRequest::where('psid', $psid)->lockForUpdate()->first();
+                    $medical = MedicalRequest::whereIn('psid', $candidates)->lockForUpdate()->first();
                     $target = $medical;
                 }
 
@@ -210,20 +214,6 @@ class PaymentIntegrationController extends Controller
             Log::error("Payment Callback Error: " . $e->getMessage());
             return response()->json(['status' => '99', 'message' => 'System Error'], 500);
         }
-    }
-
-    private function isValidToken(Request $request)
-    {
-        $token = $request->header('Authorization');
-        if (!$token) {
-            $token = $request->query('token');
-        }
-        
-        $expectedToken = config('bank.sandbox.callback_token');
-        
-        if (empty($expectedToken)) return true; // Disabled security if no token configured
-
-        return $token === 'Bearer ' . $expectedToken || $token === $expectedToken;
     }
 
     private function logAction(string $psid, string $action, string $oldStatus, string $newStatus, string $reason, ?int $paymentId = null): void

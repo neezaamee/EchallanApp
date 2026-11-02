@@ -49,8 +49,38 @@ class Create extends Component
     {
         $this->validate();
 
+        $officerId = Auth::id();
+        $staff = \Illuminate\Support\Facades\DB::table('staff')->where('user_id', $officerId)->first();
+
+        $circleId = null;
+        $sectorId = null;
+
+        if ($staff) {
+            $activePosting = \Illuminate\Support\Facades\DB::table('staff_postings')
+                ->where('staff_id', $staff->id)
+                ->where('status', 'active')
+                ->first();
+
+            if ($activePosting) {
+                $sectorId = $activePosting->sector_id;
+                $circleId = $activePosting->circle_id;
+
+                if (!$circleId) {
+                    if ($activePosting->sector_id) {
+                        $circleId = \Illuminate\Support\Facades\DB::table('sectors')->where('id', $activePosting->sector_id)->value('circle_id');
+                    } elseif ($activePosting->dumping_point_id) {
+                        $circleId = \Illuminate\Support\Facades\DB::table('dumping_points')->where('id', $activePosting->dumping_point_id)->value('circle_id');
+                    } elseif ($activePosting->medical_center_id) {
+                        $circleId = \Illuminate\Support\Facades\DB::table('medical_centers')->where('id', $activePosting->medical_center_id)->value('circle_id');
+                    }
+                }
+            }
+        }
+
         Warning::create([
             'officer_id' => Auth::id(),
+            'circle_id' => $circleId,
+            'sector_id' => $sectorId,
             'violator_name' => $this->violator_name,
             'violator_cnic' => $this->violator_cnic,
             'violator_mobile' => $this->violator_mobile,

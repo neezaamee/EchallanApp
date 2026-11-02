@@ -153,6 +153,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Medical Requests
+    Route::get('/medical-requests/{medical_request}/voucher', [\App\Http\Controllers\MedicalRequestController::class, 'voucher'])->name('medical-requests.voucher');
+    Route::get('/medical-requests/{medical_request}/voucher/download', [\App\Http\Controllers\MedicalRequestController::class, 'downloadVoucher'])->name('medical-requests.voucher.download');
+    Route::get('/medical-requests/{medical_request}/thermal', [\App\Http\Controllers\MedicalRequestController::class, 'thermalReceipt'])->name('medical-requests.thermal');
+    Route::get('/medical-requests/{medical_request}/thermal/download', [\App\Http\Controllers\MedicalRequestController::class, 'downloadThermalReceipt'])->name('medical-requests.thermal.download');
     Route::resource('medical-requests', \App\Http\Controllers\MedicalRequestController::class);
     Route::get('/api/cities/{city}/medical-centers', [\App\Http\Controllers\MedicalRequestController::class, 'getMedicalCenters'])->name('api.medical-centers');
     Route::get('/api/provinces/{province}/cities', [\App\Http\Controllers\MedicalRequestController::class, 'getCities'])->name('api.cities');
@@ -184,6 +188,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('warnings.index')->middleware('can:warnings:view');
     Route::get('/warnings/issue', App\Livewire\Warnings\Create::class)
         ->name('warnings.create')->middleware('can:warnings:create');
+    Route::get('/warnings/{id}/edit', App\Livewire\Warnings\Edit::class)
+        ->name('warnings.edit')->middleware('can:warnings:edit');
+
+    // Reports & Analytics
+    Route::get('/reports/warnings', App\Livewire\Reports\WarningReport::class)
+        ->name('reports.warnings')->middleware('can:reports:warnings');
     
     // Impound & Release Workflow
     Route::prefix('impound')->group(function () {

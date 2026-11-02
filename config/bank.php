@@ -4,6 +4,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Global Bank / 1Link Prefix
+    |--------------------------------------------------------------------------
+    |
+    | Global bank-assigned 1Bill prefix (e.g. 111787477101).
+    | When citizens pay via 1Link 1Bill in their mobile banking apps or ATMs,
+    | they enter: [Prefix] + [12-digit PSID] = 24 digits.
+    | 1Link routes the transaction using this prefix and forwards the inquiry
+    | to our API. The core PSID stored and verified in the database is 12 digits.
+    |
+    */
+    'prefix' => env('BANK_PREFIX', '111787477101'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Payment Heads (Bank Accounts)
     |--------------------------------------------------------------------------
     |
@@ -55,7 +69,7 @@ return [
     | housekeeping task. Not urgent — system handles both lengths indefinitely.
     |
     */
-    'psid_version' => (int) env('PSID_VERSION', 20),
+    'psid_version' => (int) env('PSID_VERSION', 12),
 
     /*
     |--------------------------------------------------------------------------
@@ -68,4 +82,21 @@ return [
         'callback_token' => env('BANK_CALLBACK_TOKEN', 'dummy_token_123'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Bank IP Whitelisting
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, only requests originating from the specified IP addresses
+    | or CIDR ranges will be permitted to access bank payment/inquiry APIs.
+    | Set BANK_IP_WHITELIST_ENABLED=false in .env to disable IP restrictions
+    | (e.g. during UAT or while waiting for the bank's production IP list).
+    |
+    */
+    'ip_whitelist' => [
+        'enabled'     => env('BANK_IP_WHITELIST_ENABLED', false),
+        'allowed_ips' => array_values(array_filter(array_map('trim', explode(',', env('BANK_ALLOWED_IPS', '127.0.0.1,::1'))))),
+    ],
+
 ];
+

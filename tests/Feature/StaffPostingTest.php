@@ -31,7 +31,7 @@ class StaffPostingTest extends TestCase
         $this->seed(RolePermissionSeeder::class);
 
         $this->admin = User::factory()->create();
-        $this->admin->assignRole('admin');
+        $this->admin->assignRole('super_admin');
 
         $this->province = Province::create(['name' => 'Punjab', 'slug' => 'PB']);
         $this->city = City::create(['province_id' => $this->province->id, 'name' => 'Faisalabad', 'slug' => 'faisalabad', 'is_active' => true]);
@@ -118,5 +118,58 @@ class StaffPostingTest extends TestCase
         $oldPosting->refresh();
         $this->assertEquals('inactive', $oldPosting->status);
         $this->assertEquals('2026-07-09', $oldPosting->end_date);
+    }
+
+    public function test_city_admin_restricted_to_assigned_city()
+    {
+        $cityAdmin = User::factory()->create();
+        $cityAdmin->assignRole('admin');
+
+        $adminStaff = Staff::create([
+            'user_id' => $cityAdmin->id,
+            'first_name' => 'City',
+            'last_name' => 'Admin',
+            'cnic' => '33100-8888888-1',
+            'phone' => '03008888888',
+            'email' => $cityAdmin->email,
+            'belt_no' => '99999',
+            'gender' => 'male',
+            'status' => 'active'
+        ]);
+
+        StaffPosting::create([
+            'staff_id' => $adminStaff->id,
+            'province_id' => $this->province->id,
+            'city_id' => $this->city->id,
+            'start_date' => '2026-07-01',
+            'status' => 'active',
+        ]);
+
+        // Try to post staff to a different city/province which should fail or not be allowed
+        Livewire::actingAs($cityAdmin)
+            ->test(\App\Livewire\StaffPostings\CreatePosting::class)
+            ->assertSet('is_city_admin', true)
+            ->assertSet('admin_city_id', $this->city->id)
+            // Selecting province is not permitted
+            ->set('location_type', 'province')
+            ->call('save')
+            ->assertHasErrors(['location_type']);
+
+        // Posting to a circle within Faisalabad should succeed
+        Livewire::actingAs($cityAdmin)
+            ->test(\App\Livewire\StaffPostings\CreatePosting::class)
+            ->set('staff_id', $this->staff->id)
+            ->set('location_type', 'circle')
+            ->set('circle_id', $this->circle->id)
+            ->set('start_date', '2026-07-05')
+            ->call('save')
+            ->assertRedirect(route('staff-postings.index'));
+
+        $this->assertDatabaseHas('staff_postings', [
+            'staff_id' => $this->staff->id,
+            'circle_id' => $this->circle->id,
+            'start_date' => '2026-07-05',
+            'status' => 'active',
+        ]);
     }
 }

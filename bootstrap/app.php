@@ -13,12 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-        // other aliases...
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-    ]);
+            'auth'               => \App\Http\Middleware\Authenticate::class,
+            'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'bank.token'         => \App\Http\Middleware\VerifyBankBearerToken::class,
+            'bank.ip'            => \App\Http\Middleware\VerifyBankIpWhitelist::class,
+            'bank.sandbox'       => \App\Http\Middleware\EnsureBankSandboxEnabled::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

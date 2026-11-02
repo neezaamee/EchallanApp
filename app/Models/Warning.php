@@ -11,6 +11,8 @@ class Warning extends Model
 
     protected $fillable = [
         'officer_id',
+        'circle_id',
+        'sector_id',
         'violator_name',
         'violator_cnic',
         'violator_mobile',
@@ -24,5 +26,15 @@ class Warning extends Model
     public function officer()
     {
         return $this->belongsTo(User::class, 'officer_id');
+    }
+
+    public function circle()
+    {
+        return $this->belongsTo(Circle::class);
+    }
+
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class);
     }
 }

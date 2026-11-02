@@ -79,6 +79,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Staff::class);
     }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super_admin');
+    }
     /**
      * Get the user's initials
      */

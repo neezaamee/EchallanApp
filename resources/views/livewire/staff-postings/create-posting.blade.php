@@ -36,7 +36,9 @@
                     <label class="form-label">Location Type <span class="text-danger">*</span></label>
                     <select class="form-select" wire:model.live="location_type">
                         <option value="">-- Select Location Type --</option>
-                        <option value="province">Province</option>
+                        @if(!$is_city_admin)
+                            <option value="province">Province</option>
+                        @endif
                         <option value="city">City</option>
                         <option value="circle">Circle</option>
                         <option value="sector">Sector</option>
@@ -66,7 +68,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Province <span class="text-danger">*</span></label>
-                        <select class="form-select" wire:model.live="province_id">
+                        <select class="form-select" wire:model.live="province_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select Province --</option>
                             @foreach($provinces as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -75,7 +77,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">City <span class="text-danger">*</span></label>
-                        <select class="form-select" wire:model="city_id">
+                        <select class="form-select" wire:model="city_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select City --</option>
                             @foreach($cities as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -90,7 +92,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Province</label>
-                        <select class="form-select" wire:model.live="province_id">
+                        <select class="form-select" wire:model.live="province_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select Province --</option>
                             @foreach($provinces as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -99,7 +101,7 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">City</label>
-                        <select class="form-select" wire:model.live="city_id">
+                        <select class="form-select" wire:model.live="city_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select City --</option>
                             @foreach($cities as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -123,7 +125,7 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label class="form-label">Province</label>
-                        <select class="form-select" wire:model.live="province_id">
+                        <select class="form-select" wire:model.live="province_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select Province --</option>
                             @foreach($provinces as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -132,7 +134,7 @@
                     </div>
                     <div class="col-md-3 mb-3">
                         <label class="form-label">City</label>
-                        <select class="form-select" wire:model.live="city_id">
+                        <select class="form-select" wire:model.live="city_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select City --</option>
                             @foreach($cities as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -165,7 +167,7 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label class="form-label">Province</label>
-                        <select class="form-select" wire:model.live="province_id">
+                        <select class="form-select" wire:model.live="province_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select Province --</option>
                             @foreach($provinces as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -174,7 +176,7 @@
                     </div>
                     <div class="col-md-3 mb-3">
                         <label class="form-label">City</label>
-                        <select class="form-select" wire:model.live="city_id">
+                        <select class="form-select" wire:model.live="city_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select City --</option>
                             @foreach($cities as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -207,7 +209,7 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label class="form-label">Province</label>
-                        <select class="form-select" wire:model.live="province_id">
+                        <select class="form-select" wire:model.live="province_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select Province --</option>
                             @foreach($provinces as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -216,7 +218,7 @@
                     </div>
                     <div class="col-md-3 mb-3">
                         <label class="form-label">City</label>
-                        <select class="form-select" wire:model.live="city_id">
+                        <select class="form-select" wire:model.live="city_id" @if($is_city_admin) disabled @endif>
                             <option value="">-- Select City --</option>
                             @foreach($cities as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>

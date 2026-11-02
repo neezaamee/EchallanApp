@@ -74,10 +74,10 @@ class BackupController extends Controller
             $path = Storage::path($this->backupPath . '/' . $filename);
             
             // Database credentials
-            $dbName = env('DB_DATABASE');
-            $dbUser = env('DB_USERNAME');
-            $dbPass = env('DB_PASSWORD');
-            $dbHost = env('DB_HOST', '127.0.0.1');
+            $dbName = config('database.connections.mysql.database');
+            $dbUser = config('database.connections.mysql.username');
+            $dbPass = config('database.connections.mysql.password');
+            $dbHost = config('database.connections.mysql.host', '127.0.0.1');
 
             $dsn = "mysql:host={$dbHost};dbname={$dbName}";
             

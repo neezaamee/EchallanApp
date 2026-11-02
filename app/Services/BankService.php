@@ -21,6 +21,11 @@ class BankService
      * V1 → 20 digits:  [Category(1)][CityCode(3)][ymd(6)][Random(9)][Luhn(1)]
      * V2 → 12 digits:  [Category(1)][yy(2)][ddd(3)][Random(5)][Luhn(1)]
      *
+     * Note on 1Bill: The 1Link prefix (e.g. 111787477101) is combined by the user
+     * in mobile banking (Prefix + 12-digit PSID = 24 digits). 1Link routes the transaction
+     * and strips the prefix before calling our API. The core PSID stored and verified
+     * is 12 digits, but 24-digit incoming numbers are also accepted via normalizePsid().
+     *
      * @param  string   $headType  MEDICAL | TRAFFIC_CAR | TRAFFIC_BIKE | TRAFFIC_OTHER
      * @param  float    $amount    Fine / fee amount (used by V1 for logging only)
      * @param  int|null $cityId    Optional city ID (used by V1 for city-code segment)
@@ -41,12 +46,11 @@ class BankService
     /**
      * Validate a PSID using the Luhn algorithm.
      *
-     * Automatically detects the PSID version by its length:
+     * Automatically normalizes prefixed PSIDs (e.g. 24-digit 1Bill numbers)
+     * and validates:
      *   - 20 digits → validated as V1
      *   - 12 digits → validated as V2
      *   - Any other length → invalid
-     *
-     * This ensures OLD 20-digit PSIDs remain valid after the switch to V2.
      *
      * @param  string $psid
      * @return bool
@@ -57,18 +61,60 @@ class BankService
             return false;
         }
 
-        $len = strlen($psid);
+        $clean = self::normalizePsid($psid);
+        $len   = strlen($clean);
 
         if ($len === 20) {
-            return self::validatePsidV1($psid);
+            return self::validatePsidV1($clean);
         }
 
         if ($len === 12) {
-            return self::validatePsidV2($psid);
+            return self::validatePsidV2($clean);
         }
 
         // Any other length is invalid
         return false;
+    }
+
+    /**
+     * Return the configured global bank prefix.
+     *
+     * @return string
+     */
+    public static function getBankPrefix(): string
+    {
+        return (string) config('bank.prefix', '');
+    }
+
+    /**
+     * Strip the global bank prefix from an incoming PSID/consumer number if present.
+     * e.g. "111787477101126303043625" -> "126303043625"
+     *
+     * @param  string $consumerNumber
+     * @return string
+     */
+    public static function normalizePsid(string $consumerNumber): string
+    {
+        $consumerNumber = trim($consumerNumber);
+        $prefix = self::getBankPrefix();
+
+        if ($prefix !== '' && str_starts_with($consumerNumber, $prefix)) {
+            return substr($consumerNumber, strlen($prefix));
+        }
+
+        return $consumerNumber;
+    }
+
+    /**
+     * Format a 12-digit PSID for 1Link 1Bill payment display (Prefix + PSID).
+     * e.g. "126303043625" -> "111787477101126303043625"
+     *
+     * @param  string $psid
+     * @return string
+     */
+    public static function format1BillNumber(string $psid): string
+    {
+        return self::getBankPrefix() . $psid;
     }
 
     /**
@@ -182,17 +228,18 @@ class BankService
     }
 
     // =========================================================================
-    //  V2  —  NEW 12-DIGIT PSID  (1Link bank compliant)
+    //  V2  —  12-DIGIT PSID  (1Link 1Bill Compliant)
     //
     //  Structure: [Category(1)] [yy(2)] [ddd(3)] [Random(5)] [Luhn(1)]
     //  Example:    2              26      182       48231       7
-    //  Full:       226182482317
+    //  Full:       226182482317  (12 digits)
     //
-    //  Design decisions:
-    //   - yy  (2-digit year)         → unique per year, no collision until 2100
-    //   - ddd (day of year 001-366)  → leap-year safe via PHP date('z')+1
-    //   - 5-digit random             → 100,000 combinations per category per day
-    //   - Luhn applied to 11 digits  → same algorithm as V1, different base length
+    //  1Bill Presentation:
+    //    When paying via 1Bill in banking apps, the user enters:
+    //    [Bank Prefix (12)] + [PSID (12)] = 24 digits.
+    //    e.g. 111787477101226182482317
+    //    1Link routes using the prefix and forwards the 12-digit PSID to our API.
+    //    Our normalizePsid() handles both stripped 12-digit and full 24-digit payloads.
     //
     //  Activate by setting PSID_VERSION=12 in .env
     // =========================================================================
@@ -228,10 +275,14 @@ class BankService
         // 5. Combine 11 base digits
         $base = $category . $year . $dayOfYear . $random;
 
-        // 6. Append Luhn check digit
+        // 6. Append Luhn check digit to produce self-contained 12-digit core
         $checkDigit = self::calculateLuhn($base);
+        $corePsid   = $base . $checkDigit; // Exactly 12 digits
 
-        return $base . $checkDigit; // 12 digits
+        // 7. Prepend Bank Prefix (e.g. 111787477101) to form the full 24-digit PSID
+        $bankPrefix = self::getBankPrefix();
+
+        return $bankPrefix . $corePsid;
     }
 
     /**

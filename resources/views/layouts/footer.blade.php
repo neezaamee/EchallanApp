@@ -7,10 +7,10 @@
         <div class="col-12 col-sm-auto text-center">
             @if (app()->isLocal())
                 <p class="mb-0 text-600">Your Local IP Address is: {{ request()->getClientIp() }} |
-                    {{ env('APP_VERSION') }}
+                    {{ config('app.version') }}
                 </p>
             @else
-                <p class="mb-0 text-600">Your IP Address is: {{ request()->getClientIp() }} | {{ env('APP_VERSION') }}
+                <p class="mb-0 text-600">Your IP Address is: {{ request()->getClientIp() }} | {{ config('app.version') }}
                 </p>
             @endif
         </div>

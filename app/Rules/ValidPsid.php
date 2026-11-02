@@ -11,12 +11,11 @@ use App\Services\BankService;
  *
  * Validates that a string is a structurally valid PSID:
  *  - Must be numeric
- *  - Must be exactly 20 digits (V1) OR exactly 12 digits (V2)
+ *  - Must match the bank-prefixed length (e.g. 24 digits), legacy 12 digits, or legacy 20 digits
  *  - Must pass the Luhn check digit verification
  *
- * This rule is version-agnostic — it accepts BOTH 12 and 20 digit PSIDs
- * simultaneously, so old and new records always pass validation regardless
- * of which PSID_VERSION is currently active.
+ * This rule is version-agnostic — it accepts active prefixed PSIDs, legacy 12-digit
+ * V2, and legacy 20-digit V1 PSIDs simultaneously, so all valid records pass validation.
  */
 class ValidPsid implements ValidationRule
 {
@@ -32,14 +31,16 @@ class ValidPsid implements ValidationRule
             return;
         }
 
-        $len = strlen($value);
+        $clean = BankService::normalizePsid($value);
+        $len = strlen($clean);
 
-        if ($len !== 20 && $len !== 12) {
-            $fail('The :attribute must be a valid 12-digit or 20-digit PSID.');
+        if ($len !== 12 && $len !== 20) {
+            $expectedPrefixedLen = strlen(BankService::getBankPrefix()) + 12;
+            $fail("The :attribute must be a valid 12-digit, 20-digit, or {$expectedPrefixedLen}-digit 1Bill PSID.");
             return;
         }
 
-        if (!BankService::validatePsid($value)) {
+        if (!BankService::validatePsid($clean)) {
             $fail('The :attribute has an invalid checksum. Please verify the PSID.');
         }
     }

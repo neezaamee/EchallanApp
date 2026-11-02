@@ -24,10 +24,17 @@ class OneLinkController extends Controller
             'consumer_number' => 'required|string', // PSID
         ]);
 
-        $psid = $request->consumer_number;
+        $rawPsid = $request->consumer_number;
+        $psid = \App\Services\BankService::normalizePsid($rawPsid);
+        $prefix = \App\Services\BankService::getBankPrefix();
+        $candidates = array_values(array_unique(array_filter([
+            $rawPsid,
+            $psid,
+            $prefix ? ($prefix . $psid) : null
+        ])));
 
-        // Try Challan first
-        $target = Challan::where('psid', $psid)->first();
+        // Try Challan first (supports normalized 12-digit or full 24-digit)
+        $target = Challan::whereIn('psid', $candidates)->first();
         $name = null;
         $amount = 0;
 
@@ -35,7 +42,7 @@ class OneLinkController extends Controller
             $name = $target->violator_name;
             $amount = $target->fine_amount;
         } else {
-            $target = MedicalRequest::where('psid', $psid)->first();
+            $target = MedicalRequest::whereIn('psid', $candidates)->first();
             if ($target) {
                 $name = $target->citizen->full_name ?? 'Citizen';
                 $amount = $target->amount;
@@ -87,16 +94,23 @@ class OneLinkController extends Controller
             'transaction_datetime' => 'nullable|string',
         ]);
 
-        $psid = $request->consumer_number;
+        $rawPsid = $request->consumer_number;
+        $psid = \App\Services\BankService::normalizePsid($rawPsid);
+        $prefix = \App\Services\BankService::getBankPrefix();
+        $candidates = array_values(array_unique(array_filter([
+            $rawPsid,
+            $psid,
+            $prefix ? ($prefix . $psid) : null
+        ])));
         $amountPaid = $request->amount_paid;
 
-        // Find Target
-        $challan = Challan::where('psid', $psid)->first();
+        // Find Target (supports normalized 12-digit or full 24-digit)
+        $challan = Challan::whereIn('psid', $candidates)->first();
         $medical = null;
         $target = $challan;
 
         if (!$challan) {
-            $medical = MedicalRequest::where('psid', $psid)->first();
+            $medical = MedicalRequest::whereIn('psid', $candidates)->first();
             $target = $medical;
         }
 

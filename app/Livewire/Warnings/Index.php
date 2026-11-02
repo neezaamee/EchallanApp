@@ -12,6 +12,8 @@ class Index extends Component
     use WithPagination;
 
     public $search = '';
+    public $confirmingWarningDeletion = null;
+    public $deleteId = null;
 
     public function mount()
     {
@@ -22,6 +24,32 @@ class Index extends Component
 
     protected $queryString = ['search'];
 
+    public function confirmDelete($id)
+    {
+        if (!Auth::user()->can('warnings:delete')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $this->confirmingWarningDeletion = true;
+        $this->deleteId = $id;
+    }
+
+    public function deleteWarning()
+    {
+        if (!Auth::user()->can('warnings:delete')) {
+            abort(403, 'Unauthorized action.');
+        }
+        if (!$this->deleteId) return;
+
+        $warning = Warning::find($this->deleteId);
+        if ($warning) {
+            $warning->delete();
+        }
+
+        $this->reset(['confirmingWarningDeletion', 'deleteId']);
+        session()->flash('message', 'Warning deleted successfully!');
+        $this->resetPage();
+    }
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -29,7 +57,7 @@ class Index extends Component
 
     public function render()
     {
-        $query = Warning::with('officer')
+        $query = Warning::with(['officer', 'circle', 'sector'])
             ->where(function($q) {
                 $q->where('violator_name', 'like', '%' . $this->search . '%')
                   ->orWhere('violator_cnic', 'like', '%' . $this->search . '%')
@@ -37,8 +65,8 @@ class Index extends Component
             })
             ->latest();
 
-        // If not admin, only show own warnings
-        if (!Auth::user()->hasRole('admin')) {
+        // If not super_admin or admin, only show own warnings
+        if (!Auth::user()->hasRole(['super_admin', 'admin'])) {
             $query->where('officer_id', Auth::id());
         }
 

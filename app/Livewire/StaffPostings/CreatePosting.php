@@ -35,11 +35,66 @@ class CreatePosting extends Component
     public $dumping_points = [];
     public $medical_centers = [];
 
+    // City Admin Restrictions
+    public $is_city_admin = false;
+    public $admin_province_id = null;
+    public $admin_city_id = null;
+
     public function mount()
     {
         $this->staff_list = Staff::orderBy('first_name')->get();
-        $this->provinces = Province::orderBy('name')->get();
         $this->start_date = now()->format('Y-m-d');
+
+        $user = auth()->user();
+        if (!$user->hasRole('super_admin')) {
+            $this->is_city_admin = true;
+            $staff = DB::table('staff')->where('user_id', $user->id)->first();
+            if ($staff) {
+                $activePosting = DB::table('staff_postings')
+                    ->where('staff_id', $staff->id)
+                    ->where('status', 'active')
+                    ->first();
+
+                if ($activePosting) {
+                    $this->admin_city_id = $activePosting->city_id;
+                    $this->admin_province_id = $activePosting->province_id;
+
+                    if (!$this->admin_city_id) {
+                        if ($activePosting->circle_id) {
+                            $this->admin_city_id = DB::table('circles')->where('id', $activePosting->circle_id)->value('city_id');
+                        } elseif ($activePosting->sector_id) {
+                            $circleId = DB::table('sectors')->where('id', $activePosting->sector_id)->value('circle_id');
+                            $this->admin_city_id = DB::table('circles')->where('id', $circleId)->value('city_id');
+                        } elseif ($activePosting->medical_center_id) {
+                            $circleId = DB::table('medical_centers')->where('id', $activePosting->medical_center_id)->value('circle_id');
+                            $this->admin_city_id = DB::table('circles')->where('id', $circleId)->value('city_id');
+                        } elseif ($activePosting->dumping_point_id) {
+                            $circleId = DB::table('dumping_points')->where('id', $activePosting->dumping_point_id)->value('circle_id');
+                            $this->admin_city_id = DB::table('circles')->where('id', $circleId)->value('city_id');
+                        }
+                    }
+
+                    if (!$this->admin_province_id && $this->admin_city_id) {
+                        $this->admin_province_id = DB::table('cities')->where('id', $this->admin_city_id)->value('province_id');
+                    }
+                }
+            }
+
+            // Lock values
+            $this->province_id = $this->admin_province_id;
+            $this->city_id = $this->admin_city_id;
+
+            // Load collections filtered by this city
+            if ($this->city_id) {
+                $this->cities = City::where('id', $this->city_id)->get();
+                $this->circles = Circle::where('city_id', $this->city_id)->orderBy('name')->get();
+            }
+            if ($this->province_id) {
+                $this->provinces = Province::where('id', $this->province_id)->get();
+            }
+        } else {
+            $this->provinces = Province::orderBy('name')->get();
+        }
 
         // Pre-select staff if passed via query param
         if (request()->has('staff_id')) {
@@ -50,14 +105,24 @@ class CreatePosting extends Component
     public function updatedLocationType($value)
     {
         // Reset all location fields when type changes
-        $this->province_id = null;
-        $this->city_id = null;
         $this->circle_id = null;
         $this->sector_id = null;
         $this->dumping_point_id = null;
         $this->medical_center_id = null;
-        $this->cities = [];
-        $this->circles = [];
+
+        if ($this->is_city_admin) {
+            $this->province_id = $this->admin_province_id;
+            $this->city_id = $this->admin_city_id;
+            if ($this->city_id) {
+                $this->circles = Circle::where('city_id', $this->city_id)->orderBy('name')->get();
+            }
+        } else {
+            $this->province_id = null;
+            $this->city_id = null;
+            $this->cities = [];
+            $this->circles = [];
+        }
+
         $this->sectors = [];
         $this->dumping_points = [];
         $this->medical_centers = [];
@@ -65,6 +130,10 @@ class CreatePosting extends Component
 
     public function updatedProvinceId($value)
     {
+        if ($this->is_city_admin) {
+            $this->province_id = $this->admin_province_id;
+            return;
+        }
         $this->cities = City::where('province_id', $value)->orderBy('name')->get();
         $this->city_id = null;
         $this->circle_id = null;
@@ -73,6 +142,10 @@ class CreatePosting extends Component
 
     public function updatedCityId($value)
     {
+        if ($this->is_city_admin) {
+            $this->city_id = $this->admin_city_id;
+            return;
+        }
         $this->circles = Circle::where('city_id', $value)->orderBy('name')->get();
         $this->circle_id = null;
     }
@@ -90,6 +163,15 @@ class CreatePosting extends Component
 
     public function save()
     {
+        if ($this->is_city_admin) {
+            if ($this->location_type === 'province') {
+                $this->addError('location_type', 'You are not authorized to post staff to a province.');
+                return;
+            }
+            $this->province_id = $this->admin_province_id;
+            $this->city_id = $this->admin_city_id;
+        }
+
         $this->validate([
             'staff_id' => 'required|exists:staff,id',
             'location_type' => 'required|in:province,city,circle,sector,dumping_point,medical_center',
@@ -107,6 +189,23 @@ class CreatePosting extends Component
         ];
 
         $this->validate($locationRules[$this->location_type] ?? []);
+
+        // Additional backend validation for City Admin
+        if ($this->is_city_admin) {
+            if ($this->province_id != $this->admin_province_id || $this->city_id != $this->admin_city_id) {
+                $this->addError('location_type', 'You can only post staff within your assigned city and province.');
+                return;
+            }
+            
+            // If circle or lower is selected, verify it belongs to their city
+            if (in_array($this->location_type, ['circle', 'sector', 'dumping_point', 'medical_center'])) {
+                $circle = Circle::find($this->circle_id);
+                if (!$circle || $circle->city_id != $this->admin_city_id) {
+                    $this->addError('circle_id', 'Selected circle does not belong to your assigned city.');
+                    return;
+                }
+            }
+        }
 
         DB::transaction(function () {
             // Deactivate all active postings for this staff

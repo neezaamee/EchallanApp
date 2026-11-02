@@ -546,6 +546,15 @@
                         </a>
                         <ul class="nav collapse" id="reports-analytics">
                             <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.warnings') ? 'active' : '' }}"
+                                    href="{{ route('reports.warnings') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-exclamation-circle"></span></span>
+                                        <span class="nav-link-text ps-1">Warnings Report</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link disabled" href="#!" title="Coming Soon">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-icon"><span class="fas fa-chart-bar"></span></span>

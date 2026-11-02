@@ -26,7 +26,10 @@
                 <th>Violator Info</th>
                 <th>Vehicle</th>
                 <th>Violation</th>
-                <th class="pe-3">Officer</th>
+                <th>Circle</th>
+                <th>Sector</th>
+                <th>Officer</th>
+                <th class="text-end pe-3">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -42,11 +45,19 @@
                         <div class="text-muted fs--2">{{ ucfirst($warning->vehicle_type) }}</div>
                     </td>
                     <td class="text-800">{{ $warning->violation_name }}</td>
-                    <td class="text-muted pe-3">{{ $warning->officer->name ?? 'N/A' }}</td>
+                    <td class="text-800">{{ $warning->circle->name ?? '—' }}</td>
+                    <td class="text-800">{{ $warning->sector->name ?? '—' }}</td>
+                    <td class="text-muted">{{ $warning->officer->name ?? 'N/A' }}</td>
+                    <td class="text-end pe-3">
+                        <x-falcon.action-dropdown 
+                            :editRoute="auth()->user()->can('warnings:edit') ? route('warnings.edit', $warning->id) : null"
+                            :deleteAction="auth()->user()->can('warnings:delete') ? 'confirmDelete(' . $warning->id . ')' : null"
+                        />
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center p-4 text-muted">No warnings found matching your criteria.</td>
+                    <td colspan="8" class="text-center p-4 text-muted">No warnings found matching your criteria.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -57,4 +68,13 @@
             {{ $warnings->links() }}
         </x-falcon.pagination>
     </x-slot>
+
+    {{-- Deletion Confirmation Modal --}}
+    <x-falcon.confirmation-modal 
+        :show="$confirmingWarningDeletion"
+        onCancel="$set('confirmingWarningDeletion', null)"
+        onConfirm="deleteWarning"
+        title="Confirm Deletion"
+        message="Are you sure you want to permanently delete this warning? This action cannot be undone."
+    />
 </x-falcon.card>
