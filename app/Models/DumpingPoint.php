@@ -26,4 +26,9 @@ class DumpingPoint extends Model
         return $this->belongsTo(Circle::class);
     }
 
+    public function challans()
+    {
+        return $this->hasMany(Challan::class);
+    }
+
 }

@@ -30,7 +30,7 @@ class RolePermissionSeeder extends Seeder
             'pick-up-points' => ['view', 'create', 'edit', 'delete'],
             'staff' => ['view', 'create', 'edit', 'delete'],
             'staff-postings' => ['view', 'create', 'edit', 'delete'],
-            'reports' => ['view', 'finance', 'medical', 'lifter-squad', 'warnings'],
+            'reports' => ['view', 'analytics', 'finance', 'medical', 'challans', 'lifter-squad', 'warnings'],
             'users' => ['view', 'create', 'edit', 'delete'],
             'roles' => ['view', 'create', 'edit', 'delete'],
             'permissions' => ['view', 'create', 'edit', 'delete'],
@@ -58,7 +58,7 @@ class RolePermissionSeeder extends Seeder
                 'medical-centers:view', 'medical-centers:create', 'medical-centers:edit',
                 'staff:view', 'staff:create', 'staff:edit',
                 'infrastructure:view', 'provinces:view', 'cities:view', 'circles:view', 'sectors:view', 'sectors:create', 'sectors:edit', 'sectors:delete', 'dumping-points:view', 'pick-up-points:view',
-                'reports:view', 'reports:warnings', 'logs:view',
+                'reports:view', 'reports:analytics', 'reports:warnings', 'reports:medical', 'reports:challans', 'reports:finance', 'logs:view',
                 'profile:view', 'profile:edit', 'profile:password'
             ],
 
@@ -76,7 +76,7 @@ class RolePermissionSeeder extends Seeder
 
             'cto' => [
                 'medical-requests:view', 'challans:view', 'warnings:view',
-                'reports:view', 'reports:medical', 'reports:lifter-squad',
+                'reports:view', 'reports:analytics', 'reports:medical', 'reports:lifter-squad', 'reports:challans', 'reports:warnings',
                 'infrastructure:view', 'sectors:view',
                 'profile:view', 'profile:edit', 'profile:password'
             ],

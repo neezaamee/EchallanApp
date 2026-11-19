@@ -26,4 +26,9 @@ class MedicalCenter extends Model
     {
         return $this->belongsTo(Circle::class);
     }
+
+    public function medicalRequests()
+    {
+        return $this->hasMany(MedicalRequest::class);
+    }
 }

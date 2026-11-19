@@ -158,10 +158,16 @@ class RoleController extends Controller
     {
         $groups = [];
         foreach ($permissions as $permission) {
-            $parts = explode(' ', $permission->name);
-            $groupName = count($parts) > 1 ? end($parts) : 'Other';
-            $groups[ucfirst($groupName)][] = $permission;
+            if (str_contains($permission->name, ':')) {
+                [$groupName] = explode(':', $permission->name, 2);
+            } else {
+                $parts = explode(' ', $permission->name);
+                $groupName = count($parts) > 1 ? end($parts) : 'Other';
+            }
+            $groupTitle = ucfirst(str_replace(['-', '_'], ' ', $groupName));
+            $groups[$groupTitle][] = $permission;
         }
+        ksort($groups);
         return $groups;
     }
 }

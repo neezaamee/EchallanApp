@@ -35,6 +35,18 @@
 ### D. User Roles & Access Control (`spatie/laravel-permission`)
 - Roles: `Super Admin`, `CTO`, `Doctor`, `Duty Officer`, `Staff`, `Citizen`.
 
+### E. Reports & Analytics Module
+- **Endpoints & Permissions**:
+  - Analytics Dashboard: `/reports` & `/reports/analytics` (`reports:view` or `reports:analytics`)
+  - Citizen Medical Examination Reports: `/reports/medical` (`reports:medical`)
+  - Traffic Violations & Challans Report: `/reports/challans` (`reports:challans` or `reports:lifter-squad`)
+  - Traffic Warnings Summary & Detailed Log: `/reports/warnings` (`reports:warnings`)
+  - Financial & Revenue Collection Reports: `/reports/finance` & `/reports/payments/*` (`reports:finance` or `reports:view`)
+- **Permission Management**:
+  - Permissions are prefixed with `reports:` and grouped under "Reports Module" in `/admin/roles/{id}/edit` and `/admin/users/{id}/edit`.
+  - Super Admin can grant or revoke specific report access individually to any role or user.
+  - Sidebar dynamically hides unpermitted report links and hides the entire Reports & Analytics group if user has zero reports permissions.
+
 ---
 
 ## 3. 1Bill PSID Architecture & Bank Integration

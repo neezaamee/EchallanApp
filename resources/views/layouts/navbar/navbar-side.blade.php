@@ -534,17 +534,57 @@
                 @endcanany
 
                 {{-- ==================== REPORTS & ANALYTICS ==================== --}}
-                @can('reports:view')
+                @php
+                    $isReportsActive = request()->routeIs('reports.*');
+                @endphp
+                @canany(['reports:view', 'reports:analytics', 'reports:warnings', 'reports:medical', 'reports:challans', 'reports:lifter-squad', 'reports:finance'])
                     <li class="nav-item">
-                        <a class="nav-link dropdown-indicator collapsed" 
+                        <a class="nav-link dropdown-indicator {{ $isReportsActive ? '' : 'collapsed' }}" 
                             href="#reports-analytics" role="button" data-bs-toggle="collapse" 
-                            aria-expanded="false" aria-controls="reports-analytics">
+                            aria-expanded="{{ $isReportsActive ? 'true' : 'false' }}" aria-controls="reports-analytics">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-icon"><span class="fas fa-chart-line"></span></span>
                                 <span class="nav-link-text ps-1">Reports & Analytics</span>
                             </div>
                         </a>
-                        <ul class="nav collapse" id="reports-analytics">
+                        <ul class="nav collapse {{ $isReportsActive ? 'show' : '' }}" id="reports-analytics">
+                            @canany(['reports:view', 'reports:analytics'])
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.analytics') || request()->routeIs('reports.index') ? 'active' : '' }}"
+                                    href="{{ route('reports.analytics') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-tachometer-alt"></span></span>
+                                        <span class="nav-link-text ps-1">Analytics Dashboard</span>
+                                    </div>
+                                </a>
+                            </li>
+                            @endcanany
+
+                            @can('reports:medical')
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.medical') ? 'active' : '' }}"
+                                    href="{{ route('reports.medical') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-notes-medical"></span></span>
+                                        <span class="nav-link-text ps-1">Medical Reports</span>
+                                    </div>
+                                </a>
+                            </li>
+                            @endcan
+
+                            @canany(['reports:challans', 'reports:lifter-squad'])
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('reports.challans') ? 'active' : '' }}"
+                                    href="{{ route('reports.challans') }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span class="fas fa-file-invoice"></span></span>
+                                        <span class="nav-link-text ps-1">Challans Report</span>
+                                    </div>
+                                </a>
+                            </li>
+                            @endcanany
+
+                            @can('reports:warnings')
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('reports.warnings') ? 'active' : '' }}"
                                     href="{{ route('reports.warnings') }}">
@@ -554,38 +594,22 @@
                                     </div>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link disabled" href="#!" title="Coming Soon">
-                                    <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><span class="fas fa-chart-bar"></span></span>
-                                        <span class="nav-link-text ps-1">Medical Reports</span>
-                                        <span class="badge badge-soft-warning ms-auto">Soon</span>
-                                    </div>
-                                </a>
-                            </li>
+                            @endcan
 
+                            @can('reports:finance')
                             <li class="nav-item">
-                                <a class="nav-link disabled" href="#!" title="Coming Soon">
+                                <a class="nav-link {{ request()->routeIs('reports.payments.*') || request()->routeIs('reports.finance') ? 'active' : '' }}"
+                                    href="{{ route('reports.payments.daily') }}">
                                     <div class="d-flex align-items-center">
                                         <span class="nav-link-icon"><span class="fas fa-file-invoice-dollar"></span></span>
                                         <span class="nav-link-text ps-1">Financial Reports</span>
-                                        <span class="badge badge-soft-warning ms-auto">Soon</span>
                                     </div>
                                 </a>
                             </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link disabled" href="#!" title="Coming Soon">
-                                    <div class="d-flex align-items-center">
-                                        <span class="nav-link-icon"><span class="fas fa-chart-line"></span></span>
-                                        <span class="nav-link-text ps-1">Analytics Dashboard</span>
-                                        <span class="badge badge-soft-warning ms-auto">Soon</span>
-                                    </div>
-                                </a>
-                            </li>
+                            @endcan
                         </ul>
                     </li>
-                @endcan
+                @endcanany
 
                 {{-- ==================== SUPPORT & HELP ==================== --}}
                 <li class="nav-item">

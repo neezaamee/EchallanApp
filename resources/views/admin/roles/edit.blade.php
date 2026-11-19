@@ -56,7 +56,11 @@
                                             id="perm-{{ $permission->id }}"
                                             {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }}>
                                         <label class="form-check-label fs-10 text-800" for="perm-{{ $permission->id }}">
-                                            {{ ucwords(str_replace(['read', 'crud', 'delete', 'verify'], '', $permission->name)) }}
+                                            @if(str_contains($permission->name, ':'))
+                                                {{ ucwords(str_replace(['-', '_'], ' ', explode(':', $permission->name)[1])) }}
+                                            @else
+                                                {{ ucwords(str_replace(['read', 'crud', 'delete', 'verify'], '', $permission->name)) }}
+                                            @endif
                                             <span class="text-400 d-block fs-11">Full: {{ $permission->name }}</span>
                                         </label>
                                     </div>

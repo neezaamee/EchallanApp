@@ -192,8 +192,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('warnings.edit')->middleware('can:warnings:edit');
 
     // Reports & Analytics
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'analytics'])
+        ->name('reports.index')->middleware('permission:reports:view|reports:analytics');
+    Route::get('/reports/analytics', [\App\Http\Controllers\ReportController::class, 'analytics'])
+        ->name('reports.analytics')->middleware('permission:reports:view|reports:analytics');
     Route::get('/reports/warnings', App\Livewire\Reports\WarningReport::class)
-        ->name('reports.warnings')->middleware('can:reports:warnings');
+        ->name('reports.warnings')->middleware('permission:reports:warnings');
+    Route::get('/reports/medical', App\Livewire\Reports\MedicalReport::class)
+        ->name('reports.medical')->middleware('permission:reports:medical');
+    Route::get('/reports/challans', App\Livewire\Reports\ChallanReport::class)
+        ->name('reports.challans')->middleware('permission:reports:challans|reports:lifter-squad');
+    Route::get('/reports/finance', [\App\Http\Controllers\PaymentReportController::class, 'daily'])
+        ->name('reports.finance')->middleware('permission:reports:finance|reports:view');
     
     // Impound & Release Workflow
     Route::prefix('impound')->group(function () {
@@ -235,14 +245,6 @@ Route::middleware(['auth', 'verified', 'role:super_admin|admin|accountant'])->gr
     // Payment Dashboard
     Route::get('/dashboard/payments', [\App\Http\Controllers\PaymentDashboardController::class, 'index'])->name('dashboard.payments');
 
-    // Payment Reports
-    Route::prefix('reports/payments')->group(function () {
-        Route::get('/daily', [\App\Http\Controllers\PaymentReportController::class, 'daily'])->name('reports.payments.daily');
-        Route::get('/monthly', [\App\Http\Controllers\PaymentReportController::class, 'monthly'])->name('reports.payments.monthly');
-        Route::get('/by-method', [\App\Http\Controllers\PaymentReportController::class, 'byMethod'])->name('reports.payments.by-method');
-        Route::get('/by-center', [\App\Http\Controllers\PaymentReportController::class, 'byCenter'])->name('reports.payments.by-center');
-    });
-
     // Refund Management
     Route::prefix('refunds')->group(function () {
         Route::get('/', [\App\Http\Controllers\RefundController::class, 'index'])->name('refunds.index');
@@ -257,6 +259,16 @@ Route::middleware(['auth', 'verified', 'role:super_admin|admin|accountant'])->gr
     Route::prefix('payments/export')->group(function () {
         Route::get('/excel', [\App\Http\Controllers\PaymentExportController::class, 'excel'])->name('payments.export.excel');
         Route::get('/csv', [\App\Http\Controllers\PaymentExportController::class, 'csv'])->name('payments.export.csv');
+    });
+});
+
+// Financial Reports (Accessible to accountant/admin/super_admin or users with reports:finance/reports:view)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('reports/payments')->middleware('permission:reports:finance|reports:view')->group(function () {
+        Route::get('/daily', [\App\Http\Controllers\PaymentReportController::class, 'daily'])->name('reports.payments.daily');
+        Route::get('/monthly', [\App\Http\Controllers\PaymentReportController::class, 'monthly'])->name('reports.payments.monthly');
+        Route::get('/by-method', [\App\Http\Controllers\PaymentReportController::class, 'byMethod'])->name('reports.payments.by-method');
+        Route::get('/by-center', [\App\Http\Controllers\PaymentReportController::class, 'byCenter'])->name('reports.payments.by-center');
     });
 });
 
