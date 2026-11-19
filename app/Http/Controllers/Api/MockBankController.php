@@ -20,7 +20,7 @@ class MockBankController extends Controller
     public function generatePsid(Request $request)
     {
         $request->validate([
-            'head'   => 'required|in:MEDICAL,TRAFFIC_CAR,TRAFFIC_BIKE',
+            'head'   => 'required|in:MEDICAL,TRAFFIC_CAR,TRAFFIC_BIKE,CAR,BIKE',
             'amount' => 'required|numeric',
         ]);
 

@@ -77,17 +77,54 @@ class BankService
     }
 
     /**
-     * Return the configured global bank prefix.
+     * Return the configured bank prefix for a given payment head/category,
+     * falling back to the global prefix if not specifically configured.
      *
+     * @param  string|null $headType  MEDICAL | TRAFFIC_CAR | TRAFFIC_BIKE | etc.
      * @return string
      */
-    public static function getBankPrefix(): string
+    public static function getBankPrefix(?string $headType = null): string
     {
+        if ($headType !== null) {
+            $normalizedHead = strtoupper(trim($headType));
+
+            $aliasMap = [
+                'CAR'   => 'TRAFFIC_CAR',
+                'BIKE'  => 'TRAFFIC_BIKE',
+                'OTHER' => 'TRAFFIC_OTHER',
+            ];
+            $key = $aliasMap[$normalizedHead] ?? $normalizedHead;
+
+            $prefixes = config('bank.prefixes', []);
+            if (!empty($prefixes[$key])) {
+                return (string) $prefixes[$key];
+            }
+        }
+
         return (string) config('bank.prefix', '');
     }
 
     /**
-     * Strip the global bank prefix from an incoming PSID/consumer number if present.
+     * Return all unique configured bank prefixes across all categories and global fallback.
+     * Sorted by length descending so longer prefixes match first during normalization.
+     *
+     * @return array<string>
+     */
+    public static function getAllBankPrefixes(): array
+    {
+        $prefixes = array_values(array_filter(array_merge(
+            (array) config('bank.prefixes', []),
+            [(string) config('bank.prefix', '')]
+        )));
+
+        $unique = array_values(array_unique($prefixes));
+        usort($unique, fn($a, $b) => strlen($b) <=> strlen($a));
+
+        return $unique;
+    }
+
+    /**
+     * Strip any configured bank prefix from an incoming PSID/consumer number if present.
      * e.g. "111787477101126303043625" -> "126303043625"
      *
      * @param  string $consumerNumber
@@ -96,25 +133,46 @@ class BankService
     public static function normalizePsid(string $consumerNumber): string
     {
         $consumerNumber = trim($consumerNumber);
-        $prefix = self::getBankPrefix();
 
-        if ($prefix !== '' && str_starts_with($consumerNumber, $prefix)) {
-            return substr($consumerNumber, strlen($prefix));
+        foreach (self::getAllBankPrefixes() as $prefix) {
+            if ($prefix !== '' && str_starts_with($consumerNumber, $prefix)) {
+                return substr($consumerNumber, strlen($prefix));
+            }
         }
 
         return $consumerNumber;
     }
 
     /**
-     * Format a 12-digit PSID for 1Link 1Bill payment display (Prefix + PSID).
-     * e.g. "126303043625" -> "111787477101126303043625"
+     * Format a PSID for 1Link 1Bill payment display (Prefix + PSID).
+     * Automatically uses category-specific prefix if headType is provided,
+     * or detects category from the first digit of a 12-digit V2 PSID.
+     * e.g. "126303043625" (starts with 1 = Medical) -> [Medical Prefix] + "126303043625"
      *
-     * @param  string $psid
+     * @param  string      $psid
+     * @param  string|null $headType
      * @return string
      */
-    public static function format1BillNumber(string $psid): string
+    public static function format1BillNumber(string $psid, ?string $headType = null): string
     {
-        return self::getBankPrefix() . $psid;
+        $clean = self::normalizePsid($psid);
+
+        if (strlen($clean) === 20) {
+            return $clean;
+        }
+
+        if ($headType === null && strlen($clean) === 12) {
+            $catDigit = $clean[0];
+            $headType = match ($catDigit) {
+                '1' => 'MEDICAL',
+                '2' => 'TRAFFIC_CAR',
+                '3' => 'TRAFFIC_BIKE',
+                '4' => 'TRAFFIC_OTHER',
+                default => null,
+            };
+        }
+
+        return self::getBankPrefix($headType) . $clean;
     }
 
     /**
@@ -172,13 +230,17 @@ class BankService
     private static function generatePsidV1(string $headType, float $amount, $cityId = null): string
     {
         // 1. Category Code (1 digit)
+        $normalizedHead = strtoupper(trim($headType));
         $categoryMap = [
             'MEDICAL'       => '1',
             'TRAFFIC_CAR'   => '2',
+            'CAR'           => '2',
             'TRAFFIC_BIKE'  => '3',
+            'BIKE'          => '3',
             'TRAFFIC_OTHER' => '4',
+            'OTHER'         => '4',
         ];
-        $category = $categoryMap[$headType] ?? '9';
+        $category = $categoryMap[$normalizedHead] ?? '9';
 
         // 2. City Code (3 digits — zero-padded)
         $cityCode = '000';
@@ -253,13 +315,17 @@ class BankService
     private static function generatePsidV2(string $headType): string
     {
         // 1. Category Code (1 digit)
+        $normalizedHead = strtoupper(trim($headType));
         $categoryMap = [
             'MEDICAL'       => '1',
             'TRAFFIC_CAR'   => '2',
+            'CAR'           => '2',
             'TRAFFIC_BIKE'  => '3',
+            'BIKE'          => '3',
             'TRAFFIC_OTHER' => '4',
+            'OTHER'         => '4',
         ];
-        $category = $categoryMap[$headType] ?? '9';
+        $category = $categoryMap[$normalizedHead] ?? '9';
 
         // 2. Year — yy (2 digits, e.g. "26" for 2026)
         $year = date('y');
@@ -279,8 +345,8 @@ class BankService
         $checkDigit = self::calculateLuhn($base);
         $corePsid   = $base . $checkDigit; // Exactly 12 digits
 
-        // 7. Prepend Bank Prefix (e.g. 111787477101) to form the full 24-digit PSID
-        $bankPrefix = self::getBankPrefix();
+        // 7. Prepend Bank Prefix (category-specific) to form the full 24-digit PSID
+        $bankPrefix = self::getBankPrefix($headType);
 
         return $bankPrefix . $corePsid;
     }

@@ -32,12 +32,12 @@ class PaymentIntegrationController extends Controller
 
         $rawPsid = $request->consumer_number;
         $psid = \App\Services\BankService::normalizePsid($rawPsid);
-        $prefix = \App\Services\BankService::getBankPrefix();
-        $candidates = array_values(array_unique(array_filter([
-            $rawPsid,
-            $psid,
-            $prefix ? ($prefix . $psid) : null
-        ])));
+        $prefixes = \App\Services\BankService::getAllBankPrefixes();
+        $prefixedCandidates = array_map(fn($p) => $p . $psid, $prefixes);
+        $candidates = array_values(array_unique(array_filter(array_merge(
+            [$rawPsid, $psid],
+            $prefixedCandidates
+        ))));
         $response = null;
         $category = 'Others';
 
@@ -152,12 +152,12 @@ class PaymentIntegrationController extends Controller
 
         $rawPsid = $request->consumer_number;
         $psid = \App\Services\BankService::normalizePsid($rawPsid);
-        $prefix = \App\Services\BankService::getBankPrefix();
-        $candidates = array_values(array_unique(array_filter([
-            $rawPsid,
-            $psid,
-            $prefix ? ($prefix . $psid) : null
-        ])));
+        $prefixes = \App\Services\BankService::getAllBankPrefixes();
+        $prefixedCandidates = array_map(fn($p) => $p . $psid, $prefixes);
+        $candidates = array_values(array_unique(array_filter(array_merge(
+            [$rawPsid, $psid],
+            $prefixedCandidates
+        ))));
 
         try {
             return DB::transaction(function () use ($psid, $rawPsid, $candidates, $request) {

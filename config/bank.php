@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Global Bank / 1Link Prefix
+    | Global Bank / 1Link Prefix (Fallback)
     |--------------------------------------------------------------------------
     |
     | Global bank-assigned 1Bill prefix (e.g. 111787477101).
@@ -12,9 +12,32 @@ return [
     | they enter: [Prefix] + [12-digit PSID] = 24 digits.
     | 1Link routes the transaction using this prefix and forwards the inquiry
     | to our API. The core PSID stored and verified in the database is 12 digits.
+    | Used as default fallback if a category-specific prefix is not defined.
     |
     */
     'prefix' => env('BANK_PREFIX', '111787477101'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Category-Specific 1Bill Prefixes
+    |--------------------------------------------------------------------------
+    |
+    | Separate prefixes assigned by the bank/1Link for each payment category:
+    |   - Medical:      BANK_PREFIX_MEDICAL
+    |   - Car Challan:  BANK_PREFIX_CAR (or BANK_PREFIX_TRAFFIC_CAR)
+    |   - Bike Challan: BANK_PREFIX_BIKE (or BANK_PREFIX_TRAFFIC_BIKE)
+    |   - Other:        BANK_PREFIX_OTHER
+    |
+    | When set, PSIDs generated for each category will use its respective prefix.
+    | Falls back to BANK_PREFIX if not explicitly configured in .env.
+    |
+    */
+    'prefixes' => [
+        'MEDICAL'       => env('BANK_PREFIX_MEDICAL', env('BANK_PREFIX', '111787477101')),
+        'TRAFFIC_CAR'   => env('BANK_PREFIX_CAR', env('BANK_PREFIX_TRAFFIC_CAR', env('BANK_PREFIX', '111787477101'))),
+        'TRAFFIC_BIKE'  => env('BANK_PREFIX_BIKE', env('BANK_PREFIX_TRAFFIC_BIKE', env('BANK_PREFIX', '111787477101'))),
+        'TRAFFIC_OTHER' => env('BANK_PREFIX_OTHER', env('BANK_PREFIX', '111787477101')),
+    ],
 
     /*
     |--------------------------------------------------------------------------

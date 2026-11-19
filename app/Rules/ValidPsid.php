@@ -35,8 +35,10 @@ class ValidPsid implements ValidationRule
         $len = strlen($clean);
 
         if ($len !== 12 && $len !== 20) {
-            $expectedPrefixedLen = strlen(BankService::getBankPrefix()) + 12;
-            $fail("The :attribute must be a valid 12-digit, 20-digit, or {$expectedPrefixedLen}-digit 1Bill PSID.");
+            $prefixes = BankService::getAllBankPrefixes();
+            $expectedLens = array_unique(array_map(fn($p) => strlen($p) + 12, $prefixes));
+            $expectedStr = implode(', ', array_merge(['12', '20'], array_map(fn($l) => (string) $l, $expectedLens)));
+            $fail("The :attribute must be a valid 1Bill PSID ({$expectedStr} digits).");
             return;
         }
 

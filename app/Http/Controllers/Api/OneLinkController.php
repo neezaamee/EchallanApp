@@ -26,12 +26,12 @@ class OneLinkController extends Controller
 
         $rawPsid = $request->consumer_number;
         $psid = \App\Services\BankService::normalizePsid($rawPsid);
-        $prefix = \App\Services\BankService::getBankPrefix();
-        $candidates = array_values(array_unique(array_filter([
-            $rawPsid,
-            $psid,
-            $prefix ? ($prefix . $psid) : null
-        ])));
+        $prefixes = \App\Services\BankService::getAllBankPrefixes();
+        $prefixedCandidates = array_map(fn($p) => $p . $psid, $prefixes);
+        $candidates = array_values(array_unique(array_filter(array_merge(
+            [$rawPsid, $psid],
+            $prefixedCandidates
+        ))));
 
         // Try Challan first (supports normalized 12-digit or full 24-digit)
         $target = Challan::whereIn('psid', $candidates)->first();
@@ -96,12 +96,12 @@ class OneLinkController extends Controller
 
         $rawPsid = $request->consumer_number;
         $psid = \App\Services\BankService::normalizePsid($rawPsid);
-        $prefix = \App\Services\BankService::getBankPrefix();
-        $candidates = array_values(array_unique(array_filter([
-            $rawPsid,
-            $psid,
-            $prefix ? ($prefix . $psid) : null
-        ])));
+        $prefixes = \App\Services\BankService::getAllBankPrefixes();
+        $prefixedCandidates = array_map(fn($p) => $p . $psid, $prefixes);
+        $candidates = array_values(array_unique(array_filter(array_merge(
+            [$rawPsid, $psid],
+            $prefixedCandidates
+        ))));
         $amountPaid = $request->amount_paid;
 
         // Find Target (supports normalized 12-digit or full 24-digit)
